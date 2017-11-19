@@ -5,4 +5,15 @@ package com.tans.tweather.Interface;
  */
 
 public interface INetRequestUtils {
+
+    public static interface NetRequestListener
+    {
+        public void onSeccess();
+        public void OnFail();
+    }
+    public boolean isNetWorkAvailable();
+    public void requestLocationInfo();
+    public void requestLocationInfo(NetRequestListener listener);
+    public void requestWeatherInfo(NetRequestListener listener);
+    public void requestCitiesInfo(NetRequestListener listener);
 }
