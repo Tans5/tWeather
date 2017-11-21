@@ -1,0 +1,96 @@
+https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20u%3D'c'%20and%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22chengdu%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+
+https://s.yimg.com/os/weather/1.0.1/shadow_icon/60x60/mostly_cloudy_day_night@2x.png
+
+
+�磺
+https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+������
+https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+δ���¶ȣ�
+https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+��ǰ�¶�:
+https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+
+
+0 tornado
+1 tropical storm
+2 hurricane
+3 severe thunderstorms
+4 thunderstorms
+5 mixed rain and snow
+6 mixed rain and sleet
+7 mixed snow and sleet
+8 freezing drizzle
+9 drizzle
+10 freezing rain
+11 showers
+12 showers
+13 snow flurries
+14 light snow showers
+15 blowing snow
+16 snow
+17 hail
+18 sleet
+19 dust
+20 foggy
+21 haze
+22 smoky
+23 blustery
+24 windy
+25 cold
+26 cloudy
+27 mostly cloudy (night)
+28 mostly cloudy (day)
+29 partly cloudy (night)
+30 partly cloudy (day)
+31 clear (night)
+32 sunny
+33 fair (night)
+34 fair (day)
+35 mixed rain and hail
+36 hot
+37 isolated thunderstorms
+38 scattered thunderstorms
+39 scattered thunderstorms
+40 scattered showers
+41 heavy snow
+42 scattered snow showers
+43 heavy snow
+44 partly cloudy
+45 thundershowers
+46 snow showers
+47 isolated thundershowers
+3200 not available
+
+private  List<Person> decode(JsonReader reader) throws IOException {    
+        List<Person> jacks;    
+        jacks = new ArrayList<Person>();    
+        reader.beginArray();// 通知gson框架，这里开始解析的是数组类型    
+        while (reader.hasNext()) {    
+            Person p = new Person();   
+            jacks.add(p);    
+            reader.beginObject();// 通知gson框架，这里开始解析的是对象    
+            while (reader.hasNext()) {    
+                final String name = reader.nextName();// 提到名、值对中的名    
+                if (name.equals("name")) {    
+                    final String value = reader.nextString();    
+                    p.setName(value);    
+                }  else if (name.equals("contact")) {    
+                    reader.beginObject();// 通知gson框架，这里开始解析的是对象    
+                    while (reader.hasNext()) {    
+                        final String key = reader.nextName();    
+                        final String value = reader.nextString();    
+                        p.putValue(key, value);    
+                    }    
+                    reader.endObject();// 通知gson框架，对对象的解析完成    
+                } else {    
+                    reader.skipValue();// 跳过不必要的字段，根据之前的设定，这里只能是age    
+                }    
+            }    
+            reader.endObject();// 通知gson框架，对对象的解析完成   
+        }    
+        reader.endArray();// 通知gson框架，数组对象的解析完成  
+          
+        return jacks;    
+    }

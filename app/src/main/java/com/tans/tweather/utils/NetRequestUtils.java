@@ -1,6 +1,6 @@
-package com.tans.tweather.Utils;
+package com.tans.tweather.utils;
 
-import com.tans.tweather.Interface.INetRequestUtils;
+import com.tans.tweather.interfaces.INetRequestUtils;
 
 /**
  * Created by tans on 2017/11/19.

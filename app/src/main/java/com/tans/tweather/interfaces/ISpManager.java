@@ -1,4 +1,4 @@
-package com.tans.tweather.Interface;
+package com.tans.tweather.interfaces;
 
 import java.util.Set;
 

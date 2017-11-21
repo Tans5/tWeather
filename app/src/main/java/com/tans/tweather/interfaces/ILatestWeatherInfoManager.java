@@ -1,4 +1,4 @@
-package com.tans.tweather.Interface;
+package com.tans.tweather.interfaces;
 
 /**
  * Created by tans on 2017/11/19.

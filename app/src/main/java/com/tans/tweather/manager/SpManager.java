@@ -1,9 +1,9 @@
-package com.tans.tweather.Manager;
+package com.tans.tweather.manager;
 
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import com.tans.tweather.Interface.ISpManager;
+import com.tans.tweather.interfaces.ISpManager;
 
 import java.util.ArrayList;
 import java.util.List;
