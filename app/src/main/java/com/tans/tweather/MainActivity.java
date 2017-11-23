@@ -6,26 +6,24 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.tans.tweather.bean.ForecastBean;
-import com.tans.tweather.interfaces.INetRequestUtils;
-import com.tans.tweather.utils.NetRequestUtils;
+import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
+import com.tans.tweather.manager.LatestWeatherInfoManager;
 
-import java.util.List;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
     public static String TAG = MainActivity.class.getSimpleName();
-
+    LatestWeatherInfoManager latestWeatherInfoManager = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NetRequestUtils netRequestUtils = NetRequestUtils.newInstance();
-        netRequestUtils.setContext(this);
-        netRequestUtils.requestForecastInfo("", new INetRequestUtils.NetRequestListener() {
+        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);
+        showLog(""+latestWeatherInfoManager.isLatestWeatherInfo());
+        latestWeatherInfoManager.updateLatestWeatherInfo(new ILatestWeatherInfoManager.LatestWeatherUpdateListener() {
             @Override
-            public void onSuccess(Object result) {
-                List<ForecastBean> results = (List<ForecastBean>) result;
-                showLog(results.get(0).getItem().getForecast().getText());
+            public void onSuccess() {
+                showLog(latestWeatherInfoManager.getmCondition().getTemp()+" ");
             }
 
             @Override
@@ -33,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        showLog(""+latestWeatherInfoManager.isLatestWeatherInfo());
+        super.onResume();
     }
 
     public void showLog(String s) {

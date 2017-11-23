@@ -1,7 +1,7 @@
 package com.tans.tweather.utils;
 
-import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -10,7 +10,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.tans.tweather.MainActivity;
 import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.ForecastBean;
@@ -23,7 +22,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Created by tans on 2017/11/19.
  */
@@ -32,10 +30,11 @@ public class NetRequestUtils implements INetRequestUtils {
 
     private static NetRequestUtils instance = null;
 
-    public final static String WIND_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
-    public final static String ATMOSPHERE_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
-    public final static String CURRENT_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
-    public final static String FUTURE_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22%E6%88%90%E9%83%BD%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+    public final static String WIND_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String ATMOSPHERE_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String CURRENT_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String FUTURE_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String WEATHER_URL_TAIL = "%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
     private Context mContext = null;
     private RequestQueue mQueue = null;
 
@@ -51,6 +50,7 @@ public class NetRequestUtils implements INetRequestUtils {
     }
 
     private void requestNet(String url, Response.Listener<String> response, Response.ErrorListener error) {
+        Log.i("URL",url);
         StringRequest request = new StringRequest(url, response, error);
         mQueue.add(request);
     }
@@ -76,7 +76,7 @@ public class NetRequestUtils implements INetRequestUtils {
 
             @Override
             public void onResponse(String response) {
-                String resultString = getFutureConditionJsonString(response);
+                String resultString = getAtmosphereJsonString(response);
                 Gson gson = new Gson();
                 AtmosphereBean result = gson.fromJson(resultString, AtmosphereBean.class);
                 listener.onSuccess(result);
@@ -88,7 +88,7 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(ATMOSPHERE_URL, responseListener, errorListener);
+        requestNet(ATMOSPHERE_URL+java.net.URLEncoder.encode(location)+WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class NetRequestUtils implements INetRequestUtils {
 
             @Override
             public void onResponse(String response) {
-                String resultString = getFutureConditionJsonString(response);
+                String resultString = getCurrentConditionJsonString(response);
                 Gson gson = new Gson();
                 ConditionBean result = gson.fromJson(resultString, ConditionBean.class);
                 listener.onSuccess(result);
@@ -109,7 +109,7 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(CURRENT_CONDITION_URL, responseListener, errorListener);
+        requestNet(CURRENT_CONDITION_URL+java.net.URLEncoder.encode(location)+WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(FUTURE_CONDITION_URL, responseListener, errorListener);
+        requestNet(FUTURE_CONDITION_URL+java.net.URLEncoder.encode(location)+WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class NetRequestUtils implements INetRequestUtils {
 
             @Override
             public void onResponse(String response) {
-                String resultString = getFutureConditionJsonString(response);
+                String resultString = getWindJsonString(response);
                 Gson gson = new Gson();
                 WindBean result = gson.fromJson(resultString, WindBean.class);
                 listener.onSuccess(result);
@@ -153,7 +153,7 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(WIND_URL, responseListener, errorListener);
+        requestNet(WIND_URL+java.net.URLEncoder.encode(location)+WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
 
