@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.utils.NetRequestUtils;
 
 import java.util.Calendar;
 
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);
-        showLog(""+latestWeatherInfoManager.isLatestWeatherInfo());
+        showLog("onCreate: "+latestWeatherInfoManager.isLatestWeatherInfo());
         latestWeatherInfoManager.updateLatestWeatherInfo(new ILatestWeatherInfoManager.LatestWeatherUpdateListener() {
             @Override
             public void onSuccess() {
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        showLog(""+latestWeatherInfoManager.isLatestWeatherInfo());
+        showLog("onResume: "+latestWeatherInfoManager.isLatestWeatherInfo());
         super.onResume();
     }
 

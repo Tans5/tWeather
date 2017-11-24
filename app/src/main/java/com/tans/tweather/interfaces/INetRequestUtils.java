@@ -19,7 +19,7 @@ public interface INetRequestUtils {
 
     public boolean isNetWorkAvailable();
 
-    public void requestLocationInfo();
+    public void requestLocationInfo(NetRequestListener listener);
 
     public void requestAtmosphereInfo(String location, NetRequestListener listener);
 
