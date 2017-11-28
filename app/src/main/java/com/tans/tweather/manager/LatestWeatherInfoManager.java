@@ -1,5 +1,6 @@
 package com.tans.tweather.manager;
 
+import android.app.Application;
 import android.content.Context;
 
 import com.android.volley.VolleyError;
@@ -27,8 +28,9 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     private WindBean mWind = null;
     private Context mContext = null;
     private NetRequestUtils mNetRequestUtils = null;
+    private SpManager mSpManager = null;
     private int mGotItem = 0;
-    private String currentCity = "成都市";
+    private String mCurrentCity = "成都市";
     private DateBean updateDate = null;
     private static LatestWeatherInfoManager instance = null;
     private static int WEATHER_ITEM_NUMBER = 4;
@@ -44,6 +46,23 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         this.mContext = context;
         mNetRequestUtils = NetRequestUtils.newInstance();
         mNetRequestUtils.setContext(mContext);
+
+        mSpManager = SpManager.newInstance();
+        mSpManager.initSp((Application) context.getApplicationContext());
+    }
+
+    public boolean isNetWorkAvailable() {
+        return mNetRequestUtils.isNetWorkAvailable();
+    }
+
+    public boolean isAddedCurrentCity() {
+        String currentCity = mSpManager.getCurrentUseCity();
+        if (currentCity.equals(""))
+            return false;
+        else {
+            mCurrentCity = currentCity;
+            return true;
+        }
     }
 
     public boolean isLatestWeatherInfo() {
@@ -52,7 +71,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
 
     @Override
     public void updateLatestWeatherInfo(final LatestWeatherUpdateListener listener) {
-        mNetRequestUtils.requestAtmosphereInfo(currentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mAtmosphere = (AtmosphereBean) result;
@@ -70,7 +89,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 listener.onFail(e);
             }
         });
-        mNetRequestUtils.requestConditionInfo(currentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestConditionInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mCondition = (ConditionBean) result;
@@ -88,7 +107,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 listener.onFail(e);
             }
         });
-        mNetRequestUtils.requestForecastInfo(currentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestForecastInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mForecast = (ArrayList<ForecastBean>) result;
@@ -106,7 +125,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 listener.onFail(e);
             }
         });
-        mNetRequestUtils.requestWindInfo(currentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestWindInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mWind = (WindBean) result;
@@ -136,16 +155,19 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
 
     }
 
-    public void loadCurrentCity() {
+    public void loadCurrentCity(final LoadCurrentCityListener listener) {
         mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
-                System.out.println(result.toString());
+
+                listener.onSuccess();
+                mCurrentCity = result.toString();
+                mSpManager.storeCurrentUseCity(result.toString());
             }
 
             @Override
             public void onFail(VolleyError e) {
-
+                listener.onFail(e);
             }
         });
     }
@@ -180,5 +202,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
 
     public void setmWind(WindBean mWind) {
         this.mWind = mWind;
+    }
+
+    public void setmCurrentCity(String mCurrentCity) {
+        this.mCurrentCity = mCurrentCity;
+    }
+
+    public String getmCurrentCity() {
+        return mCurrentCity;
     }
 }

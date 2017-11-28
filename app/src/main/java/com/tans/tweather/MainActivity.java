@@ -16,15 +16,34 @@ public class MainActivity extends AppCompatActivity {
 
     public static String TAG = MainActivity.class.getSimpleName();
     LatestWeatherInfoManager latestWeatherInfoManager = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);
-        showLog("onCreate: "+latestWeatherInfoManager.isLatestWeatherInfo());
+        showLog("isAddedCurrentCity: " + latestWeatherInfoManager.isAddedCurrentCity());
+        if (!latestWeatherInfoManager.isAddedCurrentCity()) {
+            latestWeatherInfoManager.loadCurrentCity(new ILatestWeatherInfoManager.LoadCurrentCityListener() {
+                @Override
+                public void onSuccess() {
+                    updateWeather();
+                }
+
+                @Override
+                public void onFail(VolleyError e) {
+
+                }
+            });
+        } else {
+            updateWeather();
+        }
+    }
+
+    public void updateWeather() {
         latestWeatherInfoManager.updateLatestWeatherInfo(new ILatestWeatherInfoManager.LatestWeatherUpdateListener() {
             @Override
             public void onSuccess() {
-                showLog(latestWeatherInfoManager.getmCondition().getTemp()+" ");
+                showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
             }
 
             @Override
@@ -34,14 +53,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        showLog("onResume: "+latestWeatherInfoManager.isLatestWeatherInfo());
-        super.onResume();
-    }
-
     public void showLog(String s) {
         Log.i(TAG, s + "666666666666666666666");
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 }

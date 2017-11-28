@@ -13,6 +13,11 @@ public interface ILatestWeatherInfoManager {
         public void onFail(VolleyError e);
     }
 
+    public static interface LoadCurrentCityListener {
+        public void onSuccess();
+
+        public void onFail(VolleyError e);
+    }
     public void updateLatestWeatherInfo(LatestWeatherUpdateListener listener);
 
     public void updateLatestWeatherInfo();
