@@ -8,9 +8,6 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
-import com.tans.tweather.utils.NetRequestUtils;
-
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
