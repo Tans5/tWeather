@@ -8,27 +8,27 @@ import java.util.Set;
 
 public interface ISpManager {
 
-    public static interface CommonUseCitiesChangeListener {
-        public void onChange(Set<String> cities);
+    interface CommonUseCitiesChangeListener {
+        void onChange(Set<String> cities);
     }
 
-    public static interface CurrentUseCityChangeListener {
-        public void onChange(String city);
+    interface CurrentUseCityChangeListener {
+        void onChange(String city);
     }
 
-    public static interface WallPaperAlphaChangeListener {
-        public void onChange(int a);
+    interface WallPaperAlphaChangeListener {
+        void onChange(int a);
     }
 
-    public void storeCommonUseCities(Set<String> commonUseCities);
+    void storeCommonUseCities(Set<String> commonUseCities);
 
-    public Set<String> getCommonUseCities();
+    Set<String> getCommonUseCities();
 
-    public void storeCurrentUseCity(String city);
+    void storeCurrentUseCity(String city);
 
-    public String getCurrentUseCity();
+    String getCurrentUseCity();
 
-    public void storeWallPaperAlpha(int a);
+    void storeWallPaperAlpha(int a);
 
-    public int getWallPaperAlpha();
+    int getWallPaperAlpha();
 }

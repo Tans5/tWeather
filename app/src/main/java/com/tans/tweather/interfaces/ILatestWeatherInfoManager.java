@@ -7,19 +7,20 @@ import com.android.volley.VolleyError;
  */
 
 public interface ILatestWeatherInfoManager {
-    public static interface LatestWeatherUpdateListener {
-        public void onSuccess();
+    interface LatestWeatherUpdateListener {
+        void onSuccess();
 
-        public void onFail(VolleyError e);
+        void onFail(VolleyError e);
     }
 
-    public static interface LoadCurrentCityListener {
-        public void onSuccess();
+    interface LoadCurrentCityListener {
+        void onSuccess();
 
-        public void onFail(VolleyError e);
+        void onFail(VolleyError e);
     }
-    public void updateLatestWeatherInfo(LatestWeatherUpdateListener listener);
 
-    public void updateLatestWeatherInfo();
+    void updateLatestWeatherInfo(LatestWeatherUpdateListener listener);
+
+    void updateLatestWeatherInfo();
 
 }

@@ -104,10 +104,10 @@ public class NetRequestUtils implements INetRequestUtils {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
         String provider = "";
-        if (providers.contains(LocationManager.GPS_PROVIDER)) {
-            provider = LocationManager.GPS_PROVIDER;
-        } else if (providers.contains((LocationManager.NETWORK_PROVIDER))) {
+        if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
             provider = LocationManager.NETWORK_PROVIDER;
+        } else if (providers.contains((LocationManager.GPS_PROVIDER))) {
+            provider = LocationManager.GPS_PROVIDER;
         } else {
             return null;
         }
@@ -122,6 +122,8 @@ public class NetRequestUtils implements INetRequestUtils {
             return null;
         }
         Location location = locationManager.getLastKnownLocation(provider);
+        if (location == null)
+            return null;
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         double[] result = {latitude, longitude};

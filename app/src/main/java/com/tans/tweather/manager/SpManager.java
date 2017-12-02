@@ -49,40 +49,40 @@ public class SpManager implements ISpManager {
 
     @Override
     public void storeCommonUseCities(Set<String> commonUseCities) {
-        mSp.edit().putStringSet(SP_KEY_COMMON_USE_CITIES,commonUseCities).commit();
+        mSp.edit().putStringSet(SP_KEY_COMMON_USE_CITIES, commonUseCities).commit();
         mCommonCities = commonUseCities;
         notifyCommonUseCitiesChange();
     }
 
     @Override
     public Set<String> getCommonUseCities() {
-        mCommonCities = mSp.getStringSet(SP_KEY_COMMON_USE_CITIES,null);
+        mCommonCities = mSp.getStringSet(SP_KEY_COMMON_USE_CITIES, null);
         return mCommonCities;
     }
 
     @Override
     public void storeCurrentUseCity(String city) {
-        mSp.edit().putString(SP_KEY_CURRENT_CITY,city).commit();
+        mSp.edit().putString(SP_KEY_CURRENT_CITY, city).commit();
         mCurrentCity = city;
         notifyCurrentUseCityChange();
     }
 
     @Override
     public String getCurrentUseCity() {
-        mCurrentCity = mSp.getString(SP_KEY_CURRENT_CITY,"");
+        mCurrentCity = mSp.getString(SP_KEY_CURRENT_CITY, "");
         return mCurrentCity;
     }
 
     @Override
     public void storeWallPaperAlpha(int a) {
-        mSp.edit().putInt(SP_KEY_WALLPAPER_ALPHA,a);
+        mSp.edit().putInt(SP_KEY_WALLPAPER_ALPHA, a);
         mWallPaperAlpha = a;
         notifyWallPaperAlphaChange();
     }
 
     @Override
     public int getWallPaperAlpha() {
-        mWallPaperAlpha = mSp.getInt(SP_KEY_WALLPAPER_ALPHA,0);
+        mWallPaperAlpha = mSp.getInt(SP_KEY_WALLPAPER_ALPHA, 0);
         return mWallPaperAlpha;
     }
 

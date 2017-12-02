@@ -3,6 +3,7 @@ package com.tans.tweather.manager;
 import android.app.Application;
 import android.content.Context;
 
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
@@ -34,6 +35,11 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     private DateBean updateDate = null;
     private static LatestWeatherInfoManager instance = null;
     private static int WEATHER_ITEM_NUMBER = 4;
+    private List<WeatherUpdatedListener> mWeatherUpdatedListeners = new ArrayList<WeatherUpdatedListener>();
+
+    public static interface WeatherUpdatedListener {
+        public void updated();
+    }
 
     public static LatestWeatherInfoManager newInstance(Context context) {
         if (instance == null) {
@@ -79,6 +85,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 if (mGotItem == WEATHER_ITEM_NUMBER) {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
                     listener.onSuccess();
                 }
             }
@@ -97,6 +104,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 if (mGotItem == WEATHER_ITEM_NUMBER) {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
                     listener.onSuccess();
                 }
             }
@@ -115,6 +123,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 if (mGotItem == WEATHER_ITEM_NUMBER) {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
                     listener.onSuccess();
                 }
             }
@@ -133,6 +142,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 if (mGotItem == WEATHER_ITEM_NUMBER) {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
                     listener.onSuccess();
                 }
             }
@@ -152,7 +162,74 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
 
     @Override
     public void updateLatestWeatherInfo() {
+        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+            @Override
+            public void onSuccess(Object result) {
+                mAtmosphere = (AtmosphereBean) result;
+                mGotItem++;
+                if (mGotItem == WEATHER_ITEM_NUMBER) {
+                    mGotItem = 0;
+                    updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
+                }
+            }
 
+            @Override
+            public void onFail(VolleyError e) {
+                mGotItem = 0;
+            }
+        });
+        mNetRequestUtils.requestConditionInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+            @Override
+            public void onSuccess(Object result) {
+                mCondition = (ConditionBean) result;
+                mGotItem++;
+                if (mGotItem == WEATHER_ITEM_NUMBER) {
+                    mGotItem = 0;
+                    updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
+                }
+            }
+
+            @Override
+            public void onFail(VolleyError e) {
+                mGotItem = 0;
+            }
+        });
+        mNetRequestUtils.requestForecastInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+            @Override
+            public void onSuccess(Object result) {
+                mForecast = (ArrayList<ForecastBean>) result;
+                mGotItem++;
+                if (mGotItem == WEATHER_ITEM_NUMBER) {
+                    mGotItem = 0;
+                    updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
+                }
+            }
+
+            @Override
+            public void onFail(VolleyError e) {
+                mGotItem = 0;
+            }
+        });
+        mNetRequestUtils.requestWindInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+            @Override
+            public void onSuccess(Object result) {
+                mWind = (WindBean) result;
+                mGotItem++;
+                if (mGotItem == WEATHER_ITEM_NUMBER) {
+                    mGotItem = 0;
+                    updateDate = getCurrentDate();
+                    notifyWeatherInfoUpdated();
+                }
+            }
+
+            @Override
+            public void onFail(VolleyError e) {
+                mGotItem = 0;
+            }
+        });
     }
 
     public void loadCurrentCity(final LoadCurrentCityListener listener) {
@@ -170,6 +247,22 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                 listener.onFail(e);
             }
         });
+    }
+
+    public void registerWeatherUpdateListener(WeatherUpdatedListener listener) {
+        if (!mWeatherUpdatedListeners.contains(listener)) {
+            mWeatherUpdatedListeners.add(listener);
+        }
+    }
+
+    public void unregisterWeatherUpdateListener(WeatherUpdatedListener listener) {
+        if (mWeatherUpdatedListeners.contains(listener))
+            mWeatherUpdatedListeners.remove(listener);
+    }
+
+    private void notifyWeatherInfoUpdated() {
+        for (WeatherUpdatedListener listener : mWeatherUpdatedListeners)
+            listener.updated();
     }
 
     public AtmosphereBean getmAtmosphere() {

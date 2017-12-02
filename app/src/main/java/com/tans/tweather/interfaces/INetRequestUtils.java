@@ -11,23 +11,23 @@ import java.io.IOException;
 
 public interface INetRequestUtils {
 
-    public static interface NetRequestListener {
-        public void onSuccess(Object result);
+    interface NetRequestListener {
+        void onSuccess(Object result);
 
-        public void onFail(VolleyError e);
+        void onFail(VolleyError e);
     }
 
-    public boolean isNetWorkAvailable();
+    boolean isNetWorkAvailable();
 
-    public void requestLocationInfo(NetRequestListener listener);
+    void requestLocationInfo(NetRequestListener listener);
 
-    public void requestAtmosphereInfo(String location, NetRequestListener listener);
+    void requestAtmosphereInfo(String location, NetRequestListener listener);
 
-    public void requestConditionInfo(String location, NetRequestListener listener);
+    void requestConditionInfo(String location, NetRequestListener listener);
 
-    public void requestForecastInfo(String location, NetRequestListener listener);
+    void requestForecastInfo(String location, NetRequestListener listener);
 
-    public void requestWindInfo(String location, NetRequestListener listener);
+    void requestWindInfo(String location, NetRequestListener listener);
 
-    public void requestCitiesInfo(NetRequestListener listener);
+    void requestCitiesInfo(NetRequestListener listener);
 }
