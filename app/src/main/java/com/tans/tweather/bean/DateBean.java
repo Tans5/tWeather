@@ -42,8 +42,8 @@ public class DateBean implements Serializable {
         this.year = year;
     }
 
-    public boolean equal(DateBean data) {
-        if (this.day == data.day && this.year == data.year && this.year == data.year)
+    public boolean equals(DateBean data) {
+        if (data!=null&&this.day == data.day && this.year == data.year && this.year == data.year)
             return true;
         else
             return false;
