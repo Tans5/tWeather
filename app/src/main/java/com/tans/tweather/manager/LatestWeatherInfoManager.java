@@ -2,6 +2,7 @@ package com.tans.tweather.manager;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -13,6 +14,7 @@ import com.tans.tweather.bean.WindBean;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.interfaces.INetRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
+import com.tans.tweather.widget.WeatherInfoWidget;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +59,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         mSpManager.initSp((Application) context.getApplicationContext());
     }
 
+    private void sendWeatherUpdatedBroadcast()
+    {
+        Intent intent = new Intent();
+        intent.setAction(WeatherInfoWidget.UPDATE_WEATHER);
+        mContext.sendBroadcast(intent);
+    }
+
     public boolean isNetWorkAvailable() {
         return mNetRequestUtils.isNetWorkAvailable();
     }
@@ -87,6 +96,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
                     listener.onSuccess();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -106,6 +116,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
                     listener.onSuccess();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -125,6 +136,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
                     listener.onSuccess();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -144,6 +156,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
                     listener.onSuccess();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -171,6 +184,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -188,6 +202,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -205,6 +220,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 
@@ -222,6 +238,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
                     mGotItem = 0;
                     updateDate = getCurrentDate();
                     notifyWeatherInfoUpdated();
+                    sendWeatherUpdatedBroadcast();
                 }
             }
 

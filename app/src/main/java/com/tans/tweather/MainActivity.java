@@ -35,21 +35,20 @@ public class MainActivity extends AppCompatActivity {
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);
         showLog("isAddedCurrentCity: " + latestWeatherInfoManager.isAddedCurrentCity());
         if (!latestWeatherInfoManager.isAddedCurrentCity()) {
-//            latestWeatherInfoManager.loadCurrentCity(new ILatestWeatherInfoManager.LoadCurrentCityListener() {
-//                @Override
-//                public void onSuccess() {
-//                    updateWeather();
-//                }
-//
-//                @Override
-//                public void onFail(VolleyError e) {
-//
-//                }
-//            });
+            latestWeatherInfoManager.loadCurrentCity(new ILatestWeatherInfoManager.LoadCurrentCityListener() {
+                @Override
+                public void onSuccess() {
+                    updateWeather();
+                }
+
+                @Override
+                public void onFail(VolleyError e) {
+
+                }
+            });
         } else {
             updateWeather();
         }
-        updateWeather();
     }
 
     public void updateWeather() {

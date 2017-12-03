@@ -1,11 +1,18 @@
 package com.tans.tweather.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.RemoteViews;
+
+import com.tans.tweather.R;
+import com.tans.tweather.bean.ConditionBean;
+import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.utils.ResultTransUtils;
 
 
 /**
@@ -20,10 +27,19 @@ public class WeatherInfoWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        if (intent.getAction().equals(UPDATE_WEATHER))
+            updateAllWidget(context);
+    }
+
+    private void updateAllWidget(Context context)
+    {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = manager.getAppWidgetIds(new ComponentName(context,WeatherInfoWidget.class.getName()));
-        for(int id:appWidgetIds)
-            Log.i(TAG,"id:"+id);
+        LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(context);
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_weather_layout);
+        remoteViews.setImageViewResource(R.id.widget_weather_ic_im, ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
+        remoteViews.setTextViewText(R.id.widget_city_tv,latestWeatherInfoManager.getmCurrentCity());
+        remoteViews.setTextViewText(R.id.widget_temp_tv,latestWeatherInfoManager.getmCondition().getTemp()+"°");
+        manager.updateAppWidget(new ComponentName(context,WeatherInfoWidget.class.getName()),remoteViews);
     }
 
     @Override
