@@ -59,7 +59,7 @@ public class UpdateWeatherInfoService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "on start command");
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        long triggerTime = SystemClock.elapsedRealtime() + 5000;
+        long triggerTime = SystemClock.elapsedRealtime() + AN_HOUR;
         Intent intent1 = new Intent();
         intent1.setAction(UPDATE_WEATHER);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);

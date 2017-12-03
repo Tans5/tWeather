@@ -18,6 +18,18 @@
         </activity>
         <service android:name=".service.UpdateWeatherInfoService">
         </service>
+        <receiver android:name=".widget.WeatherInfoWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"></action>
+                <action android:name="com.tans.tweather.CLICK_FOR_UPDATE"></action>
+                <action android:name="com.tans.tweather.UPDATE_WEATHER"></action>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weather_widget_info"
+                >
+            </meta-data>
+        </receiver>
     </application>
 
 </manifest>

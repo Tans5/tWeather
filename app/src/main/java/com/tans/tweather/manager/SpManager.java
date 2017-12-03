@@ -15,9 +15,6 @@ import java.util.Set;
 
 public class SpManager implements ISpManager {
 
-    List<CommonUseCitiesChangeListener> commonUseCitiesChangeListeners = null;
-    List<CurrentUseCityChangeListener> currentUseCityChangeListeners = null;
-    List<WallPaperAlphaChangeListener> wallPaperAlphaChangeListeners = null;
 
     private Set<String> mCommonCities = null;
     private String mCurrentCity = null;
@@ -51,7 +48,6 @@ public class SpManager implements ISpManager {
     public void storeCommonUseCities(Set<String> commonUseCities) {
         mSp.edit().putStringSet(SP_KEY_COMMON_USE_CITIES, commonUseCities).commit();
         mCommonCities = commonUseCities;
-        notifyCommonUseCitiesChange();
     }
 
     @Override
@@ -64,7 +60,6 @@ public class SpManager implements ISpManager {
     public void storeCurrentUseCity(String city) {
         mSp.edit().putString(SP_KEY_CURRENT_CITY, city).commit();
         mCurrentCity = city;
-        notifyCurrentUseCityChange();
     }
 
     @Override
@@ -77,80 +72,11 @@ public class SpManager implements ISpManager {
     public void storeWallPaperAlpha(int a) {
         mSp.edit().putInt(SP_KEY_WALLPAPER_ALPHA, a);
         mWallPaperAlpha = a;
-        notifyWallPaperAlphaChange();
     }
 
     @Override
     public int getWallPaperAlpha() {
         mWallPaperAlpha = mSp.getInt(SP_KEY_WALLPAPER_ALPHA, 0);
         return mWallPaperAlpha;
-    }
-
-
-    public void registerCommonUseCitesChangeListener(CommonUseCitiesChangeListener listener) {
-        if (commonUseCitiesChangeListeners == null) {
-            commonUseCitiesChangeListeners = new ArrayList<CommonUseCitiesChangeListener>();
-        }
-        commonUseCitiesChangeListeners.add(listener);
-    }
-
-    public void unregisterCommonUseCitesChangeListener(CommonUseCitiesChangeListener listener) {
-        if (commonUseCitiesChangeListeners == null) {
-            return;
-        }
-        commonUseCitiesChangeListeners.remove(listener);
-    }
-
-    private void notifyCommonUseCitiesChange() {
-        if (commonUseCitiesChangeListeners != null) {
-            for (CommonUseCitiesChangeListener listener : commonUseCitiesChangeListeners) {
-                listener.onChange(mCommonCities);
-            }
-        }
-    }
-
-    public void registerCurrentUseCityChangeListener(CurrentUseCityChangeListener listener) {
-        if (currentUseCityChangeListeners == null) {
-            currentUseCityChangeListeners = new ArrayList<CurrentUseCityChangeListener>();
-        }
-        currentUseCityChangeListeners.add(listener);
-    }
-
-    public void unregisterCurrentUseCityChangeListener(CurrentUseCityChangeListener listener) {
-        if (currentUseCityChangeListeners == null) {
-            return;
-        }
-        currentUseCityChangeListeners.remove(listener);
-    }
-
-    private void notifyCurrentUseCityChange() {
-        if (currentUseCityChangeListeners != null) {
-            for (CurrentUseCityChangeListener listener : currentUseCityChangeListeners) {
-                listener.onChange(mCurrentCity);
-            }
-        }
-    }
-
-
-    public void registerWallPaperAlphaChangeListener(WallPaperAlphaChangeListener listener) {
-        if (wallPaperAlphaChangeListeners == null) {
-            wallPaperAlphaChangeListeners = new ArrayList<WallPaperAlphaChangeListener>();
-        }
-        wallPaperAlphaChangeListeners.add(listener);
-    }
-
-    public void unregisterWallPaperAlphaChangeListener(WallPaperAlphaChangeListener listener) {
-        if (wallPaperAlphaChangeListeners == null) {
-            return;
-        }
-        wallPaperAlphaChangeListeners.remove(listener);
-    }
-
-    private void notifyWallPaperAlphaChange() {
-        if (wallPaperAlphaChangeListeners != null) {
-            for (WallPaperAlphaChangeListener listener : wallPaperAlphaChangeListeners) {
-                listener.onChange(mWallPaperAlpha);
-            }
-        }
     }
 }
