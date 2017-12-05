@@ -22,10 +22,10 @@ public class SpManager implements ISpManager {
     private SharedPreferences mSp = null;
 
     private static SpManager instance = null;
-    public static String SP_FILE_NAME = "sp_tweather";
-    public static String SP_KEY_CURRENT_CITY = "current_city";
-    public static String SP_KEY_COMMON_USE_CITIES = "common_use_cities";
-    public static String SP_KEY_WALLPAPER_ALPHA = "wallpaper_alpha";
+    public static String SP_FILE_NAME = "sp_tweather"; //sp文件名字
+    public static String SP_KEY_CURRENT_CITY = "current_city";//当前使用城市key
+    public static String SP_KEY_COMMON_USE_CITIES = "common_use_cities";//常用城市key
+    public static String SP_KEY_WALLPAPER_ALPHA = "wallpaper_alpha";//壁纸透明度key
 
 
     public static SpManager newInstance() {

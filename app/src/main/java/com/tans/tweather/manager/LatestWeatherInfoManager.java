@@ -25,22 +25,25 @@ import java.util.List;
  */
 
 public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
-    private AtmosphereBean mAtmosphere = null;
-    private ConditionBean mCondition = null;
-    private List<ForecastBean> mForecast = null;
-    private WindBean mWind = null;
+    private AtmosphereBean mAtmosphere = null;//大气bean
+    private ConditionBean mCondition = null;//天气bean
+    private List<ForecastBean> mForecast = null;//预报list
+    private WindBean mWind = null;//风bean
     private Context mContext = null;
-    private NetRequestUtils mNetRequestUtils = null;
-    private SpManager mSpManager = null;
-    private int mGotItem = 0;
-    private String mCurrentCity = "成都市";
-    private DateBean updateDate = null;
+    private NetRequestUtils mNetRequestUtils = null;//网络请求实例
+    private SpManager mSpManager = null;//sp管理实例
+    private int mGotItem = 0;//一次天气信息请求（大气，天气，预报，风） 收到的个数
+    private String mCurrentCity = "成都市";//当前城市
+    private DateBean updateDate = null;//更新日期
     private static LatestWeatherInfoManager instance = null;
-    private static int WEATHER_ITEM_NUMBER = 4;
-    private List<WeatherUpdatedListener> mWeatherUpdatedListeners = new ArrayList<WeatherUpdatedListener>();
+    private static int WEATHER_ITEM_NUMBER = 4; //天气请求item总共个数
+    private List<WeatherUpdatedListener> mWeatherUpdatedListeners = new ArrayList<WeatherUpdatedListener>();//注册的天气信息变化监听
 
-    public static interface WeatherUpdatedListener {
-        public void updated();
+    /**
+     * 天气变化监听
+     */
+    public interface WeatherUpdatedListener {
+        void updated();
     }
 
     public static LatestWeatherInfoManager newInstance(Context context) {
@@ -59,8 +62,10 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         mSpManager.initSp((Application) context.getApplicationContext());
     }
 
-    private void sendWeatherUpdatedBroadcast()
-    {
+    /**
+     * 发送天气信息变化的广播，小部件接收
+     */
+    private void sendWeatherUpdatedBroadcast() {
         Intent intent = new Intent();
         intent.setAction(WeatherInfoWidget.UPDATE_WEATHER);
         mContext.sendBroadcast(intent);
@@ -70,6 +75,10 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         return mNetRequestUtils.isNetWorkAvailable();
     }
 
+    /**
+     * 是否添加当前使用城市
+     * @return
+     */
     public boolean isAddedCurrentCity() {
         String currentCity = mSpManager.getCurrentUseCity();
         if (currentCity.equals(""))
@@ -80,10 +89,18 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         }
     }
 
+    /**
+     * 是否位当天的天气信息
+     * @return
+     */
     public boolean isLatestWeatherInfo() {
         return getCurrentDate().equals(updateDate);
     }
 
+    /**
+     * 请求天气更新 activity
+     * @param listener
+     */
     @Override
     public void updateLatestWeatherInfo(final LatestWeatherUpdateListener listener) {
         mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
@@ -91,12 +108,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
             public void onSuccess(Object result) {
                 mAtmosphere = (AtmosphereBean) result;
                 mGotItem++;
+                //判断信息是否接收完毕
                 if (mGotItem == WEATHER_ITEM_NUMBER) {
                     mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    listener.onSuccess();
-                    sendWeatherUpdatedBroadcast();
+                    updateDate = getCurrentDate();//更新日期
+                    notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                    listener.onSuccess(); //成功回掉
+                    sendWeatherUpdatedBroadcast(); //发送广播
                 }
             }
 
@@ -168,11 +186,18 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         });
     }
 
+    /**
+     * 获取当前日期
+     * @return
+     */
     private DateBean getCurrentDate() {
         Calendar c = Calendar.getInstance();
         return new DateBean(c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
     }
 
+    /**
+     * 广播调用
+     */
     @Override
     public void updateLatestWeatherInfo() {
         mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
@@ -249,6 +274,10 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         });
     }
 
+    /**
+     * 获取当前城市
+     * @param listener
+     */
     public void loadCurrentCity(final LoadCurrentCityListener listener) {
         mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
             @Override
@@ -256,7 +285,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
 
                 listener.onSuccess();
                 mCurrentCity = result.toString();
-                mSpManager.storeCurrentUseCity(result.toString());
+                mSpManager.storeCurrentUseCity(result.toString());//写入到sp中
             }
 
             @Override
@@ -266,17 +295,28 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         });
     }
 
+    /**
+     * 注册天气监听
+     * @param listener
+     */
     public void registerWeatherUpdateListener(WeatherUpdatedListener listener) {
         if (!mWeatherUpdatedListeners.contains(listener)) {
             mWeatherUpdatedListeners.add(listener);
         }
     }
 
+    /**
+     * 取消注册天气监听
+     * @param listener
+     */
     public void unregisterWeatherUpdateListener(WeatherUpdatedListener listener) {
         if (mWeatherUpdatedListeners.contains(listener))
             mWeatherUpdatedListeners.remove(listener);
     }
 
+    /**
+     * 通知监听 天气更新
+     */
     private void notifyWeatherInfoUpdated() {
         for (WeatherUpdatedListener listener : mWeatherUpdatedListeners)
             listener.updated();

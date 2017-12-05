@@ -7,20 +7,33 @@ import com.android.volley.VolleyError;
  */
 
 public interface ILatestWeatherInfoManager {
+
+    /**
+     * 天气更新的监听
+     */
     interface LatestWeatherUpdateListener {
         void onSuccess();
-
         void onFail(VolleyError e);
     }
 
+    /**
+     * 城市信息更新的监听
+     */
     interface LoadCurrentCityListener {
         void onSuccess();
 
         void onFail(VolleyError e);
     }
 
+    /**
+     * 请求更新天气 主要在activity中调用
+     * @param listener
+     */
     void updateLatestWeatherInfo(LatestWeatherUpdateListener listener);
 
+    /**
+     * 请求天气更新，主要在广播中调用
+     */
     void updateLatestWeatherInfo();
 
 }

@@ -21,16 +21,23 @@ import com.tans.tweather.utils.ResultTransUtils;
 
 public class WeatherInfoWidget extends AppWidgetProvider {
 
-    public static String CLICK_FOR_UPDATE = "com.tans.tweather.CLICK_FOR_UPDATE";
-    public static String UPDATE_WEATHER = "com.tans.tweather.UPDATE_WEATHER";
+    public static String CLICK_FOR_UPDATE = "com.tans.tweather.CLICK_FOR_UPDATE";//桌面button点击更新 广播
+    public static String UPDATE_WEATHER = "com.tans.tweather.UPDATE_WEATHER";//天气更新广播
     public static String TAG = WeatherInfoWidget.class.getSimpleName();
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+
+        //收到天气更新广播
         if (intent.getAction().equals(UPDATE_WEATHER))
             updateAllWidget(context);
     }
 
+    /**
+     * 更新所有桌面的小部件
+     *
+     * @param context
+     */
     private void updateAllWidget(Context context)
     {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);

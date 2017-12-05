@@ -36,12 +36,19 @@ public class NetRequestUtils implements INetRequestUtils {
 
     private static NetRequestUtils instance = null;
 
+    //风url
     public final static String WIND_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    //大气url
     public final static String ATMOSPHERE_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    //当前温度
     public final static String CURRENT_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    //未来10点温度
     public final static String FUTURE_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    //天气类url 后缀
     public final static String WEATHER_URL_TAIL = "%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+    //请求当前位置url
     public final static String LOCATION_URL = "http://api.map.baidu.com/geocoder/v2/?location=";
+    //请求位置url 的后缀
     public final static String LOCATION_URL_TAIL = "&output=json&ak=xq4Ftq8nOeLbtCAwo8PYnetOY1QlFyX1";
     private Context mContext = null;
     private RequestQueue mQueue = null;
@@ -57,6 +64,12 @@ public class NetRequestUtils implements INetRequestUtils {
 
     }
 
+    /**
+     * http请求
+     * @param url 地址
+     * @param response 成功监听
+     * @param error 错误监听
+     */
     private void requestNet(String url, Response.Listener<String> response, Response.ErrorListener error) {
         Log.i("URL", url);
         StringRequest request = new StringRequest(url, response, error);
@@ -98,6 +111,11 @@ public class NetRequestUtils implements INetRequestUtils {
         requestNet(LOCATION_URL + location[0] + "," + location[1] + LOCATION_URL_TAIL, responseListener, errorListener);
     }
 
+    /**
+     * 获取当前位置，需要用户开启 权限
+     *
+     * @return 返回精度和纬度的double数组，空的话就是没有权限。
+     */
     private double[] getLocation() {
         if (mContext == null)
             return null;
@@ -222,7 +240,11 @@ public class NetRequestUtils implements INetRequestUtils {
 
     }
 
-
+    /**
+     *
+     * @param result 网络请求返回的json 字符串
+     * @return 描述大气的json字符串
+     */
     private String getAtmosphereJsonString(String result) {
         String resultString = "";
         JSONObject jsonObject = null;
@@ -239,6 +261,11 @@ public class NetRequestUtils implements INetRequestUtils {
         return resultString;
     }
 
+    /**
+     *
+     * @param result
+     * @return 描述风的json字符串
+     */
     private String getWindJsonString(String result) {
         String resultString = "";
         JSONObject jsonObject = null;
@@ -255,6 +282,11 @@ public class NetRequestUtils implements INetRequestUtils {
         return resultString;
     }
 
+    /**
+     *
+     * @param result
+     * @return 描述当前天气的json字符串
+     */
     private String getCurrentConditionJsonString(String result) {
         String resultString = "";
         JSONObject jsonObject = null;
@@ -272,6 +304,11 @@ public class NetRequestUtils implements INetRequestUtils {
         return resultString;
     }
 
+    /**
+     *
+     * @param result
+     * @return 未来10天天气的字符串
+     */
     private String getFutureConditionJsonString(String result) {
         String resultString = "";
         JSONObject jsonObject = null;
@@ -287,6 +324,11 @@ public class NetRequestUtils implements INetRequestUtils {
         return resultString;
     }
 
+    /**
+     *
+     * @param result
+     * @return 返回当前位置的城市
+     */
     private String getCurrentCityString(String result) {
         String city = "";
         try {

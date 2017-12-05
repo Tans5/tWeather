@@ -3,11 +3,17 @@ package com.tans.tweather.utils;
 import com.tans.tweather.R;
 
 /**
+ * 用于获取到的网络信息到界面展示信息的转换。
  * Created by tans on 2017/12/3.
  */
 
 public class ResultTransUtils {
 
+    /**
+     *
+     * @param code 天气的情况编号
+     * @return 对应天气图标的drawable值
+     */
     public static int getWeatherIconId(int code) {
         int id = R.drawable.weather_ic_undefine;
         switch (code) {

@@ -8,27 +8,40 @@ import java.util.Set;
 
 public interface ISpManager {
 
-    interface CommonUseCitiesChangeListener {
-        void onChange(Set<String> cities);
-    }
 
-    interface CurrentUseCityChangeListener {
-        void onChange(String city);
-    }
-
-    interface WallPaperAlphaChangeListener {
-        void onChange(int a);
-    }
-
+    /**
+     * 储存常用城市
+     * @param commonUseCities
+     */
     void storeCommonUseCities(Set<String> commonUseCities);
 
+    /**
+     * 返回常用城市
+     * @return
+     */
     Set<String> getCommonUseCities();
 
+    /**
+     * 储存当前使用城市
+     * @param city
+     */
     void storeCurrentUseCity(String city);
 
+    /**
+     * 获取当前使用城市
+     * @return
+     */
     String getCurrentUseCity();
 
+    /**
+     * 储存桌面大图透明度
+     * @param a
+     */
     void storeWallPaperAlpha(int a);
 
+    /**
+     * 获取透明度
+     * @return
+     */
     int getWallPaperAlpha();
 }
