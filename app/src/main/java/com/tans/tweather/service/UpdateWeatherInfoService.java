@@ -64,7 +64,7 @@ public class UpdateWeatherInfoService extends Service {
         intent1.setAction(UPDATE_WEATHER);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerTime, pendingIntent);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
