@@ -7,9 +7,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.j256.ormlite.dao.Dao;
+import com.tans.tweather.database.DatabaseHelper;
+import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.service.UpdateWeatherInfoService;
+
+import java.sql.SQLException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, UpdateWeatherInfoService.class);
             startService(intent);
         }
+
         if (UpdateWeatherInfoService.getInstance() != null)
             Log.i(TAG, "is service running:" + true);
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);

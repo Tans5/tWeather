@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.tans.tweather.database.bean.LocationBean;
@@ -11,6 +12,8 @@ import com.tans.tweather.database.bean.LocationBean;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mine on 2017/12/26.
@@ -34,10 +37,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         super(context, databaseName, factory, databaseVersion, stream);
     }
 
+    private static int VERSION = 1;
+    private static String FILE_NAME = "tWeather.db";
+    private static List<Class> TABLES = null;
+    private static DatabaseHelper helper = null;
+
+    static {
+        if (TABLES == null)
+            TABLES = new ArrayList<Class>();
+        TABLES.add(LocationBean.class);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTableIfNotExists(connectionSource, LocationBean.class);
+            if(TABLES != null) {
+                for(Class table:TABLES)
+                    TableUtils.createTableIfNotExists(connectionSource,table);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -48,10 +65,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
-            TableUtils.dropTable(connectionSource, LocationBean.class,true);
+            if(TABLES != null) {
+                for(Class table:TABLES)
+                    TableUtils.dropTable(connectionSource,table,true);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         onCreate(database,connectionSource);
     }
+
+    public static DatabaseHelper getHelper(Context context) {
+        if(helper != null)
+            return helper;
+        else
+            helper = new DatabaseHelper(context,FILE_NAME,null,VERSION);
+
+        return helper;
+    }
+
 }
