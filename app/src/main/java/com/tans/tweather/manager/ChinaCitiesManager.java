@@ -24,6 +24,7 @@ public class ChinaCitiesManager {
             @Override
             public void onSuccess(Object result) {
                 String s = result.toString();
+                Log.i(TAG,s);
             }
 
             @Override
