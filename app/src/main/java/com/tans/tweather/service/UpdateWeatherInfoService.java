@@ -50,7 +50,7 @@ public class UpdateWeatherInfoService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);
+        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
         instance = this;
         registerReceiver(mUpdateWeatherReceiver, new IntentFilter(UPDATE_WEATHER));
     }

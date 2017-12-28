@@ -41,7 +41,7 @@ public class WeatherInfoWidget extends AppWidgetProvider {
     private void updateAllWidget(Context context)
     {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(context);
+        LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_weather_layout);
         remoteViews.setImageViewResource(R.id.widget_weather_ic_im, ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
         remoteViews.setTextViewText(R.id.widget_city_tv,latestWeatherInfoManager.getmCurrentCity());

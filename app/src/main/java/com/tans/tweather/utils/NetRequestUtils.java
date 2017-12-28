@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,11 @@ public class NetRequestUtils implements INetRequestUtils {
     public final static String LOCATION_URL = "http://api.map.baidu.com/geocoder/v2/?location=";
     //请求位置url 的后缀
     public final static String LOCATION_URL_TAIL = "&output=json&ak=xq4Ftq8nOeLbtCAwo8PYnetOY1QlFyX1";
+    //全国城市信息url前缀
+    public final static String CHINA_CITIES_URL = "http://www.weather.com.cn/data/list3/city";
+    //全国城市信息url后缀
+    public final static String CHINA_CITIES_URL_TAIL = ".xml";
+
     private Context mContext = null;
     private RequestQueue mQueue = null;
 
@@ -236,8 +242,24 @@ public class NetRequestUtils implements INetRequestUtils {
 
 
     @Override
-    public void requestCitiesInfo(NetRequestListener listener) {
-
+    public void requestCitiesInfo(final NetRequestListener listener,String parentCityCode) {
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    listener.onSuccess(new String(response.getBytes(),"utf-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onFail(error);
+            }
+        };
+        requestNet(CHINA_CITIES_URL+parentCityCode+CHINA_CITIES_URL_TAIL,responseListener,errorListener);
     }
 
     /**

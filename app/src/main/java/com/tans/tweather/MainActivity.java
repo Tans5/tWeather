@@ -4,18 +4,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.android.volley.VolleyError;
-import com.j256.ormlite.dao.Dao;
-import com.tans.tweather.database.DatabaseHelper;
-import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
+import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.service.UpdateWeatherInfoService;
-
-import java.sql.SQLException;
-
+import com.tans.tweather.utils.ToastUtils;
 public class MainActivity extends AppCompatActivity {
 
     public static String TAG = MainActivity.class.getSimpleName();
@@ -23,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
         @Override
         public void updated() {
-            Log.i(TAG, "weather updated");
+            showLog("weather updated");
         }
     };
 
@@ -35,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, UpdateWeatherInfoService.class);
             startService(intent);
         }
-
+        ChinaCitiesManager.CityTest();
         if (UpdateWeatherInfoService.getInstance() != null)
             Log.i(TAG, "is service running:" + true);
-        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance(this);
+        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
         showLog("isAddedCurrentCity: " + latestWeatherInfoManager.isAddedCurrentCity());
         if (!latestWeatherInfoManager.isAddedCurrentCity()) {
             latestWeatherInfoManager.loadCurrentCity(new ILatestWeatherInfoManager.LoadCurrentCityListener() {
@@ -74,13 +68,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void showLog(String s) {
         Log.i(TAG, s + "666666666666666666666");
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+        ToastUtils.getInstance().showShortText(s);
     }
 
     @Override
     protected void onDestroy() {
         latestWeatherInfoManager.unregisterWeatherUpdateListener(mWeatherUpdatedListener);
         super.onDestroy();
-
     }
 }

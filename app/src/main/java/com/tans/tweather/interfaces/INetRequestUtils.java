@@ -60,5 +60,10 @@ public interface INetRequestUtils {
      */
     void requestWindInfo(String location, NetRequestListener listener);
 
-    void requestCitiesInfo(NetRequestListener listener);
+    /**
+     * 请求城市信息
+     * @param listener
+     * @param parentCityCode 父地区 code
+     */
+    void requestCitiesInfo(NetRequestListener listener,String parentCityCode);
 }

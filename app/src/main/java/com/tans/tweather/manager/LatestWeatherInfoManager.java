@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.DateBean;
@@ -46,9 +47,9 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         void updated();
     }
 
-    public static LatestWeatherInfoManager newInstance(Context context) {
+    public static LatestWeatherInfoManager newInstance() {
         if (instance == null) {
-            instance = new LatestWeatherInfoManager(context);
+            instance = new LatestWeatherInfoManager(BaseApplication.getInstance());
         }
         return instance;
     }
