@@ -5,11 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import com.android.volley.VolleyError;
+import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
+
+import java.sql.SQLException;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     public static String TAG = MainActivity.class.getSimpleName();
@@ -29,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, UpdateWeatherInfoService.class);
             startService(intent);
         }
-        ChinaCitiesManager.CityTest();
+
+        new ChinaCitiesManager();
         if (UpdateWeatherInfoService.getInstance() != null)
             Log.i(TAG, "is service running:" + true);
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();

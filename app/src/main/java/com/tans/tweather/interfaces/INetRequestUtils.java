@@ -4,6 +4,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Created by tans on 2017/11/19.
@@ -16,7 +17,6 @@ public interface INetRequestUtils {
      */
     interface NetRequestListener {
         void onSuccess(Object result);
-
         void onFail(VolleyError e);
     }
 
