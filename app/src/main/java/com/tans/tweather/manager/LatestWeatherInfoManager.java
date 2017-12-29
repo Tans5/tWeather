@@ -104,6 +104,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
      */
     @Override
     public void updateLatestWeatherInfo(final LatestWeatherUpdateListener listener) {
+
+        if (!mNetRequestUtils.isNetWorkAvailable()) {
+            VolleyError volleyError = new VolleyError("网络不可用");
+            listener.onFail(volleyError);
+            return;
+        }
+
         mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
@@ -280,6 +287,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
      * @param listener
      */
     public void loadCurrentCity(final LoadCurrentCityListener listener) {
+
+        if (!mNetRequestUtils.isNetWorkAvailable()) {
+            VolleyError volleyError = new VolleyError("网络不可用");
+            listener.onFail(volleyError);
+            return;
+        }
+
         mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+
 import com.android.volley.VolleyError;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         if (UpdateWeatherInfoService.getInstance() == null) {
             Log.i(TAG, "is service running:" + null);
             Intent intent = new Intent(this, UpdateWeatherInfoService.class);
@@ -49,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFail(VolleyError e) {
-
+                    ToastUtils.getInstance().showShortText(e.getMessage());
                 }
             });
         } else {
-            updateWeather();
+            if (!latestWeatherInfoManager.isLatestWeatherInfo())
+                updateWeather();
         }
     }
 
@@ -67,9 +71,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFail(VolleyError e) {
-
+                ToastUtils.getInstance().showShortText(e.getMessage());
             }
         });
+    }
+
+    public void updateWeather(View v) {
+        updateWeather();
     }
 
     public void showLog(String s) {

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -75,9 +77,10 @@ public class NetRequestUtils implements INetRequestUtils {
 
     /**
      * http请求
-     * @param url 地址
+     *
+     * @param url      地址
      * @param response 成功监听
-     * @param error 错误监听
+     * @param error    错误监听
      */
     private void requestNet(String url, Response.Listener<String> response, Response.ErrorListener error) {
         Log.i("URL", url);
@@ -92,6 +95,17 @@ public class NetRequestUtils implements INetRequestUtils {
 
     @Override
     public boolean isNetWorkAvailable() {
+        ConnectivityManager connectivity = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo info = connectivity.getActiveNetworkInfo();
+            if (info != null && info.isConnected()) {
+                // 当前网络是连接的
+                if (info.getState() == NetworkInfo.State.CONNECTED) {
+                    // 当前所连接的网络可用
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -245,7 +259,7 @@ public class NetRequestUtils implements INetRequestUtils {
 
 
     @Override
-    public void requestCitiesInfo(final NetRequestListener listener,String parentCityCode) {
+    public void requestCitiesInfo(final NetRequestListener listener, String parentCityCode) {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -258,11 +272,10 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(CHINA_CITIES_URL+parentCityCode+CHINA_CITIES_URL_TAIL,responseListener,errorListener);
+        requestNet(CHINA_CITIES_URL + parentCityCode + CHINA_CITIES_URL_TAIL, responseListener, errorListener);
     }
 
     /**
-     *
      * @param result 网络请求返回的json 字符串
      * @return 描述大气的json字符串
      */
@@ -283,7 +296,6 @@ public class NetRequestUtils implements INetRequestUtils {
     }
 
     /**
-     *
      * @param result
      * @return 描述风的json字符串
      */
@@ -304,7 +316,6 @@ public class NetRequestUtils implements INetRequestUtils {
     }
 
     /**
-     *
      * @param result
      * @return 描述当前天气的json字符串
      */
@@ -326,7 +337,6 @@ public class NetRequestUtils implements INetRequestUtils {
     }
 
     /**
-     *
      * @param result
      * @return 未来10天天气的字符串
      */
@@ -346,7 +356,6 @@ public class NetRequestUtils implements INetRequestUtils {
     }
 
     /**
-     *
      * @param result
      * @return 返回当前位置的城市
      */
@@ -371,9 +380,9 @@ public class NetRequestUtils implements INetRequestUtils {
         /**
          * Creates a new request with the given method.
          *
-         * @param method the request {@link Method} to use
-         * @param url URL to fetch the string at
-         * @param listener Listener to receive the String response
+         * @param method        the request {@link Method} to use
+         * @param url           URL to fetch the string at
+         * @param listener      Listener to receive the String response
          * @param errorListener Error listener, or null to ignore errors
          */
         public StringRequest(int method, String url, Response.Listener<String> listener,
@@ -385,8 +394,8 @@ public class NetRequestUtils implements INetRequestUtils {
         /**
          * Creates a new GET request.
          *
-         * @param url URL to fetch the string at
-         * @param listener Listener to receive the String response
+         * @param url           URL to fetch the string at
+         * @param listener      Listener to receive the String response
          * @param errorListener Error listener, or null to ignore errors
          */
         public StringRequest(String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
