@@ -110,8 +110,7 @@ public class NetRequestUtils implements INetRequestUtils {
     }
 
     @Override
-    public void requestLocationInfo(final INetRequestUtils.NetRequestListener listener) {
-        double[] location = getLocation();
+    public void requestLocationInfo(final INetRequestUtils.NetRequestListener listener,double [] location) {
         if (location == null) {
             VolleyError e = new VolleyError();
             listener.onFail(e);

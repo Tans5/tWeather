@@ -16,14 +16,6 @@ public interface ILatestWeatherInfoManager {
         void onFail(VolleyError e);
     }
 
-    /**
-     * 城市信息更新的监听
-     */
-    interface LoadCurrentCityListener {
-        void onSuccess();
-
-        void onFail(VolleyError e);
-    }
 
     /**
      * 请求更新天气 主要在activity中调用

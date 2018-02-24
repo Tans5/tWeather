@@ -30,7 +30,7 @@ public interface INetRequestUtils {
      * 当前位置信息请求
      * @param listener
      */
-    void requestLocationInfo(NetRequestListener listener);
+    void requestLocationInfo(NetRequestListener listener,double[] location);
 
     /**
      * 请求大气信息

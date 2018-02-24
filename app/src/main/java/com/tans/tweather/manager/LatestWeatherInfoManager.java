@@ -72,23 +72,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         mContext.sendBroadcast(intent);
     }
 
-    public boolean isNetWorkAvailable() {
-        return mNetRequestUtils.isNetWorkAvailable();
-    }
 
-    /**
-     * 是否添加当前使用城市
-     * @return
-     */
-    public boolean isAddedCurrentCity() {
-        String currentCity = mSpManager.getCurrentUseCity();
-        if (currentCity.equals(""))
-            return false;
-        else {
-            mCurrentCity = currentCity;
-            return true;
-        }
-    }
 
     /**
      * 是否位当天的天气信息
@@ -282,33 +266,6 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         });
     }
 
-    /**
-     * 获取当前城市
-     * @param listener
-     */
-    public void loadCurrentCity(final LoadCurrentCityListener listener) {
-
-        if (!mNetRequestUtils.isNetWorkAvailable()) {
-            VolleyError volleyError = new VolleyError("网络不可用");
-            listener.onFail(volleyError);
-            return;
-        }
-
-        mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-
-                listener.onSuccess();
-                mCurrentCity = result.toString();
-                mSpManager.storeCurrentUseCity(result.toString());//写入到sp中
-            }
-
-            @Override
-            public void onFail(VolleyError e) {
-                listener.onFail(e);
-            }
-        });
-    }
 
     /**
      * 注册天气监听

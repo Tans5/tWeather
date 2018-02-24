@@ -16,7 +16,7 @@ import java.util.Set;
 public class SpManager implements ISpManager {
 
 
-    private Set<String> mCommonCities = null;
+    private String mCommonCities = null; //todo:需要转换成list
     private String mCurrentCity = null;
     private int mWallPaperAlpha = 0;
     private SharedPreferences mSp = null;
@@ -45,15 +45,15 @@ public class SpManager implements ISpManager {
     }
 
     @Override
-    public void storeCommonUseCities(Set<String> commonUseCities) {
-        mSp.edit().putStringSet(SP_KEY_COMMON_USE_CITIES, commonUseCities).commit();
+    public void storeCommonUseCities(String commonUseCities) {
+        mSp.edit().putString(SP_KEY_COMMON_USE_CITIES, commonUseCities).commit();
         mCommonCities = commonUseCities;
     }
 
     @Override
     public Set<String> getCommonUseCities() {
-        mCommonCities = mSp.getStringSet(SP_KEY_COMMON_USE_CITIES, null);
-        return mCommonCities;
+        mCommonCities = mSp.getString(SP_KEY_COMMON_USE_CITIES, null);
+        return null;
     }
 
     @Override

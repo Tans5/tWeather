@@ -11,6 +11,7 @@ import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
 
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static String TAG = MainActivity.class.getSimpleName();
     LatestWeatherInfoManager latestWeatherInfoManager = null;
+    SpManager spManager = null;
+    ChinaCitiesManager chinaCitiesManager = null;
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
         @Override
         public void updated() {
@@ -38,15 +41,18 @@ public class MainActivity extends AppCompatActivity {
             startService(intent);
         }
 
-        new ChinaCitiesManager();
+        chinaCitiesManager = new ChinaCitiesManager();
         if (UpdateWeatherInfoService.getInstance() != null)
             Log.i(TAG, "is service running:" + true);
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        showLog("isAddedCurrentCity: " + latestWeatherInfoManager.isAddedCurrentCity());
-        if (!latestWeatherInfoManager.isAddedCurrentCity()) {
-            latestWeatherInfoManager.loadCurrentCity(new ILatestWeatherInfoManager.LoadCurrentCityListener() {
+        spManager = SpManager.newInstance();
+        showLog("isAddedCurrentCity: " + isAddedCurrentCity());
+        if (!isAddedCurrentCity()) {
+            chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {
                 @Override
-                public void onSuccess() {
+                public void onSuccess(String s) {
+                    spManager.storeCurrentUseCity(s);
+                    latestWeatherInfoManager.setmCurrentCity(s);
                     updateWeather();
                 }
 
@@ -83,6 +89,20 @@ public class MainActivity extends AppCompatActivity {
     public void showLog(String s) {
         Log.i(TAG, s + "666666666666666666666");
         ToastUtils.getInstance().showShortText(s);
+    }
+
+    /**
+     * 是否添加当前使用城市
+     * @return
+     */
+    public boolean isAddedCurrentCity() {
+        String currentCity = spManager.getCurrentUseCity();
+        if (currentCity.equals(""))
+            return false;
+        else {
+            latestWeatherInfoManager.setmCurrentCity(currentCity);
+            return true;
+        }
     }
 
     @Override

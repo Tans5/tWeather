@@ -13,7 +13,7 @@ public interface ISpManager {
      * 储存常用城市
      * @param commonUseCities
      */
-    void storeCommonUseCities(Set<String> commonUseCities);
+    void storeCommonUseCities(String commonUseCities);
 
     /**
      * 返回常用城市

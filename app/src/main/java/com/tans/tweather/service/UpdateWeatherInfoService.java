@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.manager.SpManager;
 
 import java.util.Date;
 
@@ -24,10 +25,9 @@ public class UpdateWeatherInfoService extends Service {
     private static long AN_HOUR = 1000 * 60 * 60;
     private static UpdateWeatherInfoService instance = null;
     public static String TAG = UpdateWeatherInfoService.class.getSimpleName();
-    public LatestWeatherInfoManager latestWeatherInfoManager = null;
-
+    private LatestWeatherInfoManager latestWeatherInfoManager = null;
+    private SpManager spManager = null;
     public static UpdateWeatherInfoService getInstance() {
-
         return instance;
     }
 
@@ -51,6 +51,8 @@ public class UpdateWeatherInfoService extends Service {
     public void onCreate() {
         super.onCreate();
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
+        spManager = SpManager.newInstance();
+        latestWeatherInfoManager.setmCurrentCity(spManager.getCurrentUseCity());
         instance = this;
         registerReceiver(mUpdateWeatherReceiver, new IntentFilter(UPDATE_WEATHER));
     }
