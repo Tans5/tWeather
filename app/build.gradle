@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+def AAVersion='4.4.0'
 
 android {
     compileSdkVersion 26
@@ -30,5 +32,18 @@ dependencies {
     compile 'com.android.support:design:26.0.0-beta1'
     compile group: 'com.mcxiaoke.volley', name: 'library', version: '1.0.19'
     compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '4.48'
+    compile 'com.github.bumptech.glide:glide:4.3.1'
 
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations-api:$AAVersion"
+
+}
+apt {
+    arguments {
+        //老版本的写法2.2.1以前
+        androidManifestFile variant.outputs[0].processResources.manifestFile
+        //2.2.1以后
+        //androidManifestFile variant.outputs[0]?.processResources?.manifestFile//new style
+        resourcePackageName 'com.tans.tweather'//项目包名
+    }
 }
