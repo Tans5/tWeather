@@ -73,7 +73,7 @@ public class MainActivityPresenter {
         });
     }
 
-    private void updateWeather() {
+    public void updateWeather() {
         latestWeatherInfoManager.updateLatestWeatherInfo(new ILatestWeatherInfoManager.LatestWeatherUpdateListener() {
             @Override
             public void onSuccess() {

@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mRefreshWeather.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.loadWeatherInfo();
+                mPresenter.updateWeather();
             }
         });
     }
