@@ -79,6 +79,7 @@ public class MainActivityPresenter {
             public void onSuccess() {
              //   showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
                 latestWeatherInfoManager.registerWeatherUpdateListener(mWeatherUpdatedListener);
+                ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getmCurrentCity()+": "+ latestWeatherInfoManager.getmCondition().getText()+"  "+latestWeatherInfoManager.getmCondition().getTemp());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }
