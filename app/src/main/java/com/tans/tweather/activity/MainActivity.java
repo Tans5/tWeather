@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
 
     private void updateBingBg() {
+        transStatusColor();
         RequestOptions mOptions = new RequestOptions();
         mOptions.centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.NONE);
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             decorView.setSystemUiVisibility(option);
             getWindow().setNavigationBarColor(Color.TRANSPARENT);
@@ -130,5 +131,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     protected void onDestroy() {
         mPresenter.destroy();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean isRefreshing() {
+        return mRefreshWeather.isRefreshing();
+    }
+
+    @Override
+    public void closeRefreshing() {
+        mRefreshWeather.setRefreshing(false);
     }
 }

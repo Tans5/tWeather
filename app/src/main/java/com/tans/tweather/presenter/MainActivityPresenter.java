@@ -79,11 +79,17 @@ public class MainActivityPresenter {
             public void onSuccess() {
              //   showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
                 latestWeatherInfoManager.registerWeatherUpdateListener(mWeatherUpdatedListener);
+                if(mView.isRefreshing()) {
+                    mView.closeRefreshing();
+                }
             }
 
             @Override
             public void onFail(VolleyError e) {
                 ToastUtils.getInstance().showShortText(e.getMessage());
+                if(mView.isRefreshing()) {
+                    mView.closeRefreshing();
+                }
             }
         });
     }
