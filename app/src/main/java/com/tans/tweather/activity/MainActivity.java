@@ -4,11 +4,13 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -24,6 +26,7 @@ import com.tans.tweather.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
@@ -48,13 +51,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.refresh_weather)
     SwipeRefreshLayout mRefreshWeather;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @AfterViews
-    void Init () {
+    void init () {
         mPresenter = new MainActivityPresenter(this);
         mPresenter.loadWeatherInfo();
         updateBingBg();
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     private void resizeView() {
         mWeatherView.setMinimumHeight(getScreenHeight(this) - getStatusBarHeight(this));
+
         mCl.setPadding(0,getStatusBarHeight(this),0,0);
         mWeatherContent.setPadding(0,getNavigationBarHeight(this),0,0);
     }
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             decorView.setSystemUiVisibility(option);
             getWindow().setNavigationBarColor(Color.TRANSPARENT);
