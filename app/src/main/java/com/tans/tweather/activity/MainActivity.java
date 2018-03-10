@@ -1,14 +1,22 @@
 package com.tans.tweather.activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -20,8 +28,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.tans.tweather.R;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.presenter.MainActivityPresenter;
@@ -96,9 +108,37 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     private void updateBingBg() {
         transStatusColor();
         RequestOptions mOptions = new RequestOptions();
-        mOptions.centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-        Glide.with(this).load("http://api.dujin.org/bing/1366.php").apply(mOptions).into(mIvBingBg);
+        mOptions.centerCrop().diskCacheStrategy(DiskCacheStrategy.NONE);
+        Glide.with(this).load("http://api.dujin.org/bing/1366.php").apply(mOptions).listener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                initBingBgColor(resource);
+                return false;
+            }
+        }).into(mIvBingBg);
+    }
+
+    private void initBingBgColor(Drawable drawable) {
+        Bitmap b = ((BitmapDrawable)drawable).getBitmap();
+        Palette.from(b).generate(new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(Palette palette) {
+                Palette.Swatch vibrant = palette.getVibrantSwatch();//有活力的
+                Palette.Swatch vibrantDark = palette.getDarkVibrantSwatch();//有活力的，暗色
+                Palette.Swatch vibrantLight = palette.getLightVibrantSwatch();//有活力的，亮色
+                Palette.Swatch muted = palette.getMutedSwatch();//柔和的
+                Palette.Swatch mutedDark = palette.getDarkMutedSwatch();//柔和的，暗色
+                Palette.Swatch mutedLight = palette.getLightMutedSwatch();//柔和的,亮色
+                if (muted !=null) {
+                    mFatAddCity.setRippleColor(muted.getRgb());
+                }
+            }
+        });
     }
 
     public void showLog(String s) {
