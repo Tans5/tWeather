@@ -3,11 +3,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -51,6 +53,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.refresh_weather)
     SwipeRefreshLayout mRefreshWeather;
 
+    @ViewById(R.id.fat_add_city)
+    FloatingActionButton mFatAddCity;
+
+    @ViewById(R.id.abl)
+    AppBarLayout mAppBar;
+
+    @ViewById(R.id.tool_bar)
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     void init () {
         mPresenter = new MainActivityPresenter(this);
         mPresenter.loadWeatherInfo();
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         updateBingBg();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(1000);
@@ -74,9 +86,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     private void resizeView() {
         mWeatherView.setMinimumHeight(getScreenHeight(this) - getStatusBarHeight(this));
-
         mCl.setPadding(0,getStatusBarHeight(this),0,0);
         mWeatherContent.setPadding(0,getNavigationBarHeight(this),0,0);
+        CoordinatorLayout.LayoutParams lpFat = (CoordinatorLayout.LayoutParams) mFatAddCity.getLayoutParams();
+        lpFat.setMargins(0,0,50,50+getNavigationBarHeight(this));
     }
 
 
@@ -146,5 +159,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @Override
     public void closeRefreshing() {
         mRefreshWeather.setRefreshing(false);
+    }
+
+    @Click(R.id.fat_add_city)
+    void addCity() {
+
     }
 }

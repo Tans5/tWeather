@@ -21,7 +21,8 @@
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/cl"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            >
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/abl"
                 android:layout_width="match_parent"
@@ -32,9 +33,10 @@
 
 
                 <android.support.v7.widget.Toolbar
+                    android:id="@+id/tool_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?android:actionBarSize"
-                    app:layout_scrollFlags="scroll|enterAlways|snap"
+                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
                     app:title="hello"></android.support.v7.widget.Toolbar>
 
             </android.support.design.widget.AppBarLayout>
@@ -116,11 +118,11 @@
                 </android.support.v4.widget.NestedScrollView>
             </android.support.v4.widget.SwipeRefreshLayout>
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fat_add_city"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
                 android:src="@mipmap/ic_launcher"
-                android:backgroundTint="@color/colorPrimary"
+                app:backgroundTint="@color/colorPrimary"
                 app:fabSize="normal"
                 app:rippleColor="@color/colorAccent"
                 app:layout_behavior="com.tans.tweather.animation.FatBehavior"
