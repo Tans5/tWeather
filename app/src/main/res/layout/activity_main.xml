@@ -21,8 +21,8 @@
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/cl"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
+
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/abl"
                 android:layout_width="match_parent"
@@ -37,14 +37,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="?android:actionBarSize"
                     app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
-                    app:title="hello"></android.support.v7.widget.Toolbar>
+                    app:title="tWeather"></android.support.v7.widget.Toolbar>
 
             </android.support.design.widget.AppBarLayout>
+
             <android.support.v4.widget.SwipeRefreshLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:id="@+id/refresh_weather"
-                >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -57,14 +58,70 @@
                         <FrameLayout
                             android:id="@+id/weather_view"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="15dp"
+                            android:paddingTop="10dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="bottom"
-                                android:textColor="@android:color/white"
-                                android:text="weather view" />
+                                android:orientation="vertical">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="bottom"
+                                    >
+                                    <ImageView
+                                        android:id="@+id/iv_weather_ic"
+                                        android:background="@drawable/weather_ic_30"
+                                        android:layout_width="40dp"
+                                        android:layout_height="40dp"
+                                        android:layout_marginRight="10dp"
+                                        />
+                                    <TextView
+                                        android:id="@+id/tv_description"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="22dp"
+                                        android:text="Cloudy"
+                                        android:textColor="@android:color/white"
+                                        />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/ll_high_low_tem"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:id="@+id/tv_high_temp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="15dp"
+                                        android:text="30"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="20sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_low_temp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="15"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/tv_temperature"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="27"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="115sp"
+                                    android:typeface="sans" />
+                            </LinearLayout>
                         </FrameLayout>
 
                         <LinearLayout
@@ -117,17 +174,17 @@
                     </RelativeLayout>
                 </android.support.v4.widget.NestedScrollView>
             </android.support.v4.widget.SwipeRefreshLayout>
+
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fat_add_city"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
                 android:src="@mipmap/ic_launcher"
                 app:backgroundTint="@color/colorPrimary"
-                app:fabSize="normal"
-                app:rippleColor="@color/colorAccent"
+                app:fabSize="auto"
                 app:layout_behavior="com.tans.tweather.animation.FatBehavior"
-                android:layout_gravity="bottom|right"
-                />
+                app:rippleColor="@color/colorAccent" />
         </android.support.design.widget.CoordinatorLayout>
     </FrameLayout>
 

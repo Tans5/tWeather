@@ -44,8 +44,11 @@ public class MainActivityPresenter {
         if(!isAddedCurrentCity()) {
             loadCurrentCity();
         } else {
-            if (!latestWeatherInfoManager.isLatestWeatherInfo())
+            if (!latestWeatherInfoManager.isLatestWeatherInfo()) {
                 updateWeather();
+            } else {
+                mView.refreshWeatherInfo();
+            }
         }
     }
 
@@ -79,6 +82,7 @@ public class MainActivityPresenter {
             public void onSuccess() {
              //   showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
                 latestWeatherInfoManager.registerWeatherUpdateListener(mWeatherUpdatedListener);
+                mView.refreshWeatherInfo();
                 ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getmCurrentCity()+": "+ latestWeatherInfoManager.getmCondition().getText()+"  "+latestWeatherInfoManager.getmCondition().getTemp());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();

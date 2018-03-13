@@ -7,4 +7,5 @@ package com.tans.tweather.iviews;
 public interface MainActivityView {
     boolean isRefreshing();
     void closeRefreshing();
+    void refreshWeatherInfo();
 }

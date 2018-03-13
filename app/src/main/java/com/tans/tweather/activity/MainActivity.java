@@ -26,6 +26,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -35,14 +37,20 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.tans.tweather.R;
+import com.tans.tweather.bean.ConditionBean;
+import com.tans.tweather.bean.ForecastBean;
 import com.tans.tweather.iviews.MainActivityView;
+import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.presenter.MainActivityPresenter;
+import com.tans.tweather.utils.ResultTransUtils;
 import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.List;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainActivityView {
@@ -74,6 +82,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.tool_bar)
     Toolbar mToolbar;
 
+    @ViewById(R.id.iv_weather_ic)
+    ImageView mIvWeatherIc;
+
+    @ViewById(R.id.tv_description)
+    TextView mTvDes;
+
+    @ViewById(R.id.tv_high_temp)
+    TextView mTvHighTemp;
+
+    @ViewById(R.id.tv_low_temp)
+    TextView mTvLowTemp;
+
+    @ViewById(R.id.tv_temperature)
+    TextView mTvTemperature;
+
+    @ViewById(R.id.rl_menu_container)
+    RelativeLayout mMenuContainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mCl.setPadding(0,getStatusBarHeight(this),0,0);
         mWeatherContent.setPadding(0,getNavigationBarHeight(this),0,0);
         CoordinatorLayout.LayoutParams lpFat = (CoordinatorLayout.LayoutParams) mFatAddCity.getLayoutParams();
-        lpFat.setMargins(0,0,50,50+getNavigationBarHeight(this));
+        lpFat.setMargins(0,0,80,50+getNavigationBarHeight(this));
     }
 
 
@@ -136,6 +162,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 Palette.Swatch mutedLight = palette.getLightMutedSwatch();//柔和的,亮色
                 if (muted !=null) {
                     mFatAddCity.setRippleColor(muted.getRgb());
+                }
+                if (vibrantLight != null) {
+                    mMenuContainer.setBackgroundColor(vibrantLight.getRgb());
                 }
             }
         });
@@ -204,5 +233,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @Click(R.id.fat_add_city)
     void addCity() {
 
+    }
+
+    @Override
+    public void refreshWeatherInfo() {
+        LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
+        ConditionBean conditionBean = latestWeatherInfoManager.getmCondition();
+        List<ForecastBean> forecastBean = latestWeatherInfoManager.getmForecast();
+        mIvWeatherIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
+        mTvDes.setText(conditionBean.getText());
+        mTvHighTemp.setText(forecastBean.get(0).getItem().getForecast().getHigh()+" °");
+        mTvLowTemp.setText(forecastBean.get(0).getItem().getForecast().getLow()+" °");
+        mTvTemperature.setText(conditionBean.getTemp()+" °");
     }
 }
