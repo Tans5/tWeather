@@ -46,11 +46,24 @@ public class FatBehavior extends FloatingActionButton.Behavior {
                                final View target, final int dxConsumed, final int dyConsumed,
                                final int dxUnconsumed, final int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE && !isAnimate) {
+        //        if (dyConsumed > 0 && dyUnconsumed == 0) {
+//            System.out.println("上滑中。。。");
+//        }
+//        if (dyConsumed == 0 && dyUnconsumed > 0) {
+//            System.out.println("到边界了还在上滑。。。");
+//        }
+//        if (dyConsumed < 0 && dyUnconsumed == 0) {
+//            System.out.println("下滑中。。。");
+//        }
+//        if (dyConsumed == 0 && dyUnconsumed < 0) {
+//            System.out.println("到边界了，还在下滑。。。");
+//        }
+        if (dyConsumed > 15 && child.getVisibility() == View.VISIBLE && !isAnimate) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                child.animate().translationY(200)
+                child.animate().scaleX(0f)
+                        .scaleY(0f)
                         .alpha(0f)
-                        .setDuration(300)
+                        .setDuration(200)
                         .setInterpolator(new FastOutLinearInInterpolator())
                         .setListener(new Animator.AnimatorListener() {
                             @Override
@@ -76,11 +89,12 @@ public class FatBehavior extends FloatingActionButton.Behavior {
                         })
                         .start();
             }
-        } else if (dyConsumed < 0 && child.getVisibility() == View.INVISIBLE && !isAnimate) {
+        } else if (dyConsumed < -15 && child.getVisibility() == View.INVISIBLE && !isAnimate) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                child.animate().translationY(0f)
+                child.animate().scaleX(1f)
+                        .scaleY(1f)
                         .alpha(1f)
-                        .setDuration(300)
+                        .setDuration(200)
                         .setInterpolator(new FastOutLinearInInterpolator())
                         .setListener(new Animator.AnimatorListener() {
                             @Override
