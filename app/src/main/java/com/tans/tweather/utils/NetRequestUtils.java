@@ -42,16 +42,31 @@ public class NetRequestUtils implements INetRequestUtils {
 
     private static NetRequestUtils instance = null;
 
+//    //风url
+//    public final static String WIND_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+//    //大气url
+//    public final static String ATMOSPHERE_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+//    //当前温度
+//    public final static String CURRENT_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+//    //未来10点温度
+//    public final static String FUTURE_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+//    //天气类url 后缀
+//    public final static String WEATHER_URL_TAIL = "%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+
+
     //风url
-    public final static String WIND_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String WIND_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20%3D%202158433";
     //大气url
-    public final static String ATMOSPHERE_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String ATMOSPHERE_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20atmosphere%20from%20weather.forecast%20where%20woeid%20%3D%202158433";
     //当前温度
-    public final static String CURRENT_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String CURRENT_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20%3D%202158433";
     //未来10点温度
-    public final static String FUTURE_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22";
+    public final static String FUTURE_CONDITION_URL = "https://query.yahooapis.com/v1/public/yql?q=select%20item.forecast%20from%20weather.forecast%20where%20u%3D%22c%22%20and%20%20woeid%20%3D%202158433";
     //天气类url 后缀
-    public final static String WEATHER_URL_TAIL = "%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+    public final static String WEATHER_URL_TAIL = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+    //请求当前位置url
+
+
     //请求当前位置url
     public final static String LOCATION_URL = "http://api.map.baidu.com/geocoder/v2/?location=";
     //请求位置url 的后缀
@@ -188,7 +203,8 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(ATMOSPHERE_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+       // requestNet(ATMOSPHERE_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+        requestNet(ATMOSPHERE_URL  + WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
@@ -209,7 +225,8 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(CURRENT_CONDITION_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+        //requestNet(CURRENT_CONDITION_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+        requestNet(CURRENT_CONDITION_URL  + WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
@@ -232,7 +249,8 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(FUTURE_CONDITION_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+      //  requestNet(FUTURE_CONDITION_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+        requestNet(FUTURE_CONDITION_URL  + WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
@@ -253,7 +271,8 @@ public class NetRequestUtils implements INetRequestUtils {
                 listener.onFail(error);
             }
         };
-        requestNet(WIND_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+     //   requestNet(WIND_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
+        requestNet(WIND_URL + WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
 
