@@ -1,4 +1,5 @@
 package com.tans.tweather.activity;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     MainActivityPresenter mPresenter = null;
     @ViewById(R.id.iv_bing_bg)
-    ImageView mIvBingBg ;
+    ImageView mIvBingBg;
 
     @ViewById(R.id.cl)
     CoordinatorLayout mCl;
@@ -100,13 +101,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.rl_menu_container)
     RelativeLayout mMenuContainer;
 
+    @ViewById(R.id.ll_forecast)
+    LinearLayout mLlForecast;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @AfterViews
-    void init () {
+    void init() {
         mPresenter = new MainActivityPresenter(this);
         mPresenter.loadWeatherInfo();
         setSupportActionBar(mToolbar);
@@ -124,10 +128,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     private void resizeView() {
         mWeatherView.setMinimumHeight(getScreenHeight(this) - getStatusBarHeight(this));
-        mCl.setPadding(0,getStatusBarHeight(this),0,0);
-        mWeatherContent.setPadding(0,getNavigationBarHeight(this),0,0);
+        mCl.setPadding(0, getStatusBarHeight(this), 0, 0);
+        mWeatherContent.setPadding(0, getNavigationBarHeight(this), 0, 0);
         CoordinatorLayout.LayoutParams lpFat = (CoordinatorLayout.LayoutParams) mFatAddCity.getLayoutParams();
-        lpFat.setMargins(0,0,80,50+getNavigationBarHeight(this));
+        lpFat.setMargins(0, 0, 80, 50 + getNavigationBarHeight(this));
     }
 
 
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void initBingBgColor(Drawable drawable) {
-        Bitmap b = ((BitmapDrawable)drawable).getBitmap();
+        Bitmap b = ((BitmapDrawable) drawable).getBitmap();
         Palette.from(b).generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
@@ -160,12 +164,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 Palette.Swatch muted = palette.getMutedSwatch();//柔和的
                 Palette.Swatch mutedDark = palette.getDarkMutedSwatch();//柔和的，暗色
                 Palette.Swatch mutedLight = palette.getLightMutedSwatch();//柔和的,亮色
-                if (muted !=null) {
+                if (muted != null) {
                     mFatAddCity.setRippleColor(muted.getRgb());
                 }
                 if (vibrantLight != null) {
                     mMenuContainer.setBackgroundColor(vibrantLight.getRgb());
                 }
+
             }
         });
     }
@@ -202,14 +207,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     private int getStatusBarHeight(Context context) {
         Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("status_bar_height", "dimen","android");
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         int height = resources.getDimensionPixelSize(resourceId);
         return height;
     }
 
     private int getNavigationBarHeight(Context context) {
         Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("navigation_bar_height","dimen", "android");
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         int height = resources.getDimensionPixelSize(resourceId);
         return height;
     }
@@ -242,8 +247,42 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         List<ForecastBean> forecastBean = latestWeatherInfoManager.getmForecast();
         mIvWeatherIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
         mTvDes.setText(conditionBean.getText());
-        mTvHighTemp.setText(forecastBean.get(0).getItem().getForecast().getHigh()+" °");
-        mTvLowTemp.setText(forecastBean.get(0).getItem().getForecast().getLow()+" °");
-        mTvTemperature.setText(conditionBean.getTemp()+" °");
+        mTvHighTemp.setText(forecastBean.get(0).getItem().getForecast().getHigh() + " °");
+        mTvLowTemp.setText(forecastBean.get(0).getItem().getForecast().getLow() + " °");
+        mTvTemperature.setText(conditionBean.getTemp() + " °");
+
+        refreshForecast(forecastBean);
+    }
+
+    private void refreshForecast(List<ForecastBean> forecastBeans) {
+        boolean needInflate = true;
+        if(mLlForecast.getChildCount() == 12) {
+            needInflate = false;
+        }
+        for (int i = 0; i < forecastBeans.size(); i++) {
+            View item = null;
+            if (needInflate) {
+                item = View.inflate(this, R.layout.forecast_weather_item, null);
+            } else {
+                item = mLlForecast.getChildAt(i+2);
+            }
+            TextView day = item.findViewById(R.id.tv_day);
+            day.setText(forecastBeans.get(i).getItem().getForecast().getDay());
+
+            ImageView ic = item.findViewById(R.id.iv_weather_ic_item);
+            ic.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(forecastBeans.get(i).getItem().getForecast().getCode())));
+
+            TextView tvH = item.findViewById(R.id.tv_high_temp_item);
+            tvH.setText(forecastBeans.get(i).getItem().getForecast().getHigh()+ " °");
+
+            TextView tvL = item.findViewById(R.id.tv_low_temp_item);
+            tvL.setText(forecastBeans.get(i).getItem().getForecast().getLow()+ " °");
+            if (forecastBeans.size() == i + 1) {
+                item.findViewById(R.id.gap_line).setVisibility(View.GONE);
+            }
+            if(needInflate) {
+                mLlForecast.addView(item);
+            }
+        }
     }
 }
