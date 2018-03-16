@@ -10,7 +10,6 @@ import com.tans.tweather.R;
 public class ResultTransUtils {
 
     /**
-     *
      * @param code 天气的情况编号
      * @return 对应天气图标的drawable值
      */
@@ -213,5 +212,29 @@ public class ResultTransUtils {
         }
 
         return id;
+    }
+
+    public static String getWindDirection(int angle) {
+        String result = "";
+        if (angle == 0) {
+            result = "北";
+        } else if (angle == 90) {
+            result = "东";
+        } else if (angle == 180) {
+            result = "南";
+        } else if (angle == 270) {
+            result = "西";
+        } else if (angle == 360) {
+            result = "北";
+        } else if (angle > 0 && angle < 90) {
+            result = "东北";
+        } else if (angle > 90 && angle < 180) {
+            result = "东南";
+        } else if (angle > 180 && angle < 270) {
+            result = "西南";
+        } else if (angle < 270 && angle < 360) {
+            result = "西北";
+        }
+        return result;
     }
 }

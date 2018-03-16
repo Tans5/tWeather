@@ -1,16 +1,12 @@
 package com.tans.tweather.activity;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -21,11 +17,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -41,8 +38,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.tans.tweather.R;
+import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.ForecastBean;
+import com.tans.tweather.bean.WindBean;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.presenter.MainActivityPresenter;
@@ -107,6 +106,39 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.ll_forecast)
     LinearLayout mLlForecast;
 
+    @ViewById(R.id.tv_title_forecast)
+    TextView mTitleForecast;
+
+    @ViewById(R.id.tv_title_condition)
+    TextView mTitleCondition;
+
+    @ViewById(R.id.tv_humidity)
+    TextView mHumidity;
+
+    @ViewById(R.id.tv_feeling_temp)
+    TextView mFeelingTemp;
+
+    @ViewById(R.id.tv_visibility)
+    TextView mVisibility;
+
+    @ViewById(R.id.iv_condition_ic)
+    ImageView mConditionIc;
+
+    @ViewById(R.id.tv_title_wind_speed)
+    TextView mTitleWindSpeed;
+
+    @ViewById(R.id.tv_wind_direction)
+    TextView mWindDirection;
+
+    @ViewById(R.id.tv_wind_speed)
+    TextView mWindSpeed;
+
+    @ViewById(R.id.tv_pressure)
+    TextView mPressure;
+
+    @ViewById(R.id.button_card)
+    CardView mButtonCard;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         updateBingBg();
         resizeView();
-        mRefreshWeather.setDistanceToTriggerSync(1000);
+        mRefreshWeather.setDistanceToTriggerSync(600);
         mRefreshWeather.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -136,6 +168,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mWeatherContent.setPadding(0, getNavigationBarHeight(this), 0, 0);
         CoordinatorLayout.LayoutParams lpFat = (CoordinatorLayout.LayoutParams) mFatAddCity.getLayoutParams();
         lpFat.setMargins(0, 0, 80, 50 + getNavigationBarHeight(this));
+        LinearLayout.LayoutParams cardParams = (LinearLayout.LayoutParams) mButtonCard.getLayoutParams();
+        cardParams.setMargins(dip2px(getApplicationContext(),10),dip2px(getApplicationContext(),5),dip2px(getApplicationContext(),10),getNavigationBarHeight(this)+dip2px(getApplicationContext(),10));
+    }
+
+    private int dip2px(Context context, float dipValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
     }
 
 
@@ -151,13 +190,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                initBingBgColor(resource);
+                insertBingBgColor(resource);
                 return false;
             }
         }).into(mIvBingBg);
     }
 
-    private void initBingBgColor(Drawable drawable) {
+    private void insertBingBgColor(Drawable drawable) {
         Bitmap b = ((BitmapDrawable) drawable).getBitmap();
         Palette.from(b).generate(new Palette.PaletteAsyncListener() {
             @Override
@@ -173,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 }
                 if (vibrantLight != null && muted != null && mutedDark != null) {
                     setDrawerBg(vibrantLight.getRgb(),muted.getRgb(),muted.getRgb());
+                }
+
+                if (mutedDark != null) {
+                    setWeatherTitleColor(mutedDark.getRgb());
                 }
 
             }
@@ -192,10 +235,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         }
     }
 
-    public void showLog(String s) {
-        Log.i(TAG, s + "666666666666666666666");
-        ToastUtils.getInstance().showShortText(s);
+    private void setWeatherTitleColor (int color) {
+        mTitleCondition.setTextColor(color);
+        mTitleForecast.setTextColor(color);
+        mTitleWindSpeed.setTextColor(color);
     }
+
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -262,12 +307,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
         ConditionBean conditionBean = latestWeatherInfoManager.getmCondition();
         List<ForecastBean> forecastBean = latestWeatherInfoManager.getmForecast();
+        AtmosphereBean atmosphereBean = latestWeatherInfoManager.getmAtmosphere();
+        WindBean windBean = latestWeatherInfoManager.getmWind();
+
         mIvWeatherIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
         mTvDes.setText(conditionBean.getText());
         mTvHighTemp.setText(forecastBean.get(0).getItem().getForecast().getHigh() + " °");
         mTvLowTemp.setText(forecastBean.get(0).getItem().getForecast().getLow() + " °");
         mTvTemperature.setText(conditionBean.getTemp() + " °");
 
+        mFeelingTemp.setText(conditionBean.getTemp() + " °");
+        mVisibility.setText((int)atmosphereBean.getVisibility()+"公里");
+        mConditionIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
+        mHumidity.setText(atmosphereBean.getHumidity()+"%");
+
+        mWindSpeed.setText(windBean.getSpeed()+"");
+        mPressure.setText((int)atmosphereBean.getPressure()+"");
+        mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
         refreshForecast(forecastBean);
     }
 
