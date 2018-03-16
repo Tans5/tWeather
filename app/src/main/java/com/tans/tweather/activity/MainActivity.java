@@ -9,8 +9,11 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -124,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 mPresenter.updateWeather();
             }
         });
+
     }
 
     private void resizeView() {
@@ -167,12 +171,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 if (muted != null) {
                     mFatAddCity.setRippleColor(muted.getRgb());
                 }
-                if (vibrantLight != null) {
-                    mMenuContainer.setBackgroundColor(vibrantLight.getRgb());
+                if (vibrantLight != null && muted != null && mutedDark != null) {
+                    setDrawerBg(vibrantLight.getRgb(),muted.getRgb(),muted.getRgb());
                 }
 
             }
         });
+    }
+
+    private void setDrawerBg(int startColor, int centerColor, int endColor) {
+        int [] colors = {startColor,centerColor,endColor};
+        GradientDrawable gd = new GradientDrawable();
+        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            gd.setOrientation(GradientDrawable.Orientation.TR_BL);
+            gd.setColors(colors);
+            mMenuContainer.setBackground(gd);
+        } else {
+            mMenuContainer.setBackgroundColor(centerColor);
+        }
     }
 
     public void showLog(String s) {
