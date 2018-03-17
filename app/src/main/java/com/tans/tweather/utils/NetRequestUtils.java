@@ -10,10 +10,12 @@ import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
@@ -100,6 +102,10 @@ public class NetRequestUtils implements INetRequestUtils {
     private void requestNet(String url, Response.Listener<String> response, Response.ErrorListener error) {
         Log.i("URL", url);
         StringRequest request = new StringRequest(url, response, error);
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                30*1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         mQueue.add(request);
     }
 
