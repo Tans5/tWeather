@@ -102,10 +102,10 @@ public class NetRequestUtils implements INetRequestUtils {
     private void requestNet(String url, Response.Listener<String> response, Response.ErrorListener error) {
         Log.i("URL", url);
         StringRequest request = new StringRequest(url, response, error);
-        request.setRetryPolicy(new DefaultRetryPolicy(
-                30*1000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//        request.setRetryPolicy(new DefaultRetryPolicy(
+//                30*1000,
+//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         mQueue.add(request);
     }
 
@@ -426,11 +426,7 @@ public class NetRequestUtils implements INetRequestUtils {
             this(Method.GET, url, listener, errorListener);
         }
 
-        @Override
-        protected void onFinish() {
-            super.onFinish();
-            mListener = null;
-        }
+
 
         @Override
         protected void deliverResponse(String response) {
