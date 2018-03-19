@@ -82,6 +82,7 @@ public class MainActivityPresenter {
             public void onSuccess() {
              //   showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
                 latestWeatherInfoManager.registerWeatherUpdateListener(mWeatherUpdatedListener);
+                mView.setWeatherViewEnable(true);
                 mView.refreshWeatherInfo();
                 ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getmCurrentCity()+": "+ latestWeatherInfoManager.getmCondition().getText()+"  "+latestWeatherInfoManager.getmCondition().getTemp());
                 if(mView.isRefreshing()) {
@@ -91,6 +92,7 @@ public class MainActivityPresenter {
 
             @Override
             public void onFail(VolleyError e) {
+                mView.setWeatherViewEnable(false);
                 ToastUtils.getInstance().showShortText(e.getMessage());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();

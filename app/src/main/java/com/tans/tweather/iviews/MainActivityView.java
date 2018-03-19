@@ -8,4 +8,5 @@ public interface MainActivityView {
     boolean isRefreshing();
     void closeRefreshing();
     void refreshWeatherInfo();
+    void setWeatherViewEnable(boolean b);
 }
