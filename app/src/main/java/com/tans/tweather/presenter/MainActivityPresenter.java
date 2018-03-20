@@ -47,6 +47,7 @@ public class MainActivityPresenter {
             if (!latestWeatherInfoManager.isLatestWeatherInfo()) {
                 updateWeather();
             } else {
+                mView.setWeatherViewEnable(true);
                 mView.refreshWeatherInfo();
             }
         }

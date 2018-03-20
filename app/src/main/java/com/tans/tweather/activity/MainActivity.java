@@ -1,7 +1,5 @@
 package com.tans.tweather.activity;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
@@ -161,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
         mPresenter.loadWeatherInfo();
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         updateBingBg();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(600);
@@ -170,7 +170,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
                 mPresenter.updateWeather();
             }
         });
-        mDrawer.setDrawerListener(this);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawer,mToolbar,
+                R.string.app_name, R.string.app_name) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                mRefreshWeather.setEnabled(true);
+                mWeatherContent.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                mRefreshWeather.setEnabled(false);
+                mWeatherContent.setVisibility(View.GONE);
+            }
+        };
+        actionBarDrawerToggle.syncState();
+        mDrawer.addDrawerListener(actionBarDrawerToggle);
     }
 
     private void resizeView() {
