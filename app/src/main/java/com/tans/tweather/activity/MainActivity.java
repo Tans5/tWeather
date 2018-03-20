@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -43,6 +45,7 @@ import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.DensityUtils;
 import com.tans.tweather.utils.ResultTransUtils;
+import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -54,7 +57,7 @@ import java.util.List;
 import static com.tans.tweather.utils.DensityUtils.dip2px;
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends AppCompatActivity implements MainActivityView,DrawerLayout.DrawerListener {
+public class MainActivity extends AppCompatActivity implements MainActivityView {
 
     public static String TAG = MainActivity.class.getSimpleName();
 
@@ -149,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
     @ViewById(R.id.ns_scroll)
     NestedScrollView mScroll;
 
+    ActionBarDrawerToggle mActionBarDrawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
         mPresenter = new MainActivityPresenter(this);
         mPresenter.loadWeatherInfo();
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         updateBingBg();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(600);
@@ -170,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
                 mPresenter.updateWeather();
             }
         });
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawer,mToolbar,
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar,
                 R.string.app_name, R.string.app_name) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -186,8 +191,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
                 mWeatherContent.setVisibility(View.GONE);
             }
         };
-        actionBarDrawerToggle.syncState();
-        mDrawer.addDrawerListener(actionBarDrawerToggle);
+        mActionBarDrawerToggle.syncState();
+        mDrawer.addDrawerListener(mActionBarDrawerToggle);
     }
 
     private void resizeView() {
@@ -201,12 +206,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
         lpFat.setMargins(0, 0, 80, 50 + navigationBarHeight);
         LinearLayout.LayoutParams cardParams = (LinearLayout.LayoutParams) mButtonCard.getLayoutParams();
         cardParams.setMargins(dip2px(getApplicationContext(),
-                10),dip2px(getApplicationContext(),
-                5),dip2px(getApplicationContext(),10),
-                navigationBarHeight+dip2px(getApplicationContext(),10+10));
+                10), dip2px(getApplicationContext(),
+                5), dip2px(getApplicationContext(), 10),
+                navigationBarHeight + dip2px(getApplicationContext(), 10 + 10));
     }
-
-
 
 
     private void updateBingBg() {
@@ -242,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
                     mFatAddCity.setRippleColor(muted.getRgb());
                 }
                 if (vibrantLight != null && muted != null && mutedDark != null) {
-                    setDrawerBg(vibrantLight.getRgb(),muted.getRgb(),muted.getRgb());
+                    setDrawerBg(vibrantLight.getRgb(), muted.getRgb(), muted.getRgb());
                 }
 
                 if (mutedDark != null) {
@@ -254,10 +257,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
     }
 
     private void setDrawerBg(int startColor, int centerColor, int endColor) {
-        int [] colors = {startColor,centerColor,endColor};
+        int[] colors = {startColor, centerColor, endColor};
         GradientDrawable gd = new GradientDrawable();
         gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             gd.setOrientation(GradientDrawable.Orientation.TR_BL);
             gd.setColors(colors);
             mMenuContainer.setBackground(gd);
@@ -266,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
         }
     }
 
-    private void setWeatherTitleColor (int color) {
+    private void setWeatherTitleColor(int color) {
         mTitleCondition.setTextColor(color);
         mTitleForecast.setTextColor(color);
         mTitleWindSpeed.setTextColor(color);
@@ -327,19 +330,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
         mTvTemperature.setText(conditionBean.getTemp() + " °");
 
         mFeelingTemp.setText(conditionBean.getTemp() + " °");
-        mVisibility.setText((int)atmosphereBean.getVisibility()+"公里");
+        mVisibility.setText((int) atmosphereBean.getVisibility() + "公里");
         mConditionIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
-        mHumidity.setText(atmosphereBean.getHumidity()+"%");
+        mHumidity.setText(atmosphereBean.getHumidity() + "%");
 
-        mWindSpeed.setText(windBean.getSpeed()+"");
-        mPressure.setText((int)atmosphereBean.getPressure()+"");
+        mWindSpeed.setText(windBean.getSpeed() + "");
+        mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
         refreshForecast(forecastBean);
     }
 
     @Override
     public void setWeatherViewEnable(boolean b) {
-        if(b) {
+        if (b) {
             mError.setVisibility(View.GONE);
             mMainWeatherDisplay.setVisibility(View.VISIBLE);
             mWeatherContent.setVisibility(View.VISIBLE);
@@ -352,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
 
     private void refreshForecast(List<ForecastBean> forecastBeans) {
         boolean needInflate = true;
-        if(mLlForecast.getChildCount() == 12) {
+        if (mLlForecast.getChildCount() == 12) {
             needInflate = false;
         }
         for (int i = 0; i < forecastBeans.size(); i++) {
@@ -360,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
             if (needInflate) {
                 item = View.inflate(this, R.layout.forecast_weather_item, null);
             } else {
-                item = mLlForecast.getChildAt(i+2);
+                item = mLlForecast.getChildAt(i + 2);
             }
             TextView day = item.findViewById(R.id.tv_day);
             day.setText(forecastBeans.get(i).getItem().getForecast().getDay());
@@ -369,38 +372,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityView,
             ic.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(forecastBeans.get(i).getItem().getForecast().getCode())));
 
             TextView tvH = item.findViewById(R.id.tv_high_temp_item);
-            tvH.setText(forecastBeans.get(i).getItem().getForecast().getHigh()+ " °");
+            tvH.setText(forecastBeans.get(i).getItem().getForecast().getHigh() + " °");
 
             TextView tvL = item.findViewById(R.id.tv_low_temp_item);
-            tvL.setText(forecastBeans.get(i).getItem().getForecast().getLow()+ " °");
+            tvL.setText(forecastBeans.get(i).getItem().getForecast().getLow() + " °");
             if (forecastBeans.size() == i + 1) {
                 item.findViewById(R.id.gap_line).setVisibility(View.GONE);
             }
-            if(needInflate) {
+            if (needInflate) {
                 mLlForecast.addView(item);
             }
         }
     }
 
-    @Override
-    public void onDrawerSlide(View drawerView, float slideOffset) {
-
-    }
-
-    @Override
-    public void onDrawerOpened(View drawerView) {
-        mRefreshWeather.setEnabled(false);
-        mWeatherContent.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onDrawerClosed(View drawerView) {
-        mRefreshWeather.setEnabled(true);
-        mWeatherContent.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState) {
-
-    }
 }

@@ -24,24 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.design.widget.AppBarLayout
-                android:id="@+id/abl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:elevation="0dp">
 
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/tool_bar"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:actionBarSize"
-                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
-                    app:title="tWeather"></android.support.v7.widget.Toolbar>
-
-            </android.support.design.widget.AppBarLayout>
 
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/refresh_weather"
@@ -491,6 +474,22 @@
                 app:fabSize="auto"
                 app:layout_behavior="com.tans.tweather.animation.FatBehavior"
                 app:rippleColor="@color/colorAccent" />
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/abl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                >
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/tool_bar"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:actionBarSize"
+                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                    app:title="tWeather"></android.support.v7.widget.Toolbar>
+
+            </android.support.design.widget.AppBarLayout>
         </android.support.design.widget.CoordinatorLayout>
     </FrameLayout>
 
