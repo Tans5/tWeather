@@ -473,7 +473,7 @@
                 android:layout_gravity="bottom|right"
                 android:src="@drawable/add_city_ic"
                 android:transitionName="floatingButton"
-                app:backgroundTint="@color/colorPrimary"
+                app:backgroundTint="@color/transBlack"
                 app:fabSize="auto"
                 app:layout_behavior="com.tans.tweather.animation.FatBehavior"
                 app:rippleColor="@color/colorAccent" />

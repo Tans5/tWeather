@@ -1,5 +1,7 @@
 package com.tans.tweather.activity;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,6 +23,8 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
 import android.transition.Explode;
+import android.transition.Fade;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -159,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(Build.VERSION.SDK_INT >= 21) {
-            getWindow().setEnterTransition(new Explode());
+            getWindow().setEnterTransition(new Fade());
             getWindow().setSharedElementEnterTransition(new ChangeBounds());
         }
     }
@@ -318,7 +322,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @Click(R.id.fat_add_city)
     void addCity() {
-
+        if(Build.VERSION.SDK_INT >= 21) {
+            Intent intent = new Intent(this, AddCityActivity_.class);
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tool_bar), "toolbar")).toBundle());
+        }
     }
 
     @Override

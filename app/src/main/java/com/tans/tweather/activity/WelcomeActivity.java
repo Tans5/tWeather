@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Pair;
 import android.view.View;
 
 import com.tans.tweather.R;
@@ -58,10 +59,28 @@ public class WelcomeActivity extends AppCompatActivity {
     private void changeActivity() {
         if(Build.VERSION.SDK_INT >= 21) {
             Intent intent = new Intent(this, MainActivity_.class);
-            //startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tv_app_name), "toolbar")).toBundle());
-            startActivity(intent);
-            overridePendingTransition(R.anim.anim_acitivity_enter,R.anim.anim_activity_exit);
-            finish();
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tv_app_name), "toolbar")).toBundle());
+        //    startActivity(intent);
+            //overridePendingTransition(R.anim.anim_acitivity_enter,R.anim.anim_activity_exit);
+        //    finish();
+            new AsyncTask<Void,Void,Void>() {
+
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    finish();
+                    super.onPostExecute(aVoid);
+                }
+            }.execute();
         }
     }
 }

@@ -23,6 +23,9 @@
         <activity android:name=".activity.MainActivity_"
             android:screenOrientation="portrait"
             ></activity>
+        <activity android:name=".activity.AddCityActivity_"
+            android:screenOrientation="portrait"
+            ></activity>
         <service android:name=".service.UpdateWeatherInfoService">
         </service>
         <receiver android:name=".widget.WeatherInfoWidget">
