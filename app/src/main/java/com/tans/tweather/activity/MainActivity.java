@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeBounds;
+import android.transition.Explode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,7 +47,6 @@ import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.DensityUtils;
 import com.tans.tweather.utils.ResultTransUtils;
-import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -157,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(Build.VERSION.SDK_INT >= 21) {
+            getWindow().setEnterTransition(new Explode());
+            getWindow().setSharedElementEnterTransition(new ChangeBounds());
+        }
     }
 
     @AfterViews
@@ -215,7 +220,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     private void updateBingBg() {
         transStatusColor();
         RequestOptions mOptions = new RequestOptions();
-        mOptions.centerCrop().diskCacheStrategy(DiskCacheStrategy.NONE);
+        mOptions.centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
         Glide.with(this).load("http://api.dujin.org/bing/1366.php").apply(mOptions).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

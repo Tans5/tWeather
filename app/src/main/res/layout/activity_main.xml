@@ -12,7 +12,9 @@
         <ImageView
             android:id="@+id/iv_bing_bg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@drawable/default_bing"
+            />
 
         <View
             android:layout_width="match_parent"
@@ -470,6 +472,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:src="@drawable/add_city_ic"
+                android:transitionName="floatingButton"
                 app:backgroundTint="@color/colorPrimary"
                 app:fabSize="auto"
                 app:layout_behavior="com.tans.tweather.animation.FatBehavior"
@@ -487,7 +490,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="?android:actionBarSize"
                     app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
-                    app:title="tWeather"></android.support.v7.widget.Toolbar>
+                    app:title="tWeather"
+                    android:transitionName="toolbar"
+                    ></android.support.v7.widget.Toolbar>
 
             </android.support.design.widget.AppBarLayout>
         </android.support.design.widget.CoordinatorLayout>
