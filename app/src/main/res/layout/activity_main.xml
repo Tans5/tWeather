@@ -498,6 +498,6 @@
         </android.support.design.widget.CoordinatorLayout>
     </FrameLayout>
 
-    <include layout="@layout/main_activity_left_menu_layout"></include>
+    <include layout="@layout/layout_main_activity_left_menu"></include>
 </android.support.v4.widget.DrawerLayout>
 

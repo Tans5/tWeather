@@ -21,12 +21,8 @@ import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.transition.ChangeBounds;
-import android.transition.Explode;
 import android.transition.Fade;
 import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -38,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -227,9 +224,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         RequestOptions mOptions = new RequestOptions();
         mOptions.centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .optionalCenterCrop()
                 .placeholder(R.drawable.default_bing)
         ;
-        Glide.with(BaseApplication.getInstance()).load("http://api.dujin.org/bing/1366.php").apply(mOptions).listener(new RequestListener<Drawable>() {
+        Glide.with(BaseApplication.getInstance()).load("http://api.dujin.org/bing/1366.php")
+                .apply(mOptions)
+                .listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 return false;
@@ -240,7 +240,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 insertBingBgColor(resource);
                 return false;
             }
-        }).into(mIvBingBg);
+        })
+                .transition(new DrawableTransitionOptions().crossFade(300))
+                .into(mIvBingBg);
     }
 
     private void insertBingBgColor(Drawable drawable) {
@@ -377,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         for (int i = 0; i < forecastBeans.size(); i++) {
             View item = null;
             if (needInflate) {
-                item = View.inflate(this, R.layout.forecast_weather_item, null);
+                item = View.inflate(this, R.layout.item_forecast_weather, null);
             } else {
                 item = mLlForecast.getChildAt(i + 2);
             }

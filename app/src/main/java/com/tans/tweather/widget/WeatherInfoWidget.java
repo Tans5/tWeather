@@ -1,16 +1,13 @@
 package com.tans.tweather.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.tans.tweather.R;
-import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.utils.ResultTransUtils;
 
@@ -42,7 +39,7 @@ public class WeatherInfoWidget extends AppWidgetProvider {
     {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
         LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_weather_layout);
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget_weather);
         remoteViews.setImageViewResource(R.id.widget_weather_ic_im, ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
         remoteViews.setTextViewText(R.id.widget_city_tv,latestWeatherInfoManager.getmCurrentCity());
         remoteViews.setTextViewText(R.id.widget_temp_tv,latestWeatherInfoManager.getmCondition().getTemp()+"°");
