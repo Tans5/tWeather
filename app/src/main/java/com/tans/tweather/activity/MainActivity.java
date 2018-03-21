@@ -42,6 +42,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.tans.tweather.R;
+import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.ForecastBean;
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         super.onCreate(savedInstanceState);
         if(Build.VERSION.SDK_INT >= 21) {
             getWindow().setEnterTransition(new Fade());
-            getWindow().setSharedElementEnterTransition(new ChangeBounds());
+         //   getWindow().setSharedElementEnterTransition(new ChangeBounds());
         }
     }
 
@@ -225,8 +226,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         transStatusColor();
         RequestOptions mOptions = new RequestOptions();
         mOptions.centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-        Glide.with(this).load("http://api.dujin.org/bing/1366.php").apply(mOptions).listener(new RequestListener<Drawable>() {
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .placeholder(R.drawable.default_bing)
+        ;
+        Glide.with(BaseApplication.getInstance()).load("http://api.dujin.org/bing/1366.php").apply(mOptions).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 return false;

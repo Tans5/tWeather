@@ -7,4 +7,5 @@
     <color name="colorTextGray">#CCCCCC</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="lineColor">#e6e8e9</color>
+    <color name="colorOrange">#F56662</color>
 </resources>

@@ -3,7 +3,7 @@
     android:id="@+id/rl_menu_container"
     android:layout_width="match_parent"
     android:layout_gravity="left"
-    android:background="@color/colorAccent"
+    android:background="@color/colorOrange"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
         android:layout_width="wrap_content"

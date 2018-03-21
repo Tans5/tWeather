@@ -6,14 +6,25 @@
     android:background="@color/colorAccent"
     android:transitionName="floatingButton"
     >
-    <TextView
-        android:id="@+id/tv_app_name"
-        android:text="tWeather"
-        android:textSize="22sp"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
+        android:id="@+id/tv_app_name"
         android:layout_centerInParent="true"
-        android:transitionName="toolbar"
-        />
+        >
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/app_icon"
+            />
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:text="tWeather"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            />
+    </LinearLayout>
 </RelativeLayout>
