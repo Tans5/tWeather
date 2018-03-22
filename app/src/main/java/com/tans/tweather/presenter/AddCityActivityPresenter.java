@@ -4,10 +4,13 @@ import android.util.Log;
 
 import com.tans.tweather.activity.AddCityActivity;
 import com.tans.tweather.adapter.CitiesRecyclerAdapter;
+import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.iviews.AddCityActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
+import com.tans.tweather.manager.SpManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +32,8 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
 
     private int currentLevel = 1;
 
+    private SpManager mSpManager = null;
+
     public AddCityActivityPresenter(AddCityActivityView view) {
         this.mView = view;
         mChinaCitiesManager = new ChinaCitiesManager();
@@ -36,6 +41,8 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
         mAdapter = new CitiesRecyclerAdapter((AddCityActivity)mView,this);
         mAdapter.setData(data0);
         mView.initRecyclerView(mAdapter);
+        mSpManager = SpManager.newInstance();
+        mSpManager.initSp(BaseApplication.getInstance());
     }
 
     @Override
@@ -53,7 +60,18 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
                 currentLevel =3;
                 break;
             case 3:
+                saveCommonUserCity(data2.get(position).getCityName());
                 break;
+        }
+    }
+
+    private void saveCommonUserCity(String city) {
+        List<String> cities = mSpManager.getCommonUseCities();
+        if(cities.contains(city)) {
+            return;
+        } else {
+            cities.add(city);
+            mSpManager.storeCommonUseCities(cities);
         }
     }
 

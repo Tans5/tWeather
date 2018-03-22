@@ -1,5 +1,6 @@
 package com.tans.tweather.interfaces;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,13 +14,13 @@ public interface ISpManager {
      * 储存常用城市
      * @param commonUseCities
      */
-    void storeCommonUseCities(String commonUseCities);
+    void storeCommonUseCities(List<String> commonUseCities);
 
     /**
      * 返回常用城市
      * @return
      */
-    Set<String> getCommonUseCities();
+    List<String> getCommonUseCities();
 
     /**
      * 储存当前使用城市

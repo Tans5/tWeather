@@ -16,7 +16,7 @@ import java.util.Set;
 public class SpManager implements ISpManager {
 
 
-    private String mCommonCities = null; //todo:需要转换成list
+    private List<String> mCommonCities = null; //todo:需要转换成list
     private String mCurrentCity = null;
     private int mWallPaperAlpha = 0;
     private SharedPreferences mSp = null;
@@ -45,15 +45,38 @@ public class SpManager implements ISpManager {
     }
 
     @Override
-    public void storeCommonUseCities(String commonUseCities) {
-        mSp.edit().putString(SP_KEY_COMMON_USE_CITIES, commonUseCities).commit();
+    public void storeCommonUseCities(List<String> commonUseCities) {
+        mSp.edit().putString(SP_KEY_COMMON_USE_CITIES, commonCities2String(commonUseCities)).commit();
         mCommonCities = commonUseCities;
     }
 
     @Override
-    public Set<String> getCommonUseCities() {
-        mCommonCities = mSp.getString(SP_KEY_COMMON_USE_CITIES, null);
-        return null;
+    public List<String> getCommonUseCities() {
+        String s = mSp.getString(SP_KEY_COMMON_USE_CITIES, "");
+        return stringToCommonCities(s);
+    }
+
+    private String commonCities2String(List<String> list) {
+        String result = "";
+        for(int i=0;i < list.size();i++) {
+            if(i != list.size()-1) {
+                result = result + list.get(i) + ",";
+            } else {
+                result = result + list.get(i);
+            }
+        }
+        return  result;
+    }
+
+    private List<String> stringToCommonCities (String s) {
+        String [] ss = s.split(",");
+        List<String> result = new ArrayList<>();
+
+        for(int i =0 ; i<ss.length;i++) {
+            if(!ss[i] .equals(""))
+                result.add(ss[i]);
+        }
+        return result;
     }
 
     @Override

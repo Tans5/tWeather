@@ -13,6 +13,9 @@ import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by mine on 2018/3/1.
  */
@@ -67,6 +70,9 @@ public class MainActivityPresenter {
             public void onSuccess(String s) {
                 spManager.storeCurrentUseCity(s);
                 latestWeatherInfoManager.setmCurrentCity(s);
+                List<String> cities = new ArrayList<>();
+                cities.add(s);
+                spManager.storeCommonUseCities(cities);
                 updateWeather();
             }
 
