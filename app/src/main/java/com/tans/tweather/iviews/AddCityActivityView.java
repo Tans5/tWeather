@@ -1,5 +1,7 @@
 package com.tans.tweather.iviews;
 
+import android.animation.Animator;
+
 import com.tans.tweather.adapter.CitiesRecyclerAdapter;
 
 /**
@@ -8,4 +10,7 @@ import com.tans.tweather.adapter.CitiesRecyclerAdapter;
 
 public interface AddCityActivityView {
     void initRecyclerView(CitiesRecyclerAdapter adapter);
+    void setLoadingViewEnable(boolean b);
+    void startMoveReveal(Animator.AnimatorListener listener);
+    void startBackReveal(Animator.AnimatorListener listener);
 }

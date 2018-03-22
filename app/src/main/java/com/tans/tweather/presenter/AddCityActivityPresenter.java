@@ -1,6 +1,9 @@
 package com.tans.tweather.presenter;
 
+import android.animation.Animator;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.view.ViewAnimationUtils;
 
 import com.tans.tweather.activity.AddCityActivity;
 import com.tans.tweather.adapter.CitiesRecyclerAdapter;
@@ -50,19 +53,47 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
         Log.d(TAG,"level: "+level+" position: "+position);
         switch (level) {
             case 1:
-                data1 = mChinaCitiesManager.queryCitiesByParentCode(data0.get(position).getCode());
-                mAdapter.setData(data1);
-                currentLevel =2;
+                mView.setLoadingViewEnable(true);
+                updateData(data0.get(position).getCode());
                 break;
             case 2:
-                data2 = mChinaCitiesManager.queryCitiesByParentCode(data1.get(position).getCode());
-                mAdapter.setData(data2);
-                currentLevel =3;
+                mView.setLoadingViewEnable(true);
+                updateData(data1.get(position).getCode());
                 break;
             case 3:
                 saveCommonUserCity(data2.get(position).getCityName());
                 break;
         }
+    }
+
+    private void updateData(final String parentCode) {
+        new AsyncTask<Void,Void,List<LocationBean>>() {
+
+            @Override
+            protected List<LocationBean> doInBackground(Void... params) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return mChinaCitiesManager.queryCitiesByParentCode(parentCode);
+            }
+
+            @Override
+            protected void onPostExecute(List<LocationBean> locationBeen) {
+                super.onPostExecute(locationBeen);
+                int level = locationBeen.get(0).getLevel();
+                currentLevel = level;
+                if(level == 2) {
+                    data1 = locationBeen;
+                    mAdapter.setData(data1);
+                } else if (level == 3) {
+                    data2 = locationBeen;
+                    mAdapter.setData(data2);
+                }
+                mView.setLoadingViewEnable(false);
+            }
+        }.execute();
     }
 
     private void saveCommonUserCity(String city) {
@@ -97,5 +128,11 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
 
     public void onDestroy() {
         mView = null;
+        data0 = null;
+        data1 = null;
+        data2 = null;
+        mAdapter = null;
+        mChinaCitiesManager = null;
+        mSpManager = null;
     }
 }
