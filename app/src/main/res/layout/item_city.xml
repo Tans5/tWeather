@@ -6,8 +6,10 @@
     android:layout_marginTop="3dp"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
+    android:stateListAnimator="@drawable/card_click_anim"
+    android:foreground="?attr/selectableItemBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardElevation="5dp"
+    app:cardElevation="1dp"
     app:cardBackgroundColor="@color/colorWhite"
     app:contentPadding="10dp"
     >
