@@ -1,0 +1,21 @@
+<LinearLayout android:id="@+id/ll_current_position"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/location_normal_ic"
+        />
+    <TextView
+        android:id="@+id/tv_common_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="成都"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:layout_marginLeft="15dp"
+        />
+</LinearLayout>

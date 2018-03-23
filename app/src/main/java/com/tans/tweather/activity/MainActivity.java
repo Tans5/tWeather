@@ -58,6 +58,7 @@ import org.androidannotations.annotations.ViewById;
 import java.util.List;
 
 import static com.tans.tweather.utils.DensityUtils.dip2px;
+import static com.tans.tweather.utils.DensityUtils.getStatusBarHeight;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainActivityView {
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     public static String TAG = MainActivity.class.getSimpleName();
 
     MainActivityPresenter mPresenter = null;
+    ActionBarDrawerToggle mActionBarDrawerToggle;
+
     @ViewById(R.id.iv_bing_bg)
     ImageView mIvBingBg;
 
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     TextView mTvTemperature;
 
     @ViewById(R.id.rl_menu_container)
-    RelativeLayout mMenuContainer;
+    LinearLayout mMenuContainer;
 
     @ViewById(R.id.ll_forecast)
     LinearLayout mLlForecast;
@@ -155,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.ns_scroll)
     NestedScrollView mScroll;
 
-    ActionBarDrawerToggle mActionBarDrawerToggle;
+    @ViewById(R.id.ns_location)
+    NestedScrollView mLocationScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +220,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 10), dip2px(getApplicationContext(),
                 5), dip2px(getApplicationContext(), 10),
                 navigationBarHeight + dip2px(getApplicationContext(), 10 + 10));
+        LinearLayout.LayoutParams lpScrollLoction = (LinearLayout.LayoutParams) mLocationScroll.getLayoutParams();
+        lpScrollLoction.setMargins(0,getStatusBarHeight(this),0,0);
     }
 
 

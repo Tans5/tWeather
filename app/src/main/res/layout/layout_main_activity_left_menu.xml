@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_height="match_parent"
+<LinearLayout android:layout_height="match_parent"
     android:id="@+id/rl_menu_container"
     android:layout_width="match_parent"
     android:layout_gravity="left"
-    android:background="@color/colorOrange"
+    android:background="@color/transBlack"
+    android:orientation="vertical"
+    android:padding="10dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="this is drawer"
-        />
-</RelativeLayout>
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/ns_location"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        >
+        <LinearLayout
+            android:id="@+id/ll_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            >
+            <LinearLayout
+                android:id="@+id/ll_current_position"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/location_current_ic"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="成都"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18sp"
+                    android:layout_marginLeft="15dp"
+                    />
+                <ImageView
+                    android:id="@+id/iv_common_city_delete"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/location_delete_ic"
+                    android:layout_gravity="right"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</LinearLayout>
