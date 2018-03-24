@@ -99,6 +99,9 @@ public class MainActivityPresenter {
     }
 
     public void updateWeather() {
+        if(!mView.isRefreshing()) {
+            mView.startRefreshing();
+        }
         latestWeatherInfoManager.updateLatestWeatherInfo(new ILatestWeatherInfoManager.LatestWeatherUpdateListener() {
             @Override
             public void onSuccess() {

@@ -11,6 +11,7 @@ import java.util.List;
 public interface MainActivityView {
     boolean isRefreshing();
     void closeRefreshing();
+    void startRefreshing();
     void refreshWeatherInfo();
     void setWeatherViewEnable(boolean b);
     void refreshMenuCites(List<String> cites,String currentCity);

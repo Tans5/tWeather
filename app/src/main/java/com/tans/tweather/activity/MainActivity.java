@@ -341,6 +341,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mRefreshWeather.setRefreshing(false);
     }
 
+    @Override
+    public void startRefreshing() {
+        mRefreshWeather.setRefreshing(true);
+    }
+
     @Click(R.id.fat_add_city)
     void addCity() {
         if(Build.VERSION.SDK_INT >= 21) {
