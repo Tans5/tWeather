@@ -23,6 +23,8 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Pair;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,6 +46,7 @@ import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.ForecastBean;
 import com.tans.tweather.bean.WindBean;
+import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.presenter.MainActivityPresenter;
@@ -56,6 +59,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 import static com.tans.tweather.utils.DensityUtils.dip2px;
 import static com.tans.tweather.utils.DensityUtils.getStatusBarHeight;
@@ -160,6 +164,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @ViewById(R.id.ns_location)
     NestedScrollView mLocationScroll;
+
+    @ViewById(R.id.tv_current_city)
+    TextView mCurrentCity;
+
+    @ViewById(R.id.ll_location)
+    LinearLayout mCommonCitiesGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -362,6 +372,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
         refreshForecast(forecastBean);
+        mPresenter.initCommonCites();
+
     }
 
     @Override
@@ -374,6 +386,41 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
             mError.setVisibility(View.VISIBLE);
             mMainWeatherDisplay.setVisibility(View.GONE);
             mWeatherContent.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void refreshMenuCites(List<String> cites, final String currentCity) {
+        mCurrentCity.setText(currentCity);
+        mCurrentCity.setTag(currentCity);
+        mCommonCitiesGroup.removeAllViews();
+        for(final String city: cites) {
+            if (!city.equals(currentCity)) {
+                final LinearLayout llCity = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_common_city, mCommonCitiesGroup, false);
+                llCity.setTag(city);
+                final TextView tvCity = llCity.findViewById(R.id.tv_common_city);
+                tvCity.setText(city);
+                ImageView deleteIV = llCity.findViewById(R.id.iv_common_city_delete);
+                deleteIV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mCommonCitiesGroup.removeView(llCity);
+                        mPresenter.removeCommonCity(city);
+                    }
+                });
+                llCity.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mCurrentCity.setTag(city);
+                        mCurrentCity.setText(city);
+                        tvCity.setText(currentCity);
+                        llCity.setTag(currentCity);
+                        mPresenter.changeCurrentCity(city);
+                        mDrawer.closeDrawer(Gravity.LEFT,true);
+                    }
+                });
+                mCommonCitiesGroup.addView(llCity);
+            }
         }
     }
 

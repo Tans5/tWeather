@@ -13,4 +13,5 @@ public interface AddCityActivityView {
     void setLoadingViewEnable(boolean b);
     void startMoveReveal(Animator.AnimatorListener listener);
     void startBackReveal(Animator.AnimatorListener listener);
+    void destroy();
 }

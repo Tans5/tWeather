@@ -1,6 +1,7 @@
 package com.tans.tweather.manager;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -18,6 +19,7 @@ import com.tans.tweather.interfaces.INetRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.tans.tweather.utils.NetRequestUtils.LOCATION_URL;
@@ -34,10 +36,25 @@ public class ChinaCitiesManager {
     public static String ROOT_CITY_PARENT_CODE = "";
     public static int END_LEVEL = 3;
 
+    private static ChinaCitiesManager instance;
     private DatabaseHelper mDatabaseHelper = null;
     private Dao<LocationBean,String> mDao = null;
     private NetRequestUtils mNetRequestUtils = null;
     private Context mContext = null;
+
+    private SpManager mSpManager = null;
+
+    private List<CommonCitesChangeListener> commonCitesChangeListeners = null;
+
+    private List<CurrentCitesChangeListener> currentCitesChangeListeners = null;
+
+    public interface CommonCitesChangeListener {
+        void onChange();
+    }
+
+    public interface CurrentCitesChangeListener {
+        void onChange();
+    }
 
     /**
      * 城市信息更新的监听
@@ -48,10 +65,19 @@ public class ChinaCitiesManager {
         void onFail(VolleyError e);
     }
 
-    public ChinaCitiesManager () {
+    public static ChinaCitiesManager newInstance() {
+        if (instance == null) {
+            instance = new ChinaCitiesManager();
+        }
+        return instance;
+    }
+
+    private ChinaCitiesManager () {
         mDatabaseHelper = DatabaseHelper.getHelper(BaseApplication.getInstance());
         mNetRequestUtils = NetRequestUtils.newInstance();
         mContext = BaseApplication.getInstance();
+        mSpManager = SpManager.newInstance();
+        mSpManager.initSp((Application) mContext);
         mNetRequestUtils.setContext(mContext);
         try {
             mDao = mDatabaseHelper.getDao(LocationBean.class);
@@ -145,6 +171,66 @@ public class ChinaCitiesManager {
                 listener.onFail(e);
             }
         },getLocation());
+    }
+
+    public List<String> getCommonCities() {
+        return mSpManager.getCommonUseCities();
+    }
+
+    public void setCommonCitites(List<String> citites) {
+        mSpManager.storeCommonUseCities(citites);
+        notifyCommonCitesChange();
+    }
+
+    public String getCurrentCity () {
+        return mSpManager.getCurrentUseCity();
+    }
+
+    public void setCurrentCity(String city) {
+        mSpManager.storeCurrentUseCity(city);
+        notifyCurrentCityChange();
+    }
+
+    public void registerCurrentCityChangeListener(CurrentCitesChangeListener listener) {
+        if (currentCitesChangeListeners == null) {
+            currentCitesChangeListeners = new ArrayList<>();
+        }
+        if(!currentCitesChangeListeners.contains(listener)) {
+            currentCitesChangeListeners.add(listener);
+        }
+    }
+
+    public void unregisterCurrentCityChangeListenter(CurrentCitesChangeListener listener) {
+        currentCitesChangeListeners.remove(listener);
+    }
+
+    public void unregisterCommCitesChangeListener(CommonCitesChangeListener listener) {
+        commonCitesChangeListeners.remove(listener);
+    }
+
+    public void registerCommonCitesChangeListener(CommonCitesChangeListener listener) {
+        if(commonCitesChangeListeners == null) {
+            commonCitesChangeListeners = new ArrayList<>();
+        }
+        if(! commonCitesChangeListeners.contains(listener)) {
+            commonCitesChangeListeners.add(listener);
+        }
+    }
+
+    private void notifyCurrentCityChange() {
+        if(currentCitesChangeListeners != null) {
+            for(CurrentCitesChangeListener listener : currentCitesChangeListeners) {
+                listener.onChange();
+            }
+        }
+    }
+
+    private void notifyCommonCitesChange() {
+        if(commonCitesChangeListeners != null) {
+            for(CommonCitesChangeListener listener : commonCitesChangeListeners) {
+                listener.onChange();
+            }
+        }
     }
 
     /**

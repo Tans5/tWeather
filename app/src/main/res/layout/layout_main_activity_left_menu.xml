@@ -13,7 +13,6 @@
         android:layout_height="200dp"
         >
         <LinearLayout
-            android:id="@+id/ll_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -35,6 +34,7 @@
                     android:background="@drawable/location_current_ic"
                     />
                 <TextView
+                    android:id="@+id/tv_current_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="成都"
@@ -42,13 +42,13 @@
                     android:textSize="18sp"
                     android:layout_marginLeft="15dp"
                     />
-                <ImageView
-                    android:id="@+id/iv_common_city_delete"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/location_delete_ic"
-                    android:layout_gravity="right"
-                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
             </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -12,6 +12,7 @@ import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.iviews.AddCityActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.SpManager;
+import com.tans.tweather.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,17 +36,14 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
 
     private int currentLevel = 1;
 
-    private SpManager mSpManager = null;
 
     public AddCityActivityPresenter(AddCityActivityView view) {
         this.mView = view;
-        mChinaCitiesManager = new ChinaCitiesManager();
+        mChinaCitiesManager = ChinaCitiesManager.newInstance();
         data0 = mChinaCitiesManager.queryCitiesByParentCode(ChinaCitiesManager.ROOT_CITY_PARENT_CODE);
         mAdapter = new CitiesRecyclerAdapter((AddCityActivity)mView,this);
         mAdapter.setData(data0);
         mView.initRecyclerView(mAdapter);
-        mSpManager = SpManager.newInstance();
-        mSpManager.initSp(BaseApplication.getInstance());
     }
 
     @Override
@@ -97,12 +95,15 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
     }
 
     private void saveCommonUserCity(String city) {
-        List<String> cities = mSpManager.getCommonUseCities();
+        List<String> cities = mChinaCitiesManager.getCommonCities();
         if(cities.contains(city)) {
+            ToastUtils.getInstance().showShortText("该城市已经添加");
             return;
         } else {
             cities.add(city);
-            mSpManager.storeCommonUseCities(cities);
+            mChinaCitiesManager.setCommonCitites(cities);
+            ToastUtils.getInstance().showShortText("添加成功");
+            mView.destroy();
         }
     }
 
@@ -133,6 +134,5 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
         data2 = null;
         mAdapter = null;
         mChinaCitiesManager = null;
-        mSpManager = null;
     }
 }

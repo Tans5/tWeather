@@ -72,7 +72,7 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
         if (item.getItemId() == android.R.id.home) {
             boolean result = mPresenter.backToParent();
             if (!result) {
-                finish();
+                destroy();
             }
         }
         return super.onOptionsItemSelected(item);
@@ -116,6 +116,11 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
             animator.addListener(listener);
             animator.start();
         }
+    }
+
+    public void destroy() {
+        finish();
+        overridePendingTransition(R.anim.anim_acitivity_enter,R.anim.anim_activity_exit);
     }
 
     @Override

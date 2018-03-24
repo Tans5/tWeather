@@ -35,11 +35,26 @@ public class MainActivityPresenter {
         }
     };
 
+    ChinaCitiesManager.CommonCitesChangeListener commonCitesChangeListener = new ChinaCitiesManager.CommonCitesChangeListener() {
+        @Override
+        public void onChange() {
+            mView.refreshMenuCites(chinaCitiesManager.getCommonCities(),chinaCitiesManager.getCurrentCity());
+        }
+    };
+    ChinaCitiesManager.CurrentCitesChangeListener currentCitesChangeListener = new ChinaCitiesManager.CurrentCitesChangeListener() {
+        @Override
+        public void onChange() {
+            latestWeatherInfoManager.setmCurrentCity(chinaCitiesManager.getCurrentCity());
+            updateWeather();
+        }
+    };
+
+
     public MainActivityPresenter(MainActivityView view) {
         mView = view;
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
         spManager = SpManager.newInstance();
-        chinaCitiesManager = new ChinaCitiesManager();
+        chinaCitiesManager = ChinaCitiesManager.newInstance();
     }
 
     public void loadWeatherInfo() {
@@ -95,6 +110,8 @@ public class MainActivityPresenter {
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }
+                chinaCitiesManager.registerCommonCitesChangeListener(commonCitesChangeListener);
+                chinaCitiesManager.registerCurrentCityChangeListener(currentCitesChangeListener);
             }
 
             @Override
@@ -118,8 +135,26 @@ public class MainActivityPresenter {
         }
     }
 
+    public void initCommonCites() {
+        List<String> commonCites = chinaCitiesManager.getCommonCities();
+        String currentCity = chinaCitiesManager.getCurrentCity();
+        mView.refreshMenuCites(commonCites,currentCity);
+    }
+
+    public void removeCommonCity(String city) {
+        List<String> commonCities = chinaCitiesManager.getCommonCities();
+        commonCities.remove(city);
+        chinaCitiesManager.setCommonCitites(commonCities);
+    }
+
+    public void changeCurrentCity(String city) {
+        chinaCitiesManager.setCurrentCity(city);
+    }
+
     public void destroy() {
         mView = null;
         latestWeatherInfoManager.unregisterWeatherUpdateListener(mWeatherUpdatedListener);
+        chinaCitiesManager.unregisterCommCitesChangeListener(commonCitesChangeListener);
+        chinaCitiesManager.unregisterCurrentCityChangeListenter(currentCitesChangeListener);
     }
 }
