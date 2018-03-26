@@ -201,11 +201,13 @@ public class ChinaCitiesManager {
     }
 
     public void unregisterCurrentCityChangeListenter(CurrentCitesChangeListener listener) {
-        currentCitesChangeListeners.remove(listener);
+        if(listener != null && currentCitesChangeListeners != null)
+            currentCitesChangeListeners.remove(listener);
     }
 
     public void unregisterCommCitesChangeListener(CommonCitesChangeListener listener) {
-        commonCitesChangeListeners.remove(listener);
+        if(null != listener && commonCitesChangeListeners != null)
+            commonCitesChangeListeners.remove(listener);
     }
 
     public void registerCommonCitesChangeListener(CommonCitesChangeListener listener) {

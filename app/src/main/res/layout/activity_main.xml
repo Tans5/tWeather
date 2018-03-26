@@ -496,9 +496,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="?android:actionBarSize"
                     app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
-                    app:title="tWeather"
+                    app:title=" "
                     android:transitionName="toolbar"
-                    ></android.support.v7.widget.Toolbar>
+                    >
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:text="tWeather"
+                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:textColor="@color/colorAccent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:transitionName="toolbar"
+                        />
+                </android.support.v7.widget.Toolbar>
 
             </android.support.design.widget.AppBarLayout>
         </android.support.design.widget.CoordinatorLayout>

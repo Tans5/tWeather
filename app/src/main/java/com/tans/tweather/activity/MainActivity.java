@@ -26,6 +26,7 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -232,6 +233,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 navigationBarHeight + dip2px(getApplicationContext(), 10 + 10));
         LinearLayout.LayoutParams lpScrollLoction = (LinearLayout.LayoutParams) mLocationScroll.getLayoutParams();
         lpScrollLoction.setMargins(0,getStatusBarHeight(this),0,0);
+
+        ViewGroup.LayoutParams mMenuParamas = mMenuContainer.getLayoutParams();
+        mMenuParamas.width = DensityUtils.getScreenWith(this) * 2/3;
     }
 
 
@@ -257,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 return false;
             }
         })
-                .transition(new DrawableTransitionOptions().crossFade(300))
+                .transition(new DrawableTransitionOptions().crossFade(1000))
                 .into(mIvBingBg);
     }
 
@@ -350,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     void addCity() {
         if(Build.VERSION.SDK_INT >= 21) {
             Intent intent = new Intent(this, AddCityActivity_.class);
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tool_bar), "toolbar")).toBundle());
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tv_title), "toolbar")).toBundle());
         }
     }
 
