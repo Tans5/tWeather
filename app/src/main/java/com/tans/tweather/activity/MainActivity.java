@@ -172,6 +172,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.ll_location)
     LinearLayout mCommonCitiesGroup;
 
+    @ViewById(R.id.tv_current_use_city)
+    TextView mCurrentUseCity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -380,6 +383,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mWindSpeed.setText(windBean.getSpeed() + "");
         mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
+        mCurrentUseCity.setVisibility(View.VISIBLE);
+        mCurrentUseCity.setText(latestWeatherInfoManager.getmCurrentCity());
         refreshForecast(forecastBean);
         mPresenter.initCommonCites();
 

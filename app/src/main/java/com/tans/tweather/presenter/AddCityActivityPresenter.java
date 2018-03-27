@@ -32,6 +32,8 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
     private List<LocationBean> data1;
     private List<LocationBean> data2;
 
+    private String parent0;
+
     private CitiesRecyclerAdapter mAdapter;
 
     private int currentLevel = 1;
@@ -52,10 +54,13 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
         switch (level) {
             case 1:
                 mView.setLoadingViewEnable(true);
+                mView.refreshParentCity(data0.get(position).getCityName());
+                parent0 = data0.get(position).getCityName();
                 updateData(data0.get(position).getCode());
                 break;
             case 2:
                 mView.setLoadingViewEnable(true);
+                mView.refreshParentCity(data1.get(position).getCityName());
                 updateData(data1.get(position).getCode());
                 break;
             case 3:
@@ -115,11 +120,13 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
                 break;
             case  2:
                 mAdapter.setData(data0);
+                mView.hideParentCity();
                 currentLevel--;
                 b = true;
                 break;
             case 3:
                 mAdapter.setData(data1);
+                mView.refreshParentCity(parent0);
                 currentLevel--;
                 b = true;
                 break;

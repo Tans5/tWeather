@@ -14,4 +14,6 @@ public interface AddCityActivityView {
     void startMoveReveal(Animator.AnimatorListener listener);
     void startBackReveal(Animator.AnimatorListener listener);
     void destroy();
+    void refreshParentCity(String city);
+    void hideParentCity();
 }

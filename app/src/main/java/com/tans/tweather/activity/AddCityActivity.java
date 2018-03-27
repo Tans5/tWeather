@@ -44,6 +44,9 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
     @ViewById(R.id.rl_container)
     RelativeLayout mContainer;
 
+    @ViewById(R.id.tv_parent_city)
+    TextView mParentCity;
+
     AddCityActivityPresenter mPresenter;
 
     int mAnimaRadius = 25;
@@ -121,6 +124,17 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
     public void destroy() {
         finish();
         overridePendingTransition(R.anim.anim_acitivity_enter,R.anim.anim_activity_exit);
+    }
+
+    @Override
+    public void refreshParentCity(String city) {
+        mParentCity.setVisibility(View.VISIBLE);
+        mParentCity.setText(city);
+    }
+
+    @Override
+    public void hideParentCity() {
+        mParentCity.setVisibility(View.GONE);
     }
 
     @Override
