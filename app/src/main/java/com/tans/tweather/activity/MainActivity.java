@@ -22,6 +22,7 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.transition.Transition;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -179,16 +180,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Build.VERSION.SDK_INT >= 21) {
-            getWindow().setEnterTransition(new Fade());
-         //   getWindow().setSharedElementEnterTransition(new ChangeBounds());
-        }
     }
 
     @AfterViews
     void init() {
-        mPresenter = new MainActivityPresenter(this);
-        mPresenter.loadWeatherInfo(false);
+        startEnterTransition();
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -219,6 +215,45 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         };
         mActionBarDrawerToggle.syncState();
         mDrawer.addDrawerListener(mActionBarDrawerToggle);
+    }
+
+    private void startEnterTransition() {
+        mPresenter = new MainActivityPresenter(this);
+        if(Build.VERSION.SDK_INT >= 21) {
+            Transition transition = new Fade();
+            transition.setDuration(500);
+            transition.addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    mPresenter.loadWeatherInfo(false);
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+
+                }
+            });
+            getWindow().setEnterTransition(transition);
+            getWindow().setReturnTransition(new Fade());
+            //   getWindow().setSharedElementEnterTransition(transition);
+        } else {
+            mPresenter.loadWeatherInfo(false);
+        }
     }
 
     private void resizeView() {

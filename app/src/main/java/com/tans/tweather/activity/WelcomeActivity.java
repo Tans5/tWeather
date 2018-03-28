@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -26,6 +28,35 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        if(Build.VERSION.SDK_INT >= 21) {
+//            (1)setExitTransition() - 当A startB时，使A中的View退出场景的transition    在A中设置
+//
+//            (2)setEnterTransition() - 当A startB时，使B中的View进入场景的transition    在B中设置
+//
+//            (3)setReturnTransition() - 当B 返回A时，使B中的View退出场景的transition  在B中设置
+//
+//            (4)setReenterTransition() - 当B 返回A时，使A中的View进入场景的transition   在A中设置
+//
+//            注意：
+//
+//            1、要在Activity B 中设置以下代码
+//
+//            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+//
+//            并且这行代码要加在super.onCreate(savedInstanceState);之前（这是书中没说的）
+//
+//            2、退场的效果目前观察只能通过返回键触发，否则没有退场效果，
+//
+//            例如通过finish()退出B回到A是没有动画效果的
+//
+//            3、4种效果设置的Activity的是不同的！！！
+
+            Transition transition = new Fade();
+            transition.setDuration(500);
+        //    getWindow().setEnterTransition(transition);
+        //    getWindow().setReenterTransition(transition);
+            getWindow().setReenterTransition(transition);
+        }
         transStatusColor();
         new AsyncTask<Void,Void,Void>() {
 

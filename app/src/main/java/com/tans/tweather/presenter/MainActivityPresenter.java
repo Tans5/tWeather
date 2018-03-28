@@ -66,6 +66,8 @@ public class MainActivityPresenter {
             } else {
                 mView.setWeatherViewEnable(true);
                 mView.refreshWeatherInfo();
+                chinaCitiesManager.registerCommonCitesChangeListener(commonCitesChangeListener);
+                chinaCitiesManager.registerCurrentCityChangeListener(currentCitesChangeListener);
             }
         }
     }
@@ -79,6 +81,9 @@ public class MainActivityPresenter {
     }
 
     private void loadCurrentCity() {
+        if(!mView.isRefreshing()) {
+            mView.startRefreshing();
+        }
         chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {
             @Override
             public void onSuccess(String s) {
@@ -95,11 +100,14 @@ public class MainActivityPresenter {
             @Override
             public void onFail(VolleyError e) {
                 ToastUtils.getInstance().showShortText(e.getMessage());
+                if(mView.isRefreshing()) {
+                    mView.closeRefreshing();
+                }
             }
         });
     }
 
-    public void updateWeather() {
+    private void updateWeather() {
         if(!mView.isRefreshing()) {
             mView.startRefreshing();
         }
