@@ -32,6 +32,7 @@ import static com.tans.tweather.utils.NetRequestUtils.LOCATION_URL_TAIL;
 public class ChinaCitiesManager {
 
     public static String TAG = ChinaCitiesManager.class.getSimpleName();
+    public static String LOAD_CURRENT_LOCATION = "current location";
     public static int ROOT_CITY_LEVEL = 1;
     public static String ROOT_CITY_PARENT_CODE = "";
     public static int END_LEVEL = 3;
@@ -177,7 +178,7 @@ public class ChinaCitiesManager {
         return mSpManager.getCommonUseCities();
     }
 
-    public void setCommonCitites(List<String> citites) {
+    public void setCommonCities(List<String> citites) {
         mSpManager.storeCommonUseCities(citites);
         notifyCommonCitesChange();
     }

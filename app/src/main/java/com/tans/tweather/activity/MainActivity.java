@@ -49,6 +49,7 @@ import com.tans.tweather.bean.ForecastBean;
 import com.tans.tweather.bean.WindBean;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.iviews.MainActivityView;
+import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.DensityUtils;
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @AfterViews
     void init() {
         mPresenter = new MainActivityPresenter(this);
-        mPresenter.loadWeatherInfo();
+        mPresenter.loadWeatherInfo(false);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -197,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mRefreshWeather.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.updateWeather();
+                mPresenter.loadWeatherInfo(true);
             }
         });
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar,
@@ -405,9 +406,26 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @Override
     public void refreshMenuCites(List<String> cites, final String currentCity) {
-        mCurrentCity.setText(currentCity);
-        mCurrentCity.setTag(currentCity);
         mCommonCitiesGroup.removeAllViews();
+        if(currentCity.equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
+            mCurrentCity.setText("当前位置");
+            mCurrentCity.setTag(ChinaCitiesManager.LOAD_CURRENT_LOCATION);
+        } else {
+            mCurrentCity.setText(currentCity);
+            mCurrentCity.setTag(currentCity);
+            final LinearLayout currentLocation = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_common_city, mCommonCitiesGroup, false);
+            currentLocation.findViewById(R.id.iv_common_city_delete).setVisibility(View.GONE);
+            ((TextView)currentLocation.findViewById(R.id.tv_common_city)).setText("当前位置");
+            currentLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    refreshMenuCites(mPresenter.getCommonCites(),ChinaCitiesManager.LOAD_CURRENT_LOCATION);
+                    mPresenter.changeCurrentCity(ChinaCitiesManager.LOAD_CURRENT_LOCATION);
+                    mDrawer.closeDrawer(Gravity.LEFT,true);
+                }
+            });
+            mCommonCitiesGroup.addView(currentLocation);
+        }
         for(final String city: cites) {
             if (!city.equals(currentCity)) {
                 final LinearLayout llCity = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_common_city, mCommonCitiesGroup, false);

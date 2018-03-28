@@ -25,7 +25,6 @@ public class MainActivityPresenter {
 
     MainActivityView mView = null;
     LatestWeatherInfoManager latestWeatherInfoManager = null;
-    SpManager spManager = null;
     ChinaCitiesManager chinaCitiesManager = null;
 
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
@@ -44,8 +43,9 @@ public class MainActivityPresenter {
     ChinaCitiesManager.CurrentCitesChangeListener currentCitesChangeListener = new ChinaCitiesManager.CurrentCitesChangeListener() {
         @Override
         public void onChange() {
-            latestWeatherInfoManager.setmCurrentCity(chinaCitiesManager.getCurrentCity());
-            updateWeather();
+            if(!chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION))
+                latestWeatherInfoManager.setmCurrentCity(chinaCitiesManager.getCurrentCity());
+            loadWeatherInfo(true);
         }
     };
 
@@ -53,16 +53,15 @@ public class MainActivityPresenter {
     public MainActivityPresenter(MainActivityView view) {
         mView = view;
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        spManager = SpManager.newInstance();
         chinaCitiesManager = ChinaCitiesManager.newInstance();
     }
 
-    public void loadWeatherInfo() {
+    public void loadWeatherInfo(boolean isRefresh) {
         startService();
-        if(!isAddedCurrentCity()) {
+        if(!isAddedCurrentCity() || chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
             loadCurrentCity();
         } else {
-            if (!latestWeatherInfoManager.isLatestWeatherInfo()) {
+            if (!latestWeatherInfoManager.isLatestWeatherInfo() || isRefresh) {
                 updateWeather();
             } else {
                 mView.setWeatherViewEnable(true);
@@ -83,11 +82,13 @@ public class MainActivityPresenter {
         chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {
             @Override
             public void onSuccess(String s) {
-                spManager.storeCurrentUseCity(s);
                 latestWeatherInfoManager.setmCurrentCity(s);
-                List<String> cities = new ArrayList<>();
-                cities.add(s);
-                spManager.storeCommonUseCities(cities);
+                if(!chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
+                    chinaCitiesManager.setCurrentCity(s);
+                    List<String> cities = new ArrayList<>();
+                    cities.add(s);
+                    chinaCitiesManager.setCommonCities(cities);
+                }
                 updateWeather();
             }
 
@@ -129,11 +130,10 @@ public class MainActivityPresenter {
     }
 
     private boolean isAddedCurrentCity() {
-        String currentCity = spManager.getCurrentUseCity();
+        String currentCity = chinaCitiesManager.getCurrentCity();
         if (currentCity.equals(""))
             return false;
         else {
-            latestWeatherInfoManager.setmCurrentCity(currentCity);
             return true;
         }
     }
@@ -144,10 +144,14 @@ public class MainActivityPresenter {
         mView.refreshMenuCites(commonCites,currentCity);
     }
 
+    public List<String> getCommonCites() {
+        return chinaCitiesManager.getCommonCities();
+    }
+
     public void removeCommonCity(String city) {
         List<String> commonCities = chinaCitiesManager.getCommonCities();
         commonCities.remove(city);
-        chinaCitiesManager.setCommonCitites(commonCities);
+        chinaCitiesManager.setCommonCities(commonCities);
     }
 
     public void changeCurrentCity(String city) {

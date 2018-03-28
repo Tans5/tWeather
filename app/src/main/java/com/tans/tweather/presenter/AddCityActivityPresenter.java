@@ -1,20 +1,15 @@
 package com.tans.tweather.presenter;
 
-import android.animation.Animator;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.ViewAnimationUtils;
 
 import com.tans.tweather.activity.AddCityActivity;
 import com.tans.tweather.adapter.CitiesRecyclerAdapter;
-import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.iviews.AddCityActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
-import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.utils.ToastUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,7 +101,7 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
             return;
         } else {
             cities.add(city);
-            mChinaCitiesManager.setCommonCitites(cities);
+            mChinaCitiesManager.setCommonCities(cities);
             ToastUtils.getInstance().showShortText("添加成功");
             mView.destroy();
         }

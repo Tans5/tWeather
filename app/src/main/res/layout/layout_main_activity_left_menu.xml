@@ -39,7 +39,7 @@
                     android:id="@+id/tv_current_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="成都"
+                    android:text=""
                     android:textColor="@color/colorAccent"
                     android:textSize="18sp"
                     android:layout_marginLeft="15dp"

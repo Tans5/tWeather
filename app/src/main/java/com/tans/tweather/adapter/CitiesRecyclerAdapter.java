@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.tans.tweather.R;
 import com.tans.tweather.database.bean.LocationBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,9 +21,9 @@ import java.util.List;
 @SuppressLint("ViewConstructor")
 public class CitiesRecyclerAdapter extends RecyclerView.Adapter<CitiesRecyclerAdapter.ViewHolder> {
 
-    List<LocationBean> data;
+    List<LocationBean> data = new ArrayList<>();
 
-    ItemClickListener mItemClickListenter;
+    ItemClickListener mItemClickListener;
 
     Context mContext;
 
@@ -32,7 +33,7 @@ public class CitiesRecyclerAdapter extends RecyclerView.Adapter<CitiesRecyclerAd
 
     public CitiesRecyclerAdapter (Context context, ItemClickListener itemClickListener) {
         this.mContext = context;
-        this.mItemClickListenter = itemClickListener;
+        this.mItemClickListener = itemClickListener;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class CitiesRecyclerAdapter extends RecyclerView.Adapter<CitiesRecyclerAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.setItemClickListenter(position);
+        holder.setItemClickListener(position);
         holder.setData(data.get(position));
     }
 
@@ -52,7 +53,10 @@ public class CitiesRecyclerAdapter extends RecyclerView.Adapter<CitiesRecyclerAd
     }
 
     public void setData(List<LocationBean> data) {
-        this.data = data;
+        this.data.clear();
+        if(data != null) {
+            this.data.addAll(data);
+        }
         notifyDataSetChanged();
     }
 
@@ -66,11 +70,11 @@ public class CitiesRecyclerAdapter extends RecyclerView.Adapter<CitiesRecyclerAd
         public ViewHolder(View itemView) {
             super(itemView);
         }
-        public void setItemClickListenter (final int position) {
+        public void setItemClickListener(final int position) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mItemClickListenter.onClick(position,data.get(position).getLevel());
+                    mItemClickListener.onClick(position,data.get(position).getLevel());
                 }
             });
         }
