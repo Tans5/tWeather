@@ -11,6 +11,8 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.android.volley.VolleyError;
+import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SpManager;
 
@@ -26,7 +28,7 @@ public class UpdateWeatherInfoService extends Service {
     private static UpdateWeatherInfoService instance = null;
     public static String TAG = UpdateWeatherInfoService.class.getSimpleName();
     private LatestWeatherInfoManager latestWeatherInfoManager = null;
-    private SpManager spManager = null;
+    private ChinaCitiesManager chinaCitiesManager = null;
     public static UpdateWeatherInfoService getInstance() {
         return instance;
     }
@@ -51,8 +53,24 @@ public class UpdateWeatherInfoService extends Service {
     public void onCreate() {
         super.onCreate();
         latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        spManager = SpManager.newInstance();
-        latestWeatherInfoManager.setmCurrentCity(spManager.getCurrentUseCity());
+        chinaCitiesManager = ChinaCitiesManager.newInstance();
+        if(latestWeatherInfoManager.getmCurrentCity().equals("")) {
+            if(chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
+                chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {
+                    @Override
+                    public void onSuccess(String s) {
+                        latestWeatherInfoManager.setmCurrentCity(s);
+                    }
+
+                    @Override
+                    public void onFail(VolleyError e) {
+                        Log.i(TAG,"请求位置信息失败");
+                    }
+                });
+            } else {
+                latestWeatherInfoManager.setmCurrentCity(chinaCitiesManager.getCurrentCity());
+            }
+        }
         instance = this;
         registerReceiver(mUpdateWeatherReceiver, new IntentFilter(UPDATE_WEATHER));
     }
@@ -61,7 +79,7 @@ public class UpdateWeatherInfoService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "on start command");
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        long triggerTime = SystemClock.elapsedRealtime() + 1*AN_HOUR;
+        long triggerTime = SystemClock.elapsedRealtime() + AN_HOUR;
         Intent intent1 = new Intent();
         intent1.setAction(UPDATE_WEATHER);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);

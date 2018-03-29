@@ -34,7 +34,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     private NetRequestUtils mNetRequestUtils = null;//网络请求实例
     private SpManager mSpManager = null;//sp管理实例
     private int mGotItem = 0;//一次天气信息请求（大气，天气，预报，风） 收到的个数
-    private String mCurrentCity = "成都市";//当前城市
+    private String mCurrentCity = "";//当前城市
     private DateBean updateDate = null;//更新日期
     private static LatestWeatherInfoManager instance = null;
     private static int WEATHER_ITEM_NUMBER = 4; //天气请求item总共个数

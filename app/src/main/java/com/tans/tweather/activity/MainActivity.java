@@ -28,6 +28,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -176,6 +179,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @ViewById(R.id.tv_current_use_city)
     TextView mCurrentUseCity;
+
+    @ViewById(R.id.iv_fan)
+    ImageView mFan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -419,11 +425,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mWindSpeed.setText(windBean.getSpeed() + "");
         mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
+        startFanAnim();
+
         mCurrentUseCity.setVisibility(View.VISIBLE);
         mCurrentUseCity.setText(latestWeatherInfoManager.getmCurrentCity());
         refreshForecast(forecastBean);
         mPresenter.initCommonCites();
 
+    }
+
+    private void startFanAnim() {
+        Animation rotateAnim = new RotateAnimation(0f,359f,RotateAnimation.RELATIVE_TO_SELF,0.5f,
+        RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        rotateAnim.setDuration(1500);
+        rotateAnim.setInterpolator(new LinearInterpolator());
+        rotateAnim.setRepeatCount(RotateAnimation.INFINITE);
+        mFan.startAnimation(rotateAnim);
     }
 
     @Override

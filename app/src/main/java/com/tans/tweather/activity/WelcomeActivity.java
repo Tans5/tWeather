@@ -52,7 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
 //            3、4种效果设置的Activity的是不同的！！！
 
             Transition transition = new Fade();
-            transition.setDuration(500);
+//            transition.setDuration(500);
         //    getWindow().setEnterTransition(transition);
         //    getWindow().setReenterTransition(transition);
             getWindow().setReenterTransition(transition);

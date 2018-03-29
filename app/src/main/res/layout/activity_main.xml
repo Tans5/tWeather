@@ -387,10 +387,12 @@
                                         android:layout_height="wrap_content"
                                         android:orientation="horizontal"
                                         >
-                                        <RelativeLayout
+                                        <ImageView
+                                            android:id="@+id/iv_fan"
                                             android:layout_width="75dp"
-                                            android:layout_height="75dp">
-                                        </RelativeLayout>
+                                            android:layout_height="75dp"
+                                            android:background="@drawable/fan"
+                                            />
                                         <LinearLayout
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
@@ -425,6 +427,7 @@
                                                     android:layout_width="wrap_content"
                                                     android:layout_height="wrap_content"
                                                     android:id="@+id/tv_wind_direction"
+                                                    android:layout_marginLeft="3dp"
                                                     android:textSize="12dp"
                                                     android:textColor="@color/colorPrimaryDark"
                                                     />
