@@ -23,6 +23,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Transition;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -183,6 +184,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.iv_fan)
     ImageView mFan;
 
+    Animation rotateAnim;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -237,6 +240,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 @Override
                 public void onTransitionEnd(Transition transition) {
                     mPresenter.loadWeatherInfo(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        transition.removeListener(this);
+                    }
                 }
 
                 @Override
@@ -255,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 }
             });
             getWindow().setEnterTransition(transition);
-            getWindow().setReturnTransition(new Fade());
+            //   getWindow().setReturnTransition(new Fade());
             //   getWindow().setSharedElementEnterTransition(transition);
         } else {
             mPresenter.loadWeatherInfo(false);
@@ -425,7 +431,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mWindSpeed.setText(windBean.getSpeed() + "");
         mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
-        startFanAnim();
+       // startFanAnim();
+
+        mScroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                View child = v.getChildAt(0);
+                if(child.getHeight() == scrollY + v.getHeight()) {
+                    startFanAnim();
+                    Log.i(TAG,"end...............");
+                } else {
+                    stopFanAnim();
+                }
+            }
+        });
 
         mCurrentUseCity.setVisibility(View.VISIBLE);
         mCurrentUseCity.setText(latestWeatherInfoManager.getmCurrentCity());
@@ -435,12 +454,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void startFanAnim() {
-        Animation rotateAnim = new RotateAnimation(0f,359f,RotateAnimation.RELATIVE_TO_SELF,0.5f,
+        rotateAnim = new RotateAnimation(0f,359f,RotateAnimation.RELATIVE_TO_SELF,0.5f,
         RotateAnimation.RELATIVE_TO_SELF,0.5f);
         rotateAnim.setDuration(1500);
         rotateAnim.setInterpolator(new LinearInterpolator());
         rotateAnim.setRepeatCount(RotateAnimation.INFINITE);
-        mFan.startAnimation(rotateAnim);
+        if(mFan.getVisibility() == View.VISIBLE)
+            mFan.startAnimation(rotateAnim);
+    }
+
+    private void stopFanAnim() {
+        mFan.clearAnimation();
     }
 
     @Override

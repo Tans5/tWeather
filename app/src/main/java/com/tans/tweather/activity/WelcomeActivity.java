@@ -28,7 +28,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        if(Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 21) {
 //            (1)setExitTransition() - 当A startB时，使A中的View退出场景的transition    在A中设置
 //
 //            (2)setEnterTransition() - 当A startB时，使B中的View进入场景的transition    在B中设置
@@ -52,13 +52,13 @@ public class WelcomeActivity extends AppCompatActivity {
 //            3、4种效果设置的Activity的是不同的！！！
 
             Transition transition = new Fade();
-//            transition.setDuration(500);
-        //    getWindow().setEnterTransition(transition);
-        //    getWindow().setReenterTransition(transition);
-            getWindow().setReenterTransition(transition);
+            transition.setDuration(500);
+            getWindow().setEnterTransition(transition);
+            //getWindow().setReenterTransition(transition);
+            //   getWindow().setReenterTransition(transition);
         }
         transStatusColor();
-        new AsyncTask<Void,Void,Void>() {
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
@@ -92,15 +92,15 @@ public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        Log.d(TAG,"onStop");
+        Log.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onRestart() {
-        Log.d(TAG,"onRestart");
+        Log.d(TAG, "onRestart");
         super.onRestart();
-        new AsyncTask<Void,Void,Void>() {
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
@@ -115,20 +115,21 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(Void aVoid) {
                 finish();
-                overridePendingTransition(R.anim.anim_acitivity_enter,R.anim.anim_activity_exit);
+                overridePendingTransition(R.anim.anim_acitivity_enter, R.anim.anim_activity_exit);
                 super.onPostExecute(aVoid);
             }
         }.execute();
+
     }
 
     private void changeActivity() {
         Intent intent = new Intent(this, MainActivity_.class);
-        if(Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 21) {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tv_app_name), "toolbar")).toBundle());
-        //    finish();
+            //    finish();
         } else {
             startActivity(intent);
-            overridePendingTransition(R.anim.anim_acitivity_enter,R.anim.anim_activity_exit);
+            overridePendingTransition(R.anim.anim_acitivity_enter, R.anim.anim_activity_exit);
         }
     }
 }
