@@ -454,7 +454,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void startFanAnim() {
-        rotateAnim = new RotateAnimation(0f,359f,RotateAnimation.RELATIVE_TO_SELF,0.5f,
+        if (rotateAnim == null)
+            rotateAnim = new RotateAnimation(0f,359f,RotateAnimation.RELATIVE_TO_SELF,0.5f,
         RotateAnimation.RELATIVE_TO_SELF,0.5f);
         rotateAnim.setDuration(1500);
         rotateAnim.setInterpolator(new LinearInterpolator());
