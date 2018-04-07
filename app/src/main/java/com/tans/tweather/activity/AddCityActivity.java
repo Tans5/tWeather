@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
-import android.transition.Explode;
 import android.transition.Fade;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +19,17 @@ import android.widget.TextView;
 
 import com.tans.tweather.R;
 import com.tans.tweather.adapter.CitiesRecyclerAdapter;
+import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.component.DaggerAddCityActivityComponent;
 import com.tans.tweather.iviews.AddCityActivityView;
+import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.presenter.AddCityActivityPresenter;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+
+import javax.inject.Inject;
 
 /**
  * Created by mine on 2018/3/20.
@@ -47,7 +51,9 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
     @ViewById(R.id.tv_parent_city)
     TextView mParentCity;
 
+    @Inject
     AddCityActivityPresenter mPresenter;
+
 
     int mAnimaRadius = 25;
 
@@ -66,7 +72,12 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mPresenter = new AddCityActivityPresenter(this);
+        //mPresenter = new AddCityActivityPresenter(this);
+        DaggerAddCityActivityComponent.builder()
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .presenterModule(new PresenterModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override

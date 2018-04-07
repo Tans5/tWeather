@@ -35,7 +35,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -52,10 +51,11 @@ import com.tans.tweather.bean.AtmosphereBean;
 import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.ForecastBean;
 import com.tans.tweather.bean.WindBean;
-import com.tans.tweather.database.bean.LocationBean;
+import com.tans.tweather.component.DaggerMainActivityComponent;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.DensityUtils;
 import com.tans.tweather.utils.ResultTransUtils;
@@ -66,7 +66,8 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
-import java.util.zip.Inflater;
+
+import javax.inject.Inject;
 
 import static com.tans.tweather.utils.DensityUtils.dip2px;
 import static com.tans.tweather.utils.DensityUtils.getStatusBarHeight;
@@ -76,7 +77,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     public static String TAG = MainActivity.class.getSimpleName();
 
+    @Inject
     MainActivityPresenter mPresenter = null;
+
     ActionBarDrawerToggle mActionBarDrawerToggle;
 
     @ViewById(R.id.iv_bing_bg)
@@ -227,7 +230,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void startEnterTransition() {
-        mPresenter = new MainActivityPresenter(this);
+        DaggerMainActivityComponent.builder()
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .presenterModule(new PresenterModule(this))
+                .build()
+                .inject(this);
         if(Build.VERSION.SDK_INT >= 21) {
             Transition transition = new Fade();
             transition.setDuration(500);

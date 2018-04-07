@@ -74,12 +74,13 @@ public class ChinaCitiesManager {
     }
 
     private ChinaCitiesManager () {
+    }
+
+    public void initDependences(NetRequestUtils netRequestUtils,SpManager spManager) {
+        mNetRequestUtils = netRequestUtils;
+        mSpManager = spManager;
         mDatabaseHelper = DatabaseHelper.getHelper(BaseApplication.getInstance());
-        mNetRequestUtils = NetRequestUtils.newInstance();
         mContext = BaseApplication.getInstance();
-        mSpManager = SpManager.newInstance();
-        mSpManager.initSp((Application) mContext);
-        mNetRequestUtils.setContext(mContext);
         try {
             mDao = mDatabaseHelper.getDao(LocationBean.class);
         } catch (SQLException e) {

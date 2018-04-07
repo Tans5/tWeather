@@ -5,16 +5,21 @@ import android.util.Log;
 
 import com.android.volley.VolleyError;
 import com.tans.tweather.activity.MainActivity;
+import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.component.DaggerMainActivityComponent;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SpManager;
+import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Created by mine on 2018/3/1.
@@ -24,7 +29,9 @@ public class MainActivityPresenter {
     public static String TAG = MainActivityPresenter.class.getSimpleName();
 
     MainActivityView mView = null;
+    @Inject
     LatestWeatherInfoManager latestWeatherInfoManager = null;
+    @Inject
     ChinaCitiesManager chinaCitiesManager = null;
 
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
@@ -52,8 +59,13 @@ public class MainActivityPresenter {
 
     public MainActivityPresenter(MainActivityView view) {
         mView = view;
-        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        chinaCitiesManager = ChinaCitiesManager.newInstance();
+//        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
+//        chinaCitiesManager = ChinaCitiesManager.newInstance();
+        DaggerMainActivityComponent.builder()
+                .presenterModule(new PresenterModule(view))
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .build()
+                .inject(this);
     }
 
     public void loadWeatherInfo(boolean isRefresh) {

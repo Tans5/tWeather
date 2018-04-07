@@ -56,11 +56,11 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
 
     private LatestWeatherInfoManager(Context context) {
         this.mContext = context;
-        mNetRequestUtils = NetRequestUtils.newInstance();
-        mNetRequestUtils.setContext(mContext);
+    }
 
-        mSpManager = SpManager.newInstance();
-        mSpManager.initSp((Application) context.getApplicationContext());
+    public void initDependences(NetRequestUtils netRequestUtils,SpManager spManager) {
+        mNetRequestUtils = netRequestUtils;
+        mSpManager = spManager;
     }
 
     /**

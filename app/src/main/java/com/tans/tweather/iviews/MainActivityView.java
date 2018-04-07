@@ -8,7 +8,7 @@ import java.util.List;
  * Created by mine on 2018/3/1.
  */
 
-public interface MainActivityView {
+public interface MainActivityView extends View {
     boolean isRefreshing();
     void closeRefreshing();
     void startRefreshing();

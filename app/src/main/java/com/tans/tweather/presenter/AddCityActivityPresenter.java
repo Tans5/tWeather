@@ -5,12 +5,17 @@ import android.util.Log;
 
 import com.tans.tweather.activity.AddCityActivity;
 import com.tans.tweather.adapter.CitiesRecyclerAdapter;
+import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.component.DaggerAddCityActivityComponent;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.iviews.AddCityActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
+import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.utils.ToastUtils;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Created by mine on 2018/3/20.
@@ -20,8 +25,6 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
     public static String TAG = AddCityActivityPresenter.class.getSimpleName();
 
     private AddCityActivityView mView;
-
-    private ChinaCitiesManager mChinaCitiesManager;
 
     private List<LocationBean> data0;
     private List<LocationBean> data1;
@@ -33,10 +36,17 @@ public class AddCityActivityPresenter implements CitiesRecyclerAdapter.ItemClick
 
     private int currentLevel = 1;
 
+    @Inject
+    ChinaCitiesManager mChinaCitiesManager;
 
     public AddCityActivityPresenter(AddCityActivityView view) {
         this.mView = view;
-        mChinaCitiesManager = ChinaCitiesManager.newInstance();
+     //   mChinaCitiesManager = ChinaCitiesManager.newInstance();
+        DaggerAddCityActivityComponent.builder()
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .presenterModule(new PresenterModule(view))
+                .build()
+                .inject(this);
         data0 = mChinaCitiesManager.queryCitiesByParentCode(ChinaCitiesManager.ROOT_CITY_PARENT_CODE);
         mAdapter = new CitiesRecyclerAdapter((AddCityActivity)mView,this);
         mAdapter.setData(data0);
