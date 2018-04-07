@@ -1,11 +1,15 @@
 package com.tans.tweather.presenter;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
 import com.tans.tweather.activity.MainActivity;
 import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.bean.DateBean;
 import com.tans.tweather.component.DaggerMainActivityComponent;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.iviews.MainActivityView;
@@ -16,6 +20,10 @@ import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,6 +184,48 @@ public class MainActivityPresenter {
 
     public void changeCurrentCity(String city) {
         chinaCitiesManager.setCurrentCity(city);
+    }
+
+    public void saveImage(final Bitmap bitmap) {
+        DateBean today = latestWeatherInfoManager.getUpdateDate();
+        final String fileName ;
+        if(today != null) {
+            fileName = today.getYear() + "-" + today.getMonth() + "-" + today.getDay() + ".jpg";
+        } else {
+            fileName = System.currentTimeMillis()+".jpg";
+        }
+        new AsyncTask<Void,Void,Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                File fileDir = new File(Environment.getExternalStorageDirectory(), "BingImage");
+                if(!fileDir.exists()) {
+                    fileDir.mkdir();
+                }
+                File file = new File(fileDir,fileName);
+                if(file.exists()) {
+                    return null;
+                } else {
+                    try {
+                        FileOutputStream fos = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        fos.flush();
+                        fos.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                ToastUtils.getInstance().showShortText("保存成功");
+            }
+        }.execute();
     }
 
     public void destroy() {

@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -59,6 +60,7 @@ import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.DensityUtils;
 import com.tans.tweather.utils.ResultTransUtils;
+import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -79,6 +81,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @Inject
     MainActivityPresenter mPresenter = null;
+
+    @Inject
+    ToastUtils mToastUtils;
+
+    Bitmap mBingBitmap;
 
     ActionBarDrawerToggle mActionBarDrawerToggle;
 
@@ -289,8 +296,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 10), dip2px(getApplicationContext(),
                 5), dip2px(getApplicationContext(), 10),
                 navigationBarHeight + dip2px(getApplicationContext(), 10 + 10));
-        LinearLayout.LayoutParams lpScrollLoction = (LinearLayout.LayoutParams) mLocationScroll.getLayoutParams();
-        lpScrollLoction.setMargins(0,getStatusBarHeight(this),0,0);
+        LinearLayout.LayoutParams lpScrollLocation = (LinearLayout.LayoutParams) mLocationScroll.getLayoutParams();
+        lpScrollLocation.setMargins(0,getStatusBarHeight(this),0,0);
 
         ViewGroup.LayoutParams mMenuParamas = mMenuContainer.getLayoutParams();
         mMenuParamas.width = DensityUtils.getScreenWith(this) * 2/3;
@@ -308,23 +315,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         Glide.with(BaseApplication.getInstance()).load("http://api.dujin.org/bing/1366.php")
                 .apply(mOptions)
                 .listener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                return false;
-            }
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
 
-            @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                insertBingBgColor(resource);
-                return false;
-            }
-        })
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        insertBingBgColor(resource);
+                        return false;
+                    }
+                })
                 .transition(new DrawableTransitionOptions().crossFade(1000))
                 .into(mIvBingBg);
     }
 
-    private void insertBingBgColor(Drawable drawable) {
-        Bitmap b = ((BitmapDrawable) drawable).getBitmap();
+    private void insertBingBgColor(Drawable resource) {
+        Bitmap b = ((BitmapDrawable)resource).getBitmap();
+        mBingBitmap = b;
         Palette.from(b).generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
@@ -413,6 +421,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         if(Build.VERSION.SDK_INT >= 21) {
             Intent intent = new Intent(this, AddCityActivity_.class);
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tv_title), "toolbar")).toBundle());
+        }
+    }
+
+    @Click(R.id.ll_save_bing_image)
+    void saveBingImage() {
+        mDrawer.closeDrawer(Gravity.LEFT,true);
+        if(mBingBitmap == null) {
+            mToastUtils.showShortText("未获取到美图");
+        } else {
+            mPresenter.saveImage(mBingBitmap);
         }
     }
 

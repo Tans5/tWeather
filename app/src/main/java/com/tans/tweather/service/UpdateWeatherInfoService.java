@@ -12,11 +12,15 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
+import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.component.DaggerUpdateServiceComponent;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SpManager;
 
 import java.util.Date;
+
+import javax.inject.Inject;
 
 /**
  * Created by tans on 2017/12/2.
@@ -27,8 +31,10 @@ public class UpdateWeatherInfoService extends Service {
     private static long AN_HOUR = 1000 * 60 * 60;
     private static UpdateWeatherInfoService instance = null;
     public static String TAG = UpdateWeatherInfoService.class.getSimpleName();
-    private LatestWeatherInfoManager latestWeatherInfoManager = null;
-    private ChinaCitiesManager chinaCitiesManager = null;
+    @Inject
+    LatestWeatherInfoManager latestWeatherInfoManager = null;
+    @Inject
+    ChinaCitiesManager chinaCitiesManager = null;
     public static UpdateWeatherInfoService getInstance() {
         return instance;
     }
@@ -52,8 +58,12 @@ public class UpdateWeatherInfoService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        chinaCitiesManager = ChinaCitiesManager.newInstance();
+//        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
+//        chinaCitiesManager = ChinaCitiesManager.newInstance();
+        DaggerUpdateServiceComponent.builder()
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .build()
+                .inject(this);
         if(latestWeatherInfoManager.getmCurrentCity().equals("")) {
             if(chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
                 chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {

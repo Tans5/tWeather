@@ -8,8 +8,13 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 import com.tans.tweather.R;
+import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.component.DaggerUpdateServiceComponent;
+import com.tans.tweather.component.DaggerWidgetComponent;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.utils.ResultTransUtils;
+
+import javax.inject.Inject;
 
 
 /**
@@ -21,6 +26,10 @@ public class WeatherInfoWidget extends AppWidgetProvider {
     public static String CLICK_FOR_UPDATE = "com.tans.tweather.CLICK_FOR_UPDATE";//桌面button点击更新 广播
     public static String UPDATE_WEATHER = "com.tans.tweather.UPDATE_WEATHER";//天气更新广播
     public static String TAG = WeatherInfoWidget.class.getSimpleName();
+
+    @Inject
+    LatestWeatherInfoManager latestWeatherInfoManager;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
@@ -38,7 +47,11 @@ public class WeatherInfoWidget extends AppWidgetProvider {
     private void updateAllWidget(Context context)
     {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
+//        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
+        DaggerWidgetComponent.builder()
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .build()
+                .inject(this);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget_weather);
         remoteViews.setImageViewResource(R.id.widget_weather_ic_im, ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
         remoteViews.setTextViewText(R.id.widget_city_tv,latestWeatherInfoManager.getmCurrentCity());

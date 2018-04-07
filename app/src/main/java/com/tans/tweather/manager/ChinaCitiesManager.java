@@ -185,6 +185,7 @@ public class ChinaCitiesManager {
     }
 
     public String getCurrentCity () {
+
         return mSpManager.getCurrentUseCity();
     }
 

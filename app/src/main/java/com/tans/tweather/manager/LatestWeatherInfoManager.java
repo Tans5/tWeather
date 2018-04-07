@@ -40,6 +40,10 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     private static int WEATHER_ITEM_NUMBER = 4; //天气请求item总共个数
     private List<WeatherUpdatedListener> mWeatherUpdatedListeners = new ArrayList<WeatherUpdatedListener>();//注册的天气信息变化监听
 
+    public DateBean getUpdateDate() {
+        return updateDate;
+    }
+
     /**
      * 天气变化监听
      */
