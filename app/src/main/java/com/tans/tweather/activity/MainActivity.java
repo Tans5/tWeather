@@ -434,6 +434,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         }
     }
 
+    @Click(R.id.ll_settings)
+    void settings() {
+        Intent intent = new Intent(this,SettingsActivity_.class);
+        if (Build.VERSION.SDK_INT >= 21) {
+            startActivity(intent,ActivityOptions.makeSceneTransitionAnimation(this,null).toBundle());
+        } else {
+            startActivity(intent);
+        }
+    }
+
     @Override
     public void refreshWeatherInfo() {
         LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();

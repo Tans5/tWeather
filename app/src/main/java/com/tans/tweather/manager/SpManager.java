@@ -16,7 +16,7 @@ import java.util.Set;
 public class SpManager implements ISpManager {
 
 
-    private List<String> mCommonCities = null; //todo:需要转换成list
+    private List<String> mCommonCities = null;
     private String mCurrentCity = null;
     private int mWallPaperAlpha = 0;
     private SharedPreferences mSp = null;
@@ -26,7 +26,8 @@ public class SpManager implements ISpManager {
     public static String SP_KEY_CURRENT_CITY = "current_city";//当前使用城市key
     public static String SP_KEY_COMMON_USE_CITIES = "common_use_cities";//常用城市key
     public static String SP_KEY_WALLPAPER_ALPHA = "wallpaper_alpha";//壁纸透明度key
-
+    public static String SP_KEY_UPDATE_RATE = "update_rate";
+    public static String SP_KEY_LOAD_WALLPAPER = "load_wallpaper";
 
     public static SpManager newInstance() {
         if (instance == null) {
@@ -93,7 +94,7 @@ public class SpManager implements ISpManager {
 
     @Override
     public void storeWallPaperAlpha(int a) {
-        mSp.edit().putInt(SP_KEY_WALLPAPER_ALPHA, a);
+        mSp.edit().putInt(SP_KEY_WALLPAPER_ALPHA, a).commit();
         mWallPaperAlpha = a;
     }
 
@@ -101,5 +102,21 @@ public class SpManager implements ISpManager {
     public int getWallPaperAlpha() {
         mWallPaperAlpha = mSp.getInt(SP_KEY_WALLPAPER_ALPHA, 0);
         return mWallPaperAlpha;
+    }
+
+    public void storeUpdateRate(int r) {
+        mSp.edit().putInt(SP_KEY_UPDATE_RATE,r).commit();
+    }
+
+    public int getUpdateRate() {
+        return mSp.getInt(SP_KEY_UPDATE_RATE,1);
+    }
+
+    public void storeLoadBing(Boolean b) {
+        mSp.edit().putBoolean(SP_KEY_LOAD_WALLPAPER,b).commit();
+    }
+
+    public Boolean getLoadBing() {
+        return mSp.getBoolean(SP_KEY_LOAD_WALLPAPER,true);
     }
 }
