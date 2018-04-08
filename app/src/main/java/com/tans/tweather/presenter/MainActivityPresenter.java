@@ -89,6 +89,10 @@ public class MainActivityPresenter {
                 .applicationComponent(BaseApplication.getApplicationComponent())
                 .build()
                 .inject(this);
+        settingsManager.registerListener(settingsChangeListener);
+        latestWeatherInfoManager.registerWeatherUpdateListener(mWeatherUpdatedListener);
+        chinaCitiesManager.registerCommonCitesChangeListener(commonCitesChangeListener);
+        chinaCitiesManager.registerCurrentCityChangeListener(currentCitesChangeListener);
     }
 
     public void refreshScrim() {
@@ -110,8 +114,6 @@ public class MainActivityPresenter {
             } else {
                 mView.setWeatherViewEnable(true);
                 mView.refreshWeatherInfo();
-                chinaCitiesManager.registerCommonCitesChangeListener(commonCitesChangeListener);
-                chinaCitiesManager.registerCurrentCityChangeListener(currentCitesChangeListener);
             }
         }
     }
@@ -159,16 +161,12 @@ public class MainActivityPresenter {
             @Override
             public void onSuccess() {
              //   showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
-                latestWeatherInfoManager.registerWeatherUpdateListener(mWeatherUpdatedListener);
                 mView.setWeatherViewEnable(true);
                 mView.refreshWeatherInfo();
                 ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getmCurrentCity()+": "+ latestWeatherInfoManager.getmCondition().getText()+"  "+latestWeatherInfoManager.getmCondition().getTemp());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }
-                chinaCitiesManager.registerCommonCitesChangeListener(commonCitesChangeListener);
-                chinaCitiesManager.registerCurrentCityChangeListener(currentCitesChangeListener);
-                settingsManager.registerListener(settingsChangeListener);
             }
 
             @Override

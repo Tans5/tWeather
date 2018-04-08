@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -30,7 +31,7 @@ import javax.inject.Inject;
  */
 
 @EActivity(R.layout.activity_settings)
-public class SettingsActivity extends AppCompatActivity implements SettingsActivityView {
+public class SettingsActivity extends AppCompatActivity implements SettingsActivityView,View.OnClickListener {
 
     @ViewById(R.id.tool_bar)
     Toolbar mToolbar;
@@ -52,6 +53,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
 
     @ViewById(R.id.switch_service)
     Switch mSwitchService;
+
+    @ViewById(R.id.tv_rate_title)
+    TextView mRateTitle;
 
     PopupWindow rateWindow;
 
@@ -99,7 +103,13 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
 
     @Click(R.id.switch_service)
     void switchServiceClick() {
-
+        if(!mSwitchService.isChecked()) {
+            mRlRate.setEnabled(false);
+            mRateTitle.setTextColor(getResources().getColor(R.color.colorTextGray));
+        } else {
+            mRlRate.setEnabled(true);
+            mRateTitle.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
     }
 
     @Click(R.id.bt_reset)
@@ -130,7 +140,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
         if (Build.VERSION.SDK_INT >= 21) {
             rateWindow.setElevation(30f);
         }
-        rateWindow.setContentView(android.view.View.inflate(this, R.layout.layout_settings_rate, null));
+        View v = View.inflate(this, R.layout.layout_settings_rate, null);
+        v.findViewById(R.id.tv_1_hour).setOnClickListener(this);
+        v.findViewById(R.id.tv_2_hour).setOnClickListener(this);
+        v.findViewById(R.id.tv_6_hour).setOnClickListener(this);
+        v.findViewById(R.id.tv_24_hour).setOnClickListener(this);
+        rateWindow.setContentView(v);
     }
 
     @Override
@@ -158,11 +173,42 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
         mRate.setTag(updateRate);
         mAlphaSeekBar.setProgress(alpha);
         mAlpha.setText("" + alpha);
+        if(!mSwitchService.isChecked()) {
+            mRlRate.setEnabled(false);
+            mRateTitle.setTextColor(getResources().getColor(R.color.colorTextGray));
+        } else {
+            mRlRate.setEnabled(true);
+            mRateTitle.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.destroy();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.tv_1_hour:
+                mRate.setText("1个小时");
+                mRate.setTag(1);
+                break;
+            case R.id.tv_2_hour:
+                mRate.setText("2个小时");
+                mRate.setTag(2);
+                break;
+            case R.id.tv_6_hour:
+                mRate.setText("6个小时");
+                mRate.setTag(6);
+                break;
+            case R.id.tv_24_hour:
+                mRate.setText("24个小时");
+                mRate.setTag(24);
+                break;
+        }
+        rateWindow.dismiss();
     }
 }

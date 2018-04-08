@@ -97,6 +97,7 @@
             android:layout_marginBottom="15dp"
             >
             <TextView
+                android:id="@+id/tv_rate_title"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"

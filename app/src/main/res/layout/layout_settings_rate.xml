@@ -7,59 +7,43 @@
     android:background="@color/colorWhite"
     >
     <TextView
+        android:id="@+id/tv_1_hour"
         android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:text="1个小时"
         android:textColor="@color/colorTextGray"
-        android:textSize="16sp"
+        android:textSize="15sp"
+        android:gravity="center_vertical"
         />
-    <View android:layout_height="2dp"
-        android:layout_width="match_parent"
-        android:layerType="software"
-        android:background="@drawable/drawable_line_gap"
-        android:layout_marginBottom="2dp"
-        android:layout_marginTop="2dp"
-        >
-    </View>
     <TextView
+        android:id="@+id/tv_2_hour"
         android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:text="2个小时"
         android:textColor="@color/colorTextGray"
-        android:textSize="16sp"
+        android:textSize="15sp"
+        android:gravity="center_vertical"
         />
-    <View android:layout_height="2dp"
-        android:layout_width="match_parent"
-        android:layerType="software"
-        android:background="@drawable/drawable_line_gap"
-        android:layout_marginBottom="2dp"
-        android:layout_marginTop="2dp"
-        >
-    </View>
     <TextView
+        android:id="@+id/tv_6_hour"
         android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:text="6个小时"
         android:textColor="@color/colorTextGray"
-        android:textSize="16sp"
+        android:textSize="15sp"
+        android:gravity="center_vertical"
         />
-    <View android:layout_height="2dp"
-        android:layout_width="match_parent"
-        android:layerType="software"
-        android:background="@drawable/drawable_line_gap"
-        android:layout_marginBottom="2dp"
-        android:layout_marginTop="2dp"
-        >
-    </View>
     <TextView
+        android:id="@+id/tv_24_hour"
         android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:text="24个小时"
         android:textColor="@color/colorTextGray"
-        android:textSize="16sp"
+        android:textSize="15sp"
+        android:gravity="center_vertical"
         />
 </LinearLayout>

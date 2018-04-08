@@ -16,6 +16,7 @@ import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.component.DaggerUpdateServiceComponent;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.manager.SpManager;
 
 import java.util.Date;
@@ -35,6 +36,8 @@ public class UpdateWeatherInfoService extends Service {
     LatestWeatherInfoManager latestWeatherInfoManager = null;
     @Inject
     ChinaCitiesManager chinaCitiesManager = null;
+    @Inject
+    SettingsManager settingsManager = null;
     public static UpdateWeatherInfoService getInstance() {
         return instance;
     }
@@ -89,7 +92,7 @@ public class UpdateWeatherInfoService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "on start command");
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        long triggerTime = SystemClock.elapsedRealtime() + AN_HOUR;
+        long triggerTime = SystemClock.elapsedRealtime() + AN_HOUR*settingsManager.getRate();
         Intent intent1 = new Intent();
         intent1.setAction(UPDATE_WEATHER);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
