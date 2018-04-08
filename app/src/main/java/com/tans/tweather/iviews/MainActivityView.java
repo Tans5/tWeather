@@ -15,4 +15,5 @@ public interface MainActivityView extends View {
     void refreshWeatherInfo();
     void setWeatherViewEnable(boolean b);
     void refreshMenuCites(List<String> cites,String currentCity);
+    void refreshScrim(int alpha);
 }

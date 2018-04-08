@@ -28,6 +28,8 @@ public class SpManager implements ISpManager {
     public static String SP_KEY_WALLPAPER_ALPHA = "wallpaper_alpha";//壁纸透明度key
     public static String SP_KEY_UPDATE_RATE = "update_rate";
     public static String SP_KEY_LOAD_WALLPAPER = "load_wallpaper";
+    public static String SP_KEY_OPEN_SERVICE = "open_service";
+    public static int  NEVER_UPDATE = -1;
 
     public static SpManager newInstance() {
         if (instance == null) {
@@ -100,7 +102,7 @@ public class SpManager implements ISpManager {
 
     @Override
     public int getWallPaperAlpha() {
-        mWallPaperAlpha = mSp.getInt(SP_KEY_WALLPAPER_ALPHA, 0);
+        mWallPaperAlpha = mSp.getInt(SP_KEY_WALLPAPER_ALPHA, 20);
         return mWallPaperAlpha;
     }
 
@@ -118,5 +120,12 @@ public class SpManager implements ISpManager {
 
     public Boolean getLoadBing() {
         return mSp.getBoolean(SP_KEY_LOAD_WALLPAPER,true);
+    }
+
+    public void storeOpenService(Boolean b) {
+        mSp.edit().putBoolean(SP_KEY_OPEN_SERVICE,b).commit();
+    }
+    public Boolean getOpenService () {
+        return mSp.getBoolean(SP_KEY_OPEN_SERVICE,true);
     }
 }

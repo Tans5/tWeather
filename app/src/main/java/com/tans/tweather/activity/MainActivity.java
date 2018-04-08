@@ -8,11 +8,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -194,6 +194,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.iv_fan)
     ImageView mFan;
 
+    @ViewById(R.id.view_scrim)
+    View mScrim;
+
     Animation rotateAnim;
 
     @Override
@@ -203,11 +206,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @AfterViews
     void init() {
+        DaggerMainActivityComponent.builder()
+                .applicationComponent(BaseApplication.getApplicationComponent())
+                .presenterModule(new PresenterModule(this))
+                .build()
+                .inject(this);
+        transStatusColor();
         startEnterTransition();
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        updateBingBg();
+        mPresenter.refreshScrim();
+        if(mPresenter.loadBingImage())
+            updateBingBg();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(600);
         mRefreshWeather.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -237,11 +248,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void startEnterTransition() {
-        DaggerMainActivityComponent.builder()
-                .applicationComponent(BaseApplication.getApplicationComponent())
-                .presenterModule(new PresenterModule(this))
-                .build()
-                .inject(this);
         if(Build.VERSION.SDK_INT >= 21) {
             Transition transition = new Fade();
             transition.setDuration(500);
@@ -305,7 +311,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
 
     private void updateBingBg() {
-        transStatusColor();
         RequestOptions mOptions = new RequestOptions();
         mOptions.centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -438,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     void settings() {
         Intent intent = new Intent(this,SettingsActivity_.class);
         if (Build.VERSION.SDK_INT >= 21) {
-            startActivity(intent,ActivityOptions.makeSceneTransitionAnimation(this,null).toBundle());
+            startActivity(intent,ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         } else {
             startActivity(intent);
         }
@@ -566,6 +571,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 mCommonCitiesGroup.addView(llCity);
             }
         }
+    }
+
+    @Override
+    public void refreshScrim(int alpha) {
+        float a = 255*alpha/100;
+        mScrim.setBackgroundColor(Color.argb((int)a,0,0,0));
     }
 
     private void refreshForecast(List<ForecastBean> forecastBeans) {

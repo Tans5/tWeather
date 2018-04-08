@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    >
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1个小时"
+        android:textColor="@color/colorTextGray"
+        android:textSize="16sp"
+        />
+    <View android:layout_height="2dp"
+        android:layout_width="match_parent"
+        android:layerType="software"
+        android:background="@drawable/drawable_line_gap"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        >
+    </View>
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2个小时"
+        android:textColor="@color/colorTextGray"
+        android:textSize="16sp"
+        />
+    <View android:layout_height="2dp"
+        android:layout_width="match_parent"
+        android:layerType="software"
+        android:background="@drawable/drawable_line_gap"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        >
+    </View>
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="6个小时"
+        android:textColor="@color/colorTextGray"
+        android:textSize="16sp"
+        />
+    <View android:layout_height="2dp"
+        android:layout_width="match_parent"
+        android:layerType="software"
+        android:background="@drawable/drawable_line_gap"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        >
+    </View>
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="24个小时"
+        android:textColor="@color/colorTextGray"
+        android:textSize="16sp"
+        />
+</LinearLayout>

@@ -4,6 +4,7 @@ package com.tans.tweather.component;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.module.ApplicationModule;
 import com.tans.tweather.module.ManagerModule;
@@ -28,4 +29,5 @@ public interface ApplicationComponent {
     SpManager spManager();
     NetRequestUtils netRequestUtils();
     ToastUtils toastUtils();
+    SettingsManager settingsManager();
 }

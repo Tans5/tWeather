@@ -15,7 +15,7 @@ import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
-import com.tans.tweather.manager.SpManager;
+import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.module.PresenterModule;
 import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
@@ -37,10 +37,15 @@ public class MainActivityPresenter {
     public static String TAG = MainActivityPresenter.class.getSimpleName();
 
     MainActivityView mView = null;
+
     @Inject
     LatestWeatherInfoManager latestWeatherInfoManager = null;
+
     @Inject
     ChinaCitiesManager chinaCitiesManager = null;
+
+    @Inject
+    SettingsManager settingsManager;
 
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
         @Override
@@ -63,6 +68,16 @@ public class MainActivityPresenter {
             loadWeatherInfo(true);
         }
     };
+    SettingsManager.SettingsChangeListener settingsChangeListener = new SettingsManager.SettingsChangeListener() {
+        @Override
+        public void settingsChange() {
+            refreshScrim();
+            if(!settingsManager.isOpenService()) {
+                Intent intent = new Intent((MainActivity) mView, UpdateWeatherInfoService.class);
+                BaseApplication.getInstance().stopService(intent);
+            }
+        }
+    };
 
 
     public MainActivityPresenter(MainActivityView view) {
@@ -76,8 +91,17 @@ public class MainActivityPresenter {
                 .inject(this);
     }
 
+    public void refreshScrim() {
+        mView.refreshScrim(settingsManager.getAlpha());
+    }
+
+    public boolean loadBingImage() {
+        return settingsManager.isLoadImage();
+    }
+
     public void loadWeatherInfo(boolean isRefresh) {
-        startService();
+        if(settingsManager.isOpenService())
+            startService();
         if(!isAddedCurrentCity() || chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
             loadCurrentCity();
         } else {
@@ -144,6 +168,7 @@ public class MainActivityPresenter {
                 }
                 chinaCitiesManager.registerCommonCitesChangeListener(commonCitesChangeListener);
                 chinaCitiesManager.registerCurrentCityChangeListener(currentCitesChangeListener);
+                settingsManager.registerListener(settingsChangeListener);
             }
 
             @Override
@@ -233,5 +258,6 @@ public class MainActivityPresenter {
         latestWeatherInfoManager.unregisterWeatherUpdateListener(mWeatherUpdatedListener);
         chinaCitiesManager.unregisterCommCitesChangeListener(commonCitesChangeListener);
         chinaCitiesManager.unregisterCurrentCityChangeListenter(currentCitesChangeListener);
+        settingsManager.unregisterlistener(settingsChangeListener);
     }
 }

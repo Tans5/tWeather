@@ -3,6 +3,7 @@ package com.tans.tweather.module;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
+import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.utils.NetRequestUtils;
 
@@ -40,5 +41,13 @@ public class ManagerModule {
         SpManager spManager = SpManager.newInstance();
         spManager.initSp(context);
         return spManager;
+    }
+
+    @Provides
+    @Singleton
+    public SettingsManager provideSettingsManager(SpManager spManager) {
+        SettingsManager settingsManager = SettingsManager.newInstance();
+        settingsManager.setSpManager(spManager);
+        return  settingsManager;
     }
 }

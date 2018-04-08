@@ -14,9 +14,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:background="@drawable/default_bing"
             />
 
         <View
+            android:id="@+id/view_scrim"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#30000000"></View>
@@ -149,7 +151,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="获取服务器数据失败"
                                     android:layout_marginLeft="10dp"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/colorWhite"
                                     android:textSize="20sp"
                                     />
                             </LinearLayout>
@@ -485,7 +487,7 @@
                 app:backgroundTint="@color/transBlack"
                 app:fabSize="auto"
                 app:layout_behavior="com.tans.tweather.animation.FatBehavior"
-                app:rippleColor="@color/colorAccent" />
+                app:rippleColor="@color/colorWhite" />
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/abl"
                 android:layout_width="match_parent"
@@ -512,7 +514,7 @@
                             android:text="tWeather"
                             android:textStyle="bold"
                             android:textSize="22sp"
-                            android:textColor="@color/colorAccent"
+                            android:textColor="@color/colorWhite"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:transitionName="toolbar"
@@ -522,7 +524,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="15sp"
-                            android:textColor="@color/colorAccent"
+                            android:textColor="@color/colorWhite"
                             android:visibility="gone"
                             />
                     </LinearLayout>

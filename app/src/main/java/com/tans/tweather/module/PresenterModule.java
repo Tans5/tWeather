@@ -3,9 +3,11 @@ package com.tans.tweather.module;
 import com.tans.tweather.activity.AddCityActivity;
 import com.tans.tweather.iviews.AddCityActivityView;
 import com.tans.tweather.iviews.MainActivityView;
+import com.tans.tweather.iviews.SettingsActivityView;
 import com.tans.tweather.iviews.View;
 import com.tans.tweather.presenter.AddCityActivityPresenter;
 import com.tans.tweather.presenter.MainActivityPresenter;
+import com.tans.tweather.presenter.SettingsActivityPresenter;
 import com.tans.tweather.scrop.ActivityScrop;
 
 import dagger.Module;
@@ -32,5 +34,11 @@ public class PresenterModule {
     @Provides
     public AddCityActivityPresenter provideAddCityActivityPresenter() {
         return  new AddCityActivityPresenter((AddCityActivityView) mView);
+    }
+
+    @ActivityScrop
+    @Provides
+    public SettingsActivityPresenter provideSettingsActivityPresenter() {
+        return new SettingsActivityPresenter((SettingsActivityView) mView);
     }
 }
