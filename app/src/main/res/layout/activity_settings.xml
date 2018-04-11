@@ -173,25 +173,31 @@
             android:orientation="horizontal"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="10dp"
             >
             <Button
                 android:id="@+id/bt_reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorWhite"
+                android:background="@drawable/bt_bg_others"
                 android:text="重置"
                 android:textColor="@color/transBlack"
+                android:elevation="20dp"
+                android:layout_margin="10dp"
                 />
             <Button
                 android:id="@+id/bt_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/transBlack"
+                android:background="@drawable/bt_bg_positive"
                 android:text="保存"
                 android:textColor="@color/colorWhite"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="10dp"
+                android:elevation="20dp"
                 />
         </LinearLayout>
     </RelativeLayout>

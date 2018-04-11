@@ -1,11 +1,14 @@
 package com.tans.tweather.activity;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -120,7 +123,23 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
     @Click(R.id.bt_save)
     void saveClick() {
         mPresenter.save(mSwitchService.isChecked(), mSwitchImage.isChecked(), (int) mRate.getTag(), mAlphaSeekBar.getProgress());
-        finish();
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                finish();
+            }
+        }.execute();
     }
 
     @Click(R.id.rl_rate)
@@ -186,6 +205,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.destroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

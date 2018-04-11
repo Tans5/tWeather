@@ -248,14 +248,6 @@ public class ChinaCitiesManager {
             return null;
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
-        String provider = "";
-        if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-            provider = LocationManager.NETWORK_PROVIDER;
-        } else if (providers.contains((LocationManager.GPS_PROVIDER))) {
-            provider = LocationManager.GPS_PROVIDER;
-        } else {
-            return null;
-        }
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -266,7 +258,14 @@ public class ChinaCitiesManager {
             // for ActivityCompat#requestPermissions for more details.
             return null;
         }
-        Location location = locationManager.getLastKnownLocation(provider);
+        Location location = null;
+        for(String provider: providers) {
+            if(location == null) {
+                location = locationManager.getLastKnownLocation(provider);
+            } else {
+                break;
+            }
+        }
         if (location == null)
             return null;
         double latitude = location.getLatitude();

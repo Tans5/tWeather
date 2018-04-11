@@ -1,18 +1,25 @@
 package com.tans.tweather.activity;
 
+import android.Manifest;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.graphics.ColorUtils;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -197,6 +204,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.view_scrim)
     View mScrim;
 
+    @ViewById(R.id.tv_title)
+    TextView mTitle;
+
     Animation rotateAnim;
 
     @Override
@@ -217,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mPresenter.refreshScrim();
-        if(mPresenter.loadBingImage())
+        if (mPresenter.loadBingImage())
             updateBingBg();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(600);
@@ -248,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void startEnterTransition() {
-        if(Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 21) {
             Transition transition = new Fade();
             transition.setDuration(500);
             transition.addListener(new Transition.TransitionListener() {
@@ -292,6 +302,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         int screenHeight = DensityUtils.getScreenHeight(this);
         int statusBarHeight = DensityUtils.getStatusBarHeight(this);
         int navigationBarHeight = DensityUtils.getNavigationBarHeight(this);
+        if (!DensityUtils.checkDeviceHasNavigationBar(this)) {
+            navigationBarHeight = 0;
+        }
+        if (Build.VERSION.SDK_INT < 21) {
+            statusBarHeight = 0;
+        }
         mWeatherView.setMinimumHeight(screenHeight - statusBarHeight);
         mCl.setPadding(0, statusBarHeight, 0, 0);
         mWeatherContent.setPadding(0, navigationBarHeight, 0, 0);
@@ -303,10 +319,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 5), dip2px(getApplicationContext(), 10),
                 navigationBarHeight + dip2px(getApplicationContext(), 10 + 10));
         LinearLayout.LayoutParams lpScrollLocation = (LinearLayout.LayoutParams) mLocationScroll.getLayoutParams();
-        lpScrollLocation.setMargins(0,getStatusBarHeight(this),0,0);
+        lpScrollLocation.setMargins(0, getStatusBarHeight(this), 0, 0);
 
         ViewGroup.LayoutParams mMenuParamas = mMenuContainer.getLayoutParams();
-        mMenuParamas.width = DensityUtils.getScreenWith(this) * 2/3;
+        mMenuParamas.width = DensityUtils.getScreenWith(this) * 2 / 3;
     }
 
 
@@ -336,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     private void insertBingBgColor(Drawable resource) {
-        Bitmap b = ((BitmapDrawable)resource).getBitmap();
+        Bitmap b = ((BitmapDrawable) resource).getBitmap();
         mBingBitmap = b;
         Palette.from(b).generate(new Palette.PaletteAsyncListener() {
             @Override
@@ -356,6 +372,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
                 if (mutedDark != null) {
                     setWeatherTitleColor(mutedDark.getRgb());
+                }
+                if(vibrantLight != null) {
+                   // mTitle.setTextColor(vibrantLight.getRgb());
                 }
 
             }
@@ -423,16 +442,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @Click(R.id.fat_add_city)
     void addCity() {
-        if(Build.VERSION.SDK_INT >= 21) {
-            Intent intent = new Intent(this, AddCityActivity_.class);
+        Intent intent = new Intent(this, AddCityActivity_.class);
+        if (Build.VERSION.SDK_INT >= 21) {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(findViewById(R.id.tv_title), "toolbar")).toBundle());
+        } else {
+            startActivity(intent);
         }
     }
 
     @Click(R.id.ll_save_bing_image)
     void saveBingImage() {
-        mDrawer.closeDrawer(Gravity.LEFT,true);
-        if(mBingBitmap == null) {
+        mDrawer.closeDrawer(Gravity.LEFT, true);
+        if (mBingBitmap == null) {
             mToastUtils.showShortText("未获取到美图");
         } else {
             mPresenter.saveImage(mBingBitmap);
@@ -441,9 +462,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @Click(R.id.ll_settings)
     void settings() {
-        Intent intent = new Intent(this,SettingsActivity_.class);
+        Intent intent = new Intent(this, SettingsActivity_.class);
         if (Build.VERSION.SDK_INT >= 21) {
-            startActivity(intent,ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         } else {
             startActivity(intent);
         }
@@ -471,15 +492,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mWindSpeed.setText(windBean.getSpeed() + "");
         mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
-       // startFanAnim();
+        // startFanAnim();
 
         mScroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 View child = v.getChildAt(0);
-                if(child.getHeight() == scrollY + v.getHeight()) {
+                if (child.getHeight() == scrollY + v.getHeight()) {
                     startFanAnim();
-                    Log.i(TAG,"end...............");
+                    Log.i(TAG, "end...............");
                 } else {
                     stopFanAnim();
                 }
@@ -495,12 +516,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     private void startFanAnim() {
         if (rotateAnim == null)
-            rotateAnim = new RotateAnimation(0f,359f,RotateAnimation.RELATIVE_TO_SELF,0.5f,
-        RotateAnimation.RELATIVE_TO_SELF,0.5f);
+            rotateAnim = new RotateAnimation(0f, 359f, RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                    RotateAnimation.RELATIVE_TO_SELF, 0.5f);
         rotateAnim.setDuration(1500);
         rotateAnim.setInterpolator(new LinearInterpolator());
         rotateAnim.setRepeatCount(RotateAnimation.INFINITE);
-        if(mFan.getVisibility() == View.VISIBLE)
+        if (mFan.getVisibility() == View.VISIBLE)
             mFan.startAnimation(rotateAnim);
     }
 
@@ -524,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @Override
     public void refreshMenuCites(List<String> cites, final String currentCity) {
         mCommonCitiesGroup.removeAllViews();
-        if(currentCity.equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
+        if (currentCity.equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
             mCurrentCity.setText("当前位置");
             mCurrentCity.setTag(ChinaCitiesManager.LOAD_CURRENT_LOCATION);
         } else {
@@ -532,18 +553,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
             mCurrentCity.setTag(currentCity);
             final LinearLayout currentLocation = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_common_city, mCommonCitiesGroup, false);
             currentLocation.findViewById(R.id.iv_common_city_delete).setVisibility(View.GONE);
-            ((TextView)currentLocation.findViewById(R.id.tv_common_city)).setText("当前位置");
+            ((TextView) currentLocation.findViewById(R.id.tv_common_city)).setText("当前位置");
             currentLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    refreshMenuCites(mPresenter.getCommonCites(),ChinaCitiesManager.LOAD_CURRENT_LOCATION);
+                    refreshMenuCites(mPresenter.getCommonCites(), ChinaCitiesManager.LOAD_CURRENT_LOCATION);
                     mPresenter.changeCurrentCity(ChinaCitiesManager.LOAD_CURRENT_LOCATION);
-                    mDrawer.closeDrawer(Gravity.LEFT,true);
+                    mDrawer.closeDrawer(Gravity.LEFT, true);
                 }
             });
             mCommonCitiesGroup.addView(currentLocation);
         }
-        for(final String city: cites) {
+        for (final String city : cites) {
             if (!city.equals(currentCity)) {
                 final LinearLayout llCity = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_common_city, mCommonCitiesGroup, false);
                 llCity.setTag(city);
@@ -565,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                         tvCity.setText(currentCity);
                         llCity.setTag(currentCity);
                         mPresenter.changeCurrentCity(city);
-                        mDrawer.closeDrawer(Gravity.LEFT,true);
+                        mDrawer.closeDrawer(Gravity.LEFT, true);
                     }
                 });
                 mCommonCitiesGroup.addView(llCity);
@@ -575,8 +596,27 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
     @Override
     public void refreshScrim(int alpha) {
-        float a = 255*alpha/100;
-        mScrim.setBackgroundColor(Color.argb((int)a,0,0,0));
+        float a = 255 * alpha / 100;
+        mScrim.setBackgroundColor(Color.argb((int) a, 0, 0, 0));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void requestLocationPermission() {
+        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // TODO request success
+                    mPresenter.loadCurrentCity();
+                }
+                break;
+        }
     }
 
     private void refreshForecast(List<ForecastBean> forecastBeans) {
@@ -610,5 +650,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
             }
         }
     }
+
 
 }

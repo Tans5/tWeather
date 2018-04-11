@@ -1,8 +1,11 @@
 package com.tans.tweather.presenter;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -107,7 +110,10 @@ public class MainActivityPresenter {
         if(settingsManager.isOpenService())
             startService();
         if(!isAddedCurrentCity() || chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
-            loadCurrentCity();
+            if(Build.VERSION.SDK_INT < 23)
+                loadCurrentCity();
+            else
+                mView.requestLocationPermission();
         } else {
             if (!latestWeatherInfoManager.isLatestWeatherInfo() || isRefresh) {
                 updateWeather();
@@ -126,7 +132,7 @@ public class MainActivityPresenter {
         }
     }
 
-    private void loadCurrentCity() {
+    public void loadCurrentCity() {
         if(!mView.isRefreshing()) {
             mView.startRefreshing();
         }
@@ -145,7 +151,9 @@ public class MainActivityPresenter {
 
             @Override
             public void onFail(VolleyError e) {
-                ToastUtils.getInstance().showShortText(e.getMessage());
+                ToastUtils.getInstance().showShortText("位置信息请求失败");
+                initCommonCites();
+                mView.setWeatherViewEnable(false);
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }
@@ -172,6 +180,7 @@ public class MainActivityPresenter {
             @Override
             public void onFail(VolleyError e) {
                 mView.setWeatherViewEnable(false);
+                initCommonCites();
                 ToastUtils.getInstance().showShortText(e.getMessage());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();

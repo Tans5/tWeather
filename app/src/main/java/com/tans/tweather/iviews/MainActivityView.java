@@ -16,4 +16,5 @@ public interface MainActivityView extends View {
     void setWeatherViewEnable(boolean b);
     void refreshMenuCites(List<String> cites,String currentCity);
     void refreshScrim(int alpha);
+    void requestLocationPermission();
 }
