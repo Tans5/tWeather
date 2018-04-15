@@ -12,6 +12,7 @@ public class SettingsManager {
     private int rate;
     private boolean loadImage;
     private boolean openService;
+    private boolean openNotification;
     private static SettingsManager instance;
     private SpManager spManager;
     private List<SettingsChangeListener> listeners;
@@ -64,6 +65,15 @@ public class SettingsManager {
         return loadImage;
     }
 
+    public void setOpenNotification(boolean openNotification) {
+        this.openNotification = openNotification;
+    }
+
+    public boolean isOpenNotification() {
+        openNotification = spManager.getOpenNotification();
+        return openNotification;
+    }
+
     public void setLoadImage(boolean loadImage) {
         this.loadImage = loadImage;
     }
@@ -91,6 +101,7 @@ public class SettingsManager {
         spManager.storeUpdateRate(rate);
         spManager.storeWallPaperAlpha(alpha);
         spManager.storeOpenService(openService);
+        spManager.storeOpenNotification(openNotification);
         notifySettingsChange();
     }
 

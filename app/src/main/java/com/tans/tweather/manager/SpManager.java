@@ -29,6 +29,7 @@ public class SpManager implements ISpManager {
     public static String SP_KEY_UPDATE_RATE = "update_rate";
     public static String SP_KEY_LOAD_WALLPAPER = "load_wallpaper";
     public static String SP_KEY_OPEN_SERVICE = "open_service";
+    public static String SP_KEY_OPEN_NOTIFICATION = "open_notification";
     public static int  NEVER_UPDATE = -1;
 
     public static SpManager newInstance() {
@@ -127,5 +128,12 @@ public class SpManager implements ISpManager {
     }
     public Boolean getOpenService () {
         return mSp.getBoolean(SP_KEY_OPEN_SERVICE,true);
+    }
+
+    public void storeOpenNotification(Boolean b) {
+        mSp.edit().putBoolean(SP_KEY_OPEN_NOTIFICATION,b).commit();
+    }
+    public Boolean getOpenNotification() {
+        return mSp.getBoolean(SP_KEY_OPEN_NOTIFICATION,true);
     }
 }

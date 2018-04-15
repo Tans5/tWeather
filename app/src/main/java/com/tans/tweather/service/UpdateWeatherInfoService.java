@@ -1,6 +1,8 @@
 package com.tans.tweather.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -9,15 +11,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.android.volley.VolleyError;
+import com.tans.tweather.R;
+import com.tans.tweather.activity.WelcomeActivity;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.component.DaggerUpdateServiceComponent;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
-import com.tans.tweather.manager.SpManager;
+import com.tans.tweather.utils.ResultTransUtils;
 
 import java.util.Date;
 
@@ -31,6 +37,8 @@ public class UpdateWeatherInfoService extends Service {
 
     private static long AN_HOUR = 1000 * 60 * 60;
     private static UpdateWeatherInfoService instance = null;
+    private static int NOTIFICATION_IDENTIFY_CODE = 1;
+
     public static String TAG = UpdateWeatherInfoService.class.getSimpleName();
     @Inject
     LatestWeatherInfoManager latestWeatherInfoManager = null;
@@ -53,6 +61,26 @@ public class UpdateWeatherInfoService extends Service {
         }
     };
 
+    private LatestWeatherInfoManager.WeatherUpdatedListener weatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
+        @Override
+        public void updated() {
+            if(settingsManager.isOpenNotification()) {
+                showNotification();
+            }
+        }
+    };
+
+    private SettingsManager.SettingsChangeListener settingsChangeListener = new SettingsManager.SettingsChangeListener() {
+        @Override
+        public void settingsChange() {
+            if(settingsManager.isOpenNotification()) {
+                showNotification();
+            } else {
+                cancelNotification();
+            }
+        }
+    };
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -61,8 +89,6 @@ public class UpdateWeatherInfoService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-//        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-//        chinaCitiesManager = ChinaCitiesManager.newInstance();
         DaggerUpdateServiceComponent.builder()
                 .applicationComponent(BaseApplication.getApplicationComponent())
                 .build()
@@ -86,6 +112,8 @@ public class UpdateWeatherInfoService extends Service {
         }
         instance = this;
         registerReceiver(mUpdateWeatherReceiver, new IntentFilter(UPDATE_WEATHER));
+        latestWeatherInfoManager.registerWeatherUpdateListener(weatherUpdatedListener);
+        settingsManager.registerListener(settingsChangeListener);
     }
 
     @Override
@@ -106,5 +134,35 @@ public class UpdateWeatherInfoService extends Service {
         Log.i(TAG, "destroy");
         instance = null;
         unregisterReceiver(mUpdateWeatherReceiver);
+        latestWeatherInfoManager.unregisterWeatherUpdateListener(weatherUpdatedListener);
+        settingsManager.unregisterlistener(settingsChangeListener);
+    }
+
+    private void showNotification() {
+        RemoteViews v = new RemoteViews(this.getPackageName(), R.layout.layout_notification_weather);
+        v.setImageViewResource(R.id.iv_weather_ic,
+                ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
+        v.setTextViewText(R.id.tv_temperature,latestWeatherInfoManager.getmCondition().getTemp()+"°");
+        v.setTextViewText(R.id.tv_city,latestWeatherInfoManager.getmCurrentCity());
+
+        Intent intent = new Intent(this, WelcomeActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContent(v);
+        builder.setAutoCancel(false);
+        builder.setOngoing(true);
+        builder.setSmallIcon(ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
+        builder.setContentIntent(pendingIntent);
+
+        Notification notification = builder.build();
+        //notification.visibility = Notification.VISIBILITY_SECRET;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_IDENTIFY_CODE,notification);
+    }
+
+    public void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_IDENTIFY_CODE);
     }
 }

@@ -31,15 +31,16 @@ public class SettingsActivityPresenter {
     }
 
     public void refreshData() {
-        mView.refreshViews(settingsManager.isOpenService(),settingsManager.isLoadImage(),
-                settingsManager.getRate(),settingsManager.getAlpha());
+        mView.refreshViews(settingsManager.isOpenService(),settingsManager.isLoadImage()
+                ,settingsManager.isOpenNotification(),settingsManager.getRate(),settingsManager.getAlpha());
     }
 
-    public void save(boolean openService,boolean loadImage,int rate,int alpha) {
+    public void save(boolean openService,boolean loadImage,boolean openNotification,int rate,int alpha) {
         settingsManager.setOpenService(openService);
         settingsManager.setLoadImage(loadImage);
         settingsManager.setRate(rate);
         settingsManager.setAlpha(alpha);
+        settingsManager.setOpenNotification(openNotification);
         settingsManager.save();
     }
 

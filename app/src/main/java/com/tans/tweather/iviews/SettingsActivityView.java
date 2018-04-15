@@ -5,5 +5,5 @@ package com.tans.tweather.iviews;
  */
 
 public interface SettingsActivityView extends View {
-    void refreshViews(boolean openService,boolean loadImage,int updateRate,int alpha);
+    void refreshViews(boolean openService,boolean loadImage,boolean openNotification,int updateRate,int alpha);
 }

@@ -57,6 +57,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
     @ViewById(R.id.switch_service)
     Switch mSwitchService;
 
+    @ViewById(R.id.switch_notification)
+    Switch mNotification;
+
     @ViewById(R.id.tv_rate_title)
     TextView mRateTitle;
 
@@ -122,7 +125,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
 
     @Click(R.id.bt_save)
     void saveClick() {
-        mPresenter.save(mSwitchService.isChecked(), mSwitchImage.isChecked(), (int) mRate.getTag(), mAlphaSeekBar.getProgress());
+        mPresenter.save(mSwitchService.isChecked(), mSwitchImage.isChecked(), mNotification.isChecked(),
+                (int) mRate.getTag(), mAlphaSeekBar.getProgress());
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -185,9 +189,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsActiv
     }
 
     @Override
-    public void refreshViews(boolean openService, boolean loadImage, int updateRate, int alpha) {
+    public void refreshViews(boolean openService, boolean loadImage, boolean openNotification ,int updateRate, int alpha) {
         mSwitchImage.setChecked(loadImage);
         mSwitchService.setChecked(openService);
+        mNotification.setChecked(openNotification);
         mRate.setText(updateRate + "个小时");
         mRate.setTag(updateRate);
         mAlphaSeekBar.setProgress(alpha);
