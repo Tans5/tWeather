@@ -471,12 +471,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     @Override
-    public void refreshWeatherInfo() {
+    public void refreshWeatherInfo(MainActivityPresenter.WeatherVo weatherVo) {
         LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        ConditionBean conditionBean = latestWeatherInfoManager.getmCondition();
-        List<ForecastBean> forecastBean = latestWeatherInfoManager.getmForecast();
-        AtmosphereBean atmosphereBean = latestWeatherInfoManager.getmAtmosphere();
-        WindBean windBean = latestWeatherInfoManager.getmWind();
+        ConditionBean conditionBean = weatherVo.condition;
+        List<ForecastBean> forecastBean = weatherVo.forecast;
+        AtmosphereBean atmosphereBean = weatherVo.atmosphere;
+        WindBean windBean = weatherVo.wind;
 
         mIvWeatherIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
         mTvDes.setText(conditionBean.getText());
@@ -492,7 +492,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mWindSpeed.setText(windBean.getSpeed() + "");
         mPressure.setText((int) atmosphereBean.getPressure() + "");
         mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
-        // startFanAnim();
 
         mScroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -510,8 +509,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mCurrentUseCity.setVisibility(View.VISIBLE);
         mCurrentUseCity.setText(latestWeatherInfoManager.getmCurrentCity());
         refreshForecast(forecastBean);
-        mPresenter.initCommonCites();
-
     }
 
     private void startFanAnim() {
