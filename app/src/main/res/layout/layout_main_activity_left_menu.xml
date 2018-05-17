@@ -115,4 +115,27 @@
         android:layout_marginTop="15dp"
         >
     </View>
+    <LinearLayout
+        android:id="@+id/ll_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        >
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/login_ic"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="登录"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:layout_marginLeft="15dp"
+            />
+    </LinearLayout>
 </LinearLayout>
