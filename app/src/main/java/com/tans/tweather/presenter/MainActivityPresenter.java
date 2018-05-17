@@ -208,6 +208,7 @@ public class MainActivityPresenter {
 
     private WeatherVo createWeatherVo() {
         if(mWeatherVo == null) {
+            mWeatherVo = new WeatherVo();
             mWeatherVo.condition = latestWeatherInfoManager.getmCondition();
             mWeatherVo.atmosphere = latestWeatherInfoManager.getmAtmosphere();
             mWeatherVo.forecast = latestWeatherInfoManager.getmForecast();
