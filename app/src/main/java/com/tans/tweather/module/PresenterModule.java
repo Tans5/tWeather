@@ -27,7 +27,9 @@ public class PresenterModule {
     @ActivityScrop
     @Provides
     public MainActivityPresenter provideMainActivityPresenter() {
-        return new MainActivityPresenter((MainActivityView) mView);
+        MainActivityPresenter presenter = new MainActivityPresenter((MainActivityView) mView);
+        presenter.init();
+        return presenter;
     }
 
     @ActivityScrop

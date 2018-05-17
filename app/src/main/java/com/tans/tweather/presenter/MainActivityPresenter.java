@@ -12,7 +12,11 @@ import android.util.Log;
 import com.android.volley.VolleyError;
 import com.tans.tweather.activity.MainActivity;
 import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.bean.AtmosphereBean;
+import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.DateBean;
+import com.tans.tweather.bean.ForecastBean;
+import com.tans.tweather.bean.WindBean;
 import com.tans.tweather.component.DaggerMainActivityComponent;
 import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.iviews.MainActivityView;
@@ -37,6 +41,16 @@ import javax.inject.Inject;
  */
 
 public class MainActivityPresenter {
+
+    public class WeatherVo {
+        public AtmosphereBean atmosphere;
+        public ConditionBean condition;
+        public List<ForecastBean> forecast;
+        public WindBean wind;
+    }
+
+    WeatherVo mWeatherVo;
+
     public static String TAG = MainActivityPresenter.class.getSimpleName();
 
     MainActivityView mView = null;
@@ -85,10 +99,11 @@ public class MainActivityPresenter {
 
     public MainActivityPresenter(MainActivityView view) {
         mView = view;
-//        latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-//        chinaCitiesManager = ChinaCitiesManager.newInstance();
+    }
+
+    public void init() {
         DaggerMainActivityComponent.builder()
-                .presenterModule(new PresenterModule(view))
+                .presenterModule(new PresenterModule(mView))
                 .applicationComponent(BaseApplication.getApplicationComponent())
                 .build()
                 .inject(this);
@@ -107,19 +122,23 @@ public class MainActivityPresenter {
     }
 
     public void loadWeatherInfo(boolean isRefresh) {
-        if(settingsManager.isOpenService())
+        initCommonCites();
+        if(settingsManager.isOpenService()) {
             startService();
+        }
         if(!isAddedCurrentCity() || chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
-            if(Build.VERSION.SDK_INT < 23)
+            if(Build.VERSION.SDK_INT < 23) {
                 loadCurrentCity();
-            else
+            }
+            else {
                 mView.requestLocationPermission();
+            }
         } else {
             if (!latestWeatherInfoManager.isLatestWeatherInfo() || isRefresh) {
                 updateWeather();
             } else {
                 mView.setWeatherViewEnable(true);
-                mView.refreshWeatherInfo();
+                mView.refreshWeatherInfo(createWeatherVo());
             }
         }
     }
@@ -145,6 +164,7 @@ public class MainActivityPresenter {
                     List<String> cities = new ArrayList<>();
                     cities.add(s);
                     chinaCitiesManager.setCommonCities(cities);
+                    initCommonCites();
                 }
                 updateWeather();
             }
@@ -152,7 +172,6 @@ public class MainActivityPresenter {
             @Override
             public void onFail(VolleyError e) {
                 ToastUtils.getInstance().showShortText("位置信息请求失败");
-                initCommonCites();
                 mView.setWeatherViewEnable(false);
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
@@ -168,9 +187,8 @@ public class MainActivityPresenter {
         latestWeatherInfoManager.updateLatestWeatherInfo(new ILatestWeatherInfoManager.LatestWeatherUpdateListener() {
             @Override
             public void onSuccess() {
-             //   showLog(latestWeatherInfoManager.getmCurrentCity() + ":" + latestWeatherInfoManager.getmCondition().getTemp() + "C  " + latestWeatherInfoManager.getmCondition().getText());
                 mView.setWeatherViewEnable(true);
-                mView.refreshWeatherInfo();
+                mView.refreshWeatherInfo(createWeatherVo());
                 ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getmCurrentCity()+": "+ latestWeatherInfoManager.getmCondition().getText()+"  "+latestWeatherInfoManager.getmCondition().getTemp());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
@@ -180,13 +198,22 @@ public class MainActivityPresenter {
             @Override
             public void onFail(VolleyError e) {
                 mView.setWeatherViewEnable(false);
-                initCommonCites();
                 ToastUtils.getInstance().showShortText(e.getMessage());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }
             }
         });
+    }
+
+    private WeatherVo createWeatherVo() {
+        if(mWeatherVo == null) {
+            mWeatherVo.condition = latestWeatherInfoManager.getmCondition();
+            mWeatherVo.atmosphere = latestWeatherInfoManager.getmAtmosphere();
+            mWeatherVo.forecast = latestWeatherInfoManager.getmForecast();
+            mWeatherVo.wind = latestWeatherInfoManager.getmWind();
+        }
+        return mWeatherVo;
     }
 
     private boolean isAddedCurrentCity() {
