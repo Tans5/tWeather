@@ -60,6 +60,8 @@ import com.tans.tweather.bean.ConditionBean;
 import com.tans.tweather.bean.ForecastBean;
 import com.tans.tweather.bean.WindBean;
 import com.tans.tweather.component.DaggerMainActivityComponent;
+import com.tans.tweather.dialog.LogDialogBuilder;
+import com.tans.tweather.dialog.SignUpDialogBuilder;
 import com.tans.tweather.iviews.MainActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
@@ -468,6 +470,54 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         } else {
             startActivity(intent);
         }
+    }
+
+    @Click(R.id.ll_login)
+    void logIn() {
+        LogDialogBuilder.LogDialogListener logDialogListener = new LogDialogBuilder.LogDialogListener() {
+            @Override
+            public void log(String name, String password, LogDialogBuilder.LogDialog dialog) {
+
+            }
+
+            @Override
+            public void cancel(LogDialogBuilder.LogDialog dialog) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void signUp(LogDialogBuilder.LogDialog dialog) {
+                dialog.dismiss();
+                createSignUpDialog();
+            }
+        };
+        LogDialogBuilder.LogDialog logDialog = new LogDialogBuilder()
+                .setListener(logDialogListener)
+                .build();
+        logDialog.show(getFragmentManager(),"signInDialog");
+    }
+
+    private void createSignUpDialog() {
+        SignUpDialogBuilder.SignUpListener signUpListener = new SignUpDialogBuilder.SignUpListener() {
+            @Override
+            public void signUp(String name, String password, SignUpDialogBuilder.SignUpDialog dialog) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void reset(SignUpDialogBuilder.SignUpDialog dialog) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void cancel(SignUpDialogBuilder.SignUpDialog dialog) {
+                dialog.dismiss();
+            }
+        };
+        SignUpDialogBuilder.SignUpDialog dialog = new SignUpDialogBuilder()
+                .setListener(signUpListener)
+                .build();
+        dialog.show(getFragmentManager(),"signUpDialog");
     }
 
     @Override

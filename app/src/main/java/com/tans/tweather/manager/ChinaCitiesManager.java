@@ -1,29 +1,23 @@
 package com.tans.tweather.manager;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.j256.ormlite.dao.Dao;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.database.DatabaseHelper;
 import com.tans.tweather.database.bean.LocationBean;
-import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.interfaces.INetRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.tans.tweather.utils.NetRequestUtils.LOCATION_URL;
-import static com.tans.tweather.utils.NetRequestUtils.LOCATION_URL_TAIL;
 
 /**
  * Created by mine on 2017/12/28.
@@ -97,10 +91,10 @@ public class ChinaCitiesManager {
             e.printStackTrace();
         }
         if(testCity == null)
-            InitCitiesInfo(ROOT_CITY_PARENT_CODE,ROOT_CITY_LEVEL);
+            initCitiesInfo(ROOT_CITY_PARENT_CODE,ROOT_CITY_LEVEL);
     }
 
-    private void InitCitiesInfo(final String parentCityCode, final int level) {
+    private void initCitiesInfo(final String parentCityCode, final int level) {
 
         mNetRequestUtils.requestCitiesInfo(new INetRequestUtils.NetRequestListener() {
             @Override
@@ -111,7 +105,7 @@ public class ChinaCitiesManager {
                     String[] city = splitCityNameAndCode(cities[i]);
                     saveCity(city,parentCityCode,level);
                     if(level < END_LEVEL) {
-                        InitCitiesInfo(city[0],level+1);
+                        initCitiesInfo(city[0],level+1);
                     }
                 }
             }
