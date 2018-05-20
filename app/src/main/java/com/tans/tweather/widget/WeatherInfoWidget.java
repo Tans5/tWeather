@@ -9,7 +9,7 @@ import android.widget.RemoteViews;
 
 import com.tans.tweather.R;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.component.DaggerWidgetComponent;
+import com.tans.tweather.dagger2.component.DaggerWidgetComponent;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.utils.ResultTransUtils;
 

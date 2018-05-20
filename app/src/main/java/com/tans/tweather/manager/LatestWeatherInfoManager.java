@@ -1,18 +1,15 @@
 package com.tans.tweather.manager;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.bean.AtmosphereBean;
-import com.tans.tweather.bean.ConditionBean;
+import com.tans.tweather.bean.weather.AtmosphereBean;
+import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.DateBean;
-import com.tans.tweather.bean.ForecastBean;
-import com.tans.tweather.bean.WindBean;
-import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
+import com.tans.tweather.bean.weather.ForecastBean;
+import com.tans.tweather.bean.weather.WindBean;
 import com.tans.tweather.interfaces.INetRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
 import com.tans.tweather.widget.WeatherInfoWidget;
@@ -25,7 +22,7 @@ import java.util.List;
  * Created by mine on 2017/11/23.
  */
 
-public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
+public class LatestWeatherInfoManager {
     private AtmosphereBean mAtmosphere = null;//大气bean
     private ConditionBean mCondition = null;//天气bean
     private List<ForecastBean> mForecast = null;//预报list
@@ -40,8 +37,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     private static int WEATHER_ITEM_NUMBER = 4; //天气请求item总共个数
     private List<WeatherUpdatedListener> mWeatherUpdatedListeners = new ArrayList<WeatherUpdatedListener>();//注册的天气信息变化监听
 
-    public DateBean getUpdateDate() {
-        return updateDate;
+
+    /**
+     * 天气更新的监听
+     */
+    public interface WeatherRequestListener {
+        void onSuccess();
+        void onFail(VolleyError e);
     }
 
     /**
@@ -49,6 +51,10 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
      */
     public interface WeatherUpdatedListener {
         void updated();
+    }
+
+    public DateBean getUpdateDate() {
+        return updateDate;
     }
 
     public static LatestWeatherInfoManager newInstance() {
@@ -62,7 +68,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         this.mContext = context;
     }
 
-    public void initDependences(NetRequestUtils netRequestUtils,SpManager spManager) {
+    public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager) {
         mNetRequestUtils = netRequestUtils;
         mSpManager = spManager;
     }
@@ -90,8 +96,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
      * 请求天气更新 activity
      * @param listener
      */
-    @Override
-    public void updateLatestWeatherInfo(final LatestWeatherUpdateListener listener) {
+    public void updateLatestWeatherInfo(final WeatherRequestListener listener) {
 
         if (!mNetRequestUtils.isNetWorkAvailable()) {
             VolleyError volleyError = new VolleyError("网络不可用");
@@ -194,7 +199,6 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     /**
      * 广播调用
      */
-    @Override
     public void updateLatestWeatherInfo() {
         mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override

@@ -17,9 +17,9 @@ import android.widget.RemoteViews;
 
 import com.android.volley.VolleyError;
 import com.tans.tweather.R;
-import com.tans.tweather.activity.WelcomeActivity;
+import com.tans.tweather.activity.welcome.WelcomeActivity;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.component.DaggerUpdateServiceComponent;
+import com.tans.tweather.dagger2.component.DaggerUpdateServiceComponent;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
@@ -131,7 +131,7 @@ public class UpdateWeatherInfoService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "destroy");
+        Log.i(TAG, "destroyActivity");
         instance = null;
         unregisterReceiver(mUpdateWeatherReceiver);
         latestWeatherInfoManager.unregisterWeatherUpdateListener(weatherUpdatedListener);
