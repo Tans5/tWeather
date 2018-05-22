@@ -1,24 +1,15 @@
 package com.tans.tweather.utils;
-
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,21 +17,18 @@ import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.weather.ForecastBean;
 import com.tans.tweather.bean.weather.WindBean;
-import com.tans.tweather.interfaces.INetRequestUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.tans.tweather.interfaces.HttpRequestUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import com.tans.tweather.interfaces.HttpRequestUtils.NetRequestListener;
 
 /**
  * Created by tans on 2017/11/19.
  */
 
-public class NetRequestUtils implements INetRequestUtils {
+public class NetRequestUtils {
 
     private static NetRequestUtils instance = null;
 
@@ -59,7 +47,6 @@ public class NetRequestUtils implements INetRequestUtils {
         mQueue = Volley.newRequestQueue(mContext);
     }
 
-    @Override
     public boolean isNetWorkAvailable() {
         ConnectivityManager connectivity = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -75,11 +62,10 @@ public class NetRequestUtils implements INetRequestUtils {
         return false;
     }
 
-    @Override
-    public void requestLocationInfo(final INetRequestUtils.NetRequestListener listener,double [] location) {
+    public void requestLocationInfo(final HttpRequestUtils.NetRequestListener listener, double [] location) {
         if (location == null) {
             VolleyError e = new VolleyError();
-            listener.onFail(e);
+            listener.onFail(e.getMessage());
             return;
         }
         Response.Listener<String> responseListener = new Response.Listener<String>() {
@@ -87,25 +73,24 @@ public class NetRequestUtils implements INetRequestUtils {
             @Override
             public void onResponse(String response) {
 
-                listener.onSuccess(ResultTransUtils.getCurrentCityString(response));
+                listener.onSuccess(ResponseConvertUtils.getCurrentCityString(response));
             }
         };
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onFail(error);
+                listener.onFail(error.getMessage());
             }
         };
         requestNet(UrlUtils.getBaiduLocationUrl(location), responseListener, errorListener);
     }
 
-    @Override
     public void requestAtmosphereInfo(String location, final NetRequestListener listener) {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                String resultString = ResultTransUtils.getAtmosphereJsonString(response);
+                String resultString = ResponseConvertUtils.getAtmosphereJsonString(response);
                 Gson gson = new Gson();
                 AtmosphereBean result = gson.fromJson(resultString, AtmosphereBean.class);
                 listener.onSuccess(result);
@@ -114,19 +99,18 @@ public class NetRequestUtils implements INetRequestUtils {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onFail(error);
+                listener.onFail(error.getMessage());
             }
         };
         requestNet(UrlUtils.getWeatherAtomosphereUrl(location), responseListener, errorListener);
     }
 
-    @Override
     public void requestConditionInfo(String location, final NetRequestListener listener) {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                String resultString = ResultTransUtils.getCurrentConditionJsonString(response);
+                String resultString = ResponseConvertUtils.getCurrentConditionJsonString(response);
                 Gson gson = new Gson();
                 ConditionBean result = gson.fromJson(resultString, ConditionBean.class);
                 listener.onSuccess(result);
@@ -135,20 +119,19 @@ public class NetRequestUtils implements INetRequestUtils {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onFail(error);
+                listener.onFail(error.getMessage());
             }
         };
         requestNet(UrlUtils.getWeatherConditionUrl(location), responseListener, errorListener);
     }
 
-    @Override
     public void requestForecastInfo(String location, final NetRequestListener listener) {
 
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                String resultString = ResultTransUtils.getFutureConditionJsonString(response);
+                String resultString = ResponseConvertUtils.getFutureConditionJsonString(response);
                 Gson gson = new Gson();
                 List<ForecastBean> result = gson.fromJson(resultString, new TypeToken<ArrayList<ForecastBean>>() {
                 }.getType());
@@ -158,19 +141,18 @@ public class NetRequestUtils implements INetRequestUtils {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onFail(error);
+                listener.onFail(error.getMessage());
             }
         };
         requestNet(UrlUtils.getWeatherForecastUrl(location), responseListener, errorListener);
     }
 
-    @Override
     public void requestWindInfo(String location, final NetRequestListener listener) {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                String resultString = ResultTransUtils.getWindJsonString(response);
+                String resultString = ResponseConvertUtils.getWindJsonString(response);
                 Gson gson = new Gson();
                 WindBean result = gson.fromJson(resultString, WindBean.class);
                 listener.onSuccess(result);
@@ -179,14 +161,13 @@ public class NetRequestUtils implements INetRequestUtils {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onFail(error);
+                listener.onFail(error.getMessage());
             }
         };
         requestNet(UrlUtils.getWeatherWindUrl(location), responseListener, errorListener);
     }
 
 
-    @Override
     public void requestCitiesInfo(final NetRequestListener listener, String parentCityCode) {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
@@ -197,7 +178,7 @@ public class NetRequestUtils implements INetRequestUtils {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onFail(error);
+                listener.onFail(error.getMessage());
             }
         };
         requestNet(UrlUtils.getChinaCitiesUrl(parentCityCode), responseListener, errorListener);

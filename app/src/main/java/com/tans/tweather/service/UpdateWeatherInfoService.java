@@ -23,7 +23,7 @@ import com.tans.tweather.dagger2.component.DaggerUpdateServiceComponent;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
-import com.tans.tweather.utils.ResultTransUtils;
+import com.tans.tweather.utils.ResponseConvertUtils;
 
 import java.util.Date;
 
@@ -102,7 +102,7 @@ public class UpdateWeatherInfoService extends Service {
                     }
 
                     @Override
-                    public void onFail(VolleyError e) {
+                    public void onFail(String e) {
                         Log.i(TAG,"请求位置信息失败");
                     }
                 });
@@ -141,7 +141,7 @@ public class UpdateWeatherInfoService extends Service {
     private void showNotification() {
         RemoteViews v = new RemoteViews(this.getPackageName(), R.layout.layout_notification_weather);
         v.setImageViewResource(R.id.iv_weather_ic,
-                ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getCondition().getCode()));
+                ResponseConvertUtils.getWeatherIconId(latestWeatherInfoManager.getCondition().getCode()));
         v.setTextViewText(R.id.tv_temperature,latestWeatherInfoManager.getCondition().getTemp()+"°");
         v.setTextViewText(R.id.tv_city,latestWeatherInfoManager.getCurrentCity());
 
@@ -152,7 +152,7 @@ public class UpdateWeatherInfoService extends Service {
         builder.setContent(v);
         builder.setAutoCancel(false);
         builder.setOngoing(true);
-        builder.setSmallIcon(ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getCondition().getCode()));
+        builder.setSmallIcon(ResponseConvertUtils.getWeatherIconId(latestWeatherInfoManager.getCondition().getCode()));
         builder.setContentIntent(pendingIntent);
 
         Notification notification = builder.build();

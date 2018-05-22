@@ -65,7 +65,7 @@ import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.dagger2.module.PresenterModule;
 import com.tans.tweather.activity.main.presenter.MainActivityPresenter;
 import com.tans.tweather.utils.DensityUtils;
-import com.tans.tweather.utils.ResultTransUtils;
+import com.tans.tweather.utils.ResponseConvertUtils;
 import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         AtmosphereBean atmosphereBean = weatherVo.atmosphere;
         WindBean windBean = weatherVo.wind;
 
-        mIvWeatherIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
+        mIvWeatherIc.setImageDrawable(getResources().getDrawable(ResponseConvertUtils.getWeatherIconId(conditionBean.getCode())));
         mTvDes.setText(conditionBean.getText());
         mTvHighTemp.setText(forecastBean.get(0).getItem().getForecast().getHigh() + " °");
         mTvLowTemp.setText(forecastBean.get(0).getItem().getForecast().getLow() + " °");
@@ -244,12 +244,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
 
         mFeelingTemp.setText(conditionBean.getTemp() + " °");
         mVisibility.setText((int) atmosphereBean.getVisibility() + "公里");
-        mConditionIc.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(conditionBean.getCode())));
+        mConditionIc.setImageDrawable(getResources().getDrawable(ResponseConvertUtils.getWeatherIconId(conditionBean.getCode())));
         mHumidity.setText(atmosphereBean.getHumidity() + "%");
 
         mWindSpeed.setText(windBean.getSpeed() + "");
         mPressure.setText((int) atmosphereBean.getPressure() + "");
-        mWindDirection.setText(ResultTransUtils.getWindDirection(windBean.getDirection()));
+        mWindDirection.setText(ResponseConvertUtils.getWindDirection(windBean.getDirection()));
 
         mScroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
             day.setText(forecastBeans.get(i).getItem().getForecast().getDay());
 
             ImageView ic = item.findViewById(R.id.iv_weather_ic_item);
-            ic.setImageDrawable(getResources().getDrawable(ResultTransUtils.getWeatherIconId(forecastBeans.get(i).getItem().getForecast().getCode())));
+            ic.setImageDrawable(getResources().getDrawable(ResponseConvertUtils.getWeatherIconId(forecastBeans.get(i).getItem().getForecast().getCode())));
 
             TextView tvH = item.findViewById(R.id.tv_high_temp_item);
             tvH.setText(forecastBeans.get(i).getItem().getForecast().getHigh() + " °");

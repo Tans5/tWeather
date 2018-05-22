@@ -11,7 +11,7 @@ import org.json.JSONObject;
  * Created by tans on 2017/12/3.
  */
 
-public class ResultTransUtils {
+public class ResponseConvertUtils {
 
 
     /**

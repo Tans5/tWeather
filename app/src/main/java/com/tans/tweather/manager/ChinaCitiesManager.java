@@ -12,7 +12,7 @@ import com.j256.ormlite.dao.Dao;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.database.DatabaseHelper;
 import com.tans.tweather.database.bean.LocationBean;
-import com.tans.tweather.interfaces.INetRequestUtils;
+import com.tans.tweather.interfaces.HttpRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
 
 import java.sql.SQLException;
@@ -57,7 +57,7 @@ public class ChinaCitiesManager {
     public interface LoadCurrentCityListener {
         void onSuccess(String s);
 
-        void onFail(VolleyError e);
+        void onFail(String e);
     }
 
     public static ChinaCitiesManager newInstance() {
@@ -98,11 +98,11 @@ public class ChinaCitiesManager {
 
         if (!mNetRequestUtils.isNetWorkAvailable()) {
             VolleyError volleyError = new VolleyError("网络不可用");
-            listener.onFail(volleyError);
+            listener.onFail(volleyError.toString());
             return;
         }
 
-        mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestLocationInfo(new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
 
@@ -112,7 +112,7 @@ public class ChinaCitiesManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 listener.onFail(e);
             }
         },getLocation());
@@ -181,7 +181,7 @@ public class ChinaCitiesManager {
 
     private void initCitiesInfo(final String parentCityCode, final int level) {
 
-        mNetRequestUtils.requestCitiesInfo(new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestCitiesInfo(new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 String s = result.toString();
@@ -196,7 +196,7 @@ public class ChinaCitiesManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
 
             }
         },parentCityCode);

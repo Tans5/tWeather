@@ -161,7 +161,7 @@ public class MainActivityPresenter implements Presenter {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 ToastUtils.getInstance().showShortText("位置信息请求失败");
                 mView.setWeatherViewEnable(false);
                 if(mView.isRefreshing()) {
@@ -266,9 +266,9 @@ public class MainActivityPresenter implements Presenter {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mView.setWeatherViewEnable(false);
-                ToastUtils.getInstance().showShortText(e.getMessage());
+                ToastUtils.getInstance().showShortText(e);
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }

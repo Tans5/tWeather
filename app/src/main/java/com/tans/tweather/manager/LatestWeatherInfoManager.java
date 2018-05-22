@@ -10,7 +10,7 @@ import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.DateBean;
 import com.tans.tweather.bean.weather.ForecastBean;
 import com.tans.tweather.bean.weather.WindBean;
-import com.tans.tweather.interfaces.INetRequestUtils;
+import com.tans.tweather.interfaces.HttpRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
 import com.tans.tweather.widget.WeatherInfoWidget;
 
@@ -43,7 +43,7 @@ public class LatestWeatherInfoManager {
      */
     public interface WeatherRequestListener {
         void onSuccess();
-        void onFail(VolleyError e);
+        void onFail(String e);
     }
 
     /**
@@ -125,11 +125,11 @@ public class LatestWeatherInfoManager {
 
         if (!mNetRequestUtils.isNetWorkAvailable()) {
             VolleyError volleyError = new VolleyError("网络不可用");
-            listener.onFail(volleyError);
+            listener.onFail(volleyError.getMessage());
             return;
         }
 
-        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mAtmosphere = (AtmosphereBean) result;
@@ -145,12 +145,12 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
                 listener.onFail(e);
             }
         });
-        mNetRequestUtils.requestConditionInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestConditionInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mCondition = (ConditionBean) result;
@@ -165,12 +165,12 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
                 listener.onFail(e);
             }
         });
-        mNetRequestUtils.requestForecastInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestForecastInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mForecast = (ArrayList<ForecastBean>) result;
@@ -185,12 +185,12 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
                 listener.onFail(e);
             }
         });
-        mNetRequestUtils.requestWindInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestWindInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mWind = (WindBean) result;
@@ -205,7 +205,7 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
                 listener.onFail(e);
             }
@@ -216,7 +216,7 @@ public class LatestWeatherInfoManager {
      * 广播调用
      */
     public void updateLatestWeatherInfo() {
-        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mAtmosphere = (AtmosphereBean) result;
@@ -230,11 +230,11 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
             }
         });
-        mNetRequestUtils.requestConditionInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestConditionInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mCondition = (ConditionBean) result;
@@ -248,11 +248,11 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
             }
         });
-        mNetRequestUtils.requestForecastInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestForecastInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mForecast = (ArrayList<ForecastBean>) result;
@@ -266,11 +266,11 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
             }
         });
-        mNetRequestUtils.requestWindInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
+        mNetRequestUtils.requestWindInfo(mCurrentCity, new HttpRequestUtils.NetRequestListener() {
             @Override
             public void onSuccess(Object result) {
                 mWind = (WindBean) result;
@@ -284,7 +284,7 @@ public class LatestWeatherInfoManager {
             }
 
             @Override
-            public void onFail(VolleyError e) {
+            public void onFail(String e) {
                 mGotItem = 0;
             }
         });
