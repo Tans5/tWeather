@@ -47,7 +47,7 @@ public class ManagerModule {
     @Singleton
     public SettingsManager provideSettingsManager(SpManager spManager) {
         SettingsManager settingsManager = SettingsManager.newInstance();
-        settingsManager.setSpManager(spManager);
+        settingsManager.initDependencies(spManager);
         return  settingsManager;
     }
 }

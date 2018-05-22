@@ -16,7 +16,6 @@ import com.tans.tweather.bean.DateBean;
 import com.tans.tweather.bean.weather.ForecastBean;
 import com.tans.tweather.bean.weather.WindBean;
 import com.tans.tweather.dagger2.component.DaggerMainActivityComponent;
-import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
 import com.tans.tweather.mvp.Presenter;
 import com.tans.tweather.mvp.view.MainActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
@@ -80,7 +79,7 @@ public class MainActivityPresenter implements Presenter {
         @Override
         public void onChange() {
             if(!chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION))
-                latestWeatherInfoManager.setmCurrentCity(chinaCitiesManager.getCurrentCity());
+                latestWeatherInfoManager.setCurrentCity(chinaCitiesManager.getCurrentCity());
             loadWeatherInfo(true);
         }
     };
@@ -150,7 +149,7 @@ public class MainActivityPresenter implements Presenter {
         chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {
             @Override
             public void onSuccess(String s) {
-                latestWeatherInfoManager.setmCurrentCity(s);
+                latestWeatherInfoManager.setCurrentCity(s);
                 if(!chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
                     chinaCitiesManager.setCurrentCity(s);
                     List<String> cities = new ArrayList<>();
@@ -240,7 +239,7 @@ public class MainActivityPresenter implements Presenter {
         latestWeatherInfoManager.unregisterWeatherUpdateListener(mWeatherUpdatedListener);
         chinaCitiesManager.unregisterCommCitesChangeListener(commonCitesChangeListener);
         chinaCitiesManager.unregisterCurrentCityChangeListener(currentCitesChangeListener);
-        settingsManager.unregisterlistener(settingsChangeListener);
+        settingsManager.unregisterListener(settingsChangeListener);
     }
 
     private void startService() {
@@ -260,7 +259,7 @@ public class MainActivityPresenter implements Presenter {
             public void onSuccess() {
                 mView.setWeatherViewEnable(true);
                 mView.refreshWeatherInfo(createWeatherVo());
-                ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getmCurrentCity()+": "+ latestWeatherInfoManager.getmCondition().getText()+"  "+latestWeatherInfoManager.getmCondition().getTemp());
+                ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getCurrentCity()+": "+ latestWeatherInfoManager.getCondition().getText()+"  "+latestWeatherInfoManager.getCondition().getTemp());
                 if(mView.isRefreshing()) {
                     mView.closeRefreshing();
                 }
@@ -281,10 +280,10 @@ public class MainActivityPresenter implements Presenter {
         if(mWeatherVo == null) {
             mWeatherVo = new WeatherVo();
         }
-        mWeatherVo.condition = latestWeatherInfoManager.getmCondition();
-        mWeatherVo.atmosphere = latestWeatherInfoManager.getmAtmosphere();
-        mWeatherVo.forecast = latestWeatherInfoManager.getmForecast();
-        mWeatherVo.wind = latestWeatherInfoManager.getmWind();
+        mWeatherVo.condition = latestWeatherInfoManager.getCondition();
+        mWeatherVo.atmosphere = latestWeatherInfoManager.getAtmosphere();
+        mWeatherVo.forecast = latestWeatherInfoManager.listForecast();
+        mWeatherVo.wind = latestWeatherInfoManager.getWind();
         return mWeatherVo;
     }
 

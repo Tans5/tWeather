@@ -53,10 +53,6 @@ public class LatestWeatherInfoManager {
         void updated();
     }
 
-    public DateBean getUpdateDate() {
-        return updateDate;
-    }
-
     public static LatestWeatherInfoManager newInstance() {
         if (instance == null) {
             instance = new LatestWeatherInfoManager(BaseApplication.getInstance());
@@ -64,25 +60,54 @@ public class LatestWeatherInfoManager {
         return instance;
     }
 
-    private LatestWeatherInfoManager(Context context) {
-        this.mContext = context;
-    }
-
     public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager) {
         mNetRequestUtils = netRequestUtils;
         mSpManager = spManager;
     }
 
-    /**
-     * 发送天气信息变化的广播，小部件接收
-     */
-    private void sendWeatherUpdatedBroadcast() {
-        Intent intent = new Intent();
-        intent.setAction(WeatherInfoWidget.UPDATE_WEATHER);
-        mContext.sendBroadcast(intent);
+    public DateBean getUpdateDate() {
+        return updateDate;
     }
 
+    public AtmosphereBean getAtmosphere() {
+        return mAtmosphere;
+    }
 
+    public void setAtmosphere(AtmosphereBean mAtmosphere) {
+        this.mAtmosphere = mAtmosphere;
+    }
+
+    public ConditionBean getCondition() {
+        return mCondition;
+    }
+
+    public void setCondition(ConditionBean mCondition) {
+        this.mCondition = mCondition;
+    }
+
+    public List<ForecastBean> listForecast() {
+        return mForecast;
+    }
+
+    public void setForecast(List<ForecastBean> mForecast) {
+        this.mForecast = mForecast;
+    }
+
+    public WindBean getWind() {
+        return mWind;
+    }
+
+    public void setWind(WindBean mWind) {
+        this.mWind = mWind;
+    }
+
+    public void setCurrentCity(String mCurrentCity) {
+        this.mCurrentCity = mCurrentCity;
+    }
+
+    public String getCurrentCity() {
+        return mCurrentCity;
+    }
 
     /**
      * 是否位当天的天气信息
@@ -188,15 +213,6 @@ public class LatestWeatherInfoManager {
     }
 
     /**
-     * 获取当前日期
-     * @return
-     */
-    private DateBean getCurrentDate() {
-        Calendar c = Calendar.getInstance();
-        return new DateBean(c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
-    }
-
-    /**
      * 广播调用
      */
     public void updateLatestWeatherInfo() {
@@ -274,7 +290,6 @@ public class LatestWeatherInfoManager {
         });
     }
 
-
     /**
      * 注册天气监听
      * @param listener
@@ -294,51 +309,34 @@ public class LatestWeatherInfoManager {
             mWeatherUpdatedListeners.remove(listener);
     }
 
+    private LatestWeatherInfoManager(Context context) {
+        this.mContext = context;
+    }
+
+    /**
+     * 发送天气信息变化的广播，小部件接收
+     */
+    private void sendWeatherUpdatedBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction(WeatherInfoWidget.UPDATE_WEATHER);
+        mContext.sendBroadcast(intent);
+    }
+
+
+    /**
+     * 获取当前日期
+     * @return
+     */
+    private DateBean getCurrentDate() {
+        Calendar c = Calendar.getInstance();
+        return new DateBean(c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
+    }
+
     /**
      * 通知监听 天气更新
      */
     private void notifyWeatherInfoUpdated() {
         for (WeatherUpdatedListener listener : mWeatherUpdatedListeners)
             listener.updated();
-    }
-
-    public AtmosphereBean getmAtmosphere() {
-        return mAtmosphere;
-    }
-
-    public void setmAtmosphere(AtmosphereBean mAtmosphere) {
-        this.mAtmosphere = mAtmosphere;
-    }
-
-    public ConditionBean getmCondition() {
-        return mCondition;
-    }
-
-    public void setmCondition(ConditionBean mCondition) {
-        this.mCondition = mCondition;
-    }
-
-    public List<ForecastBean> getmForecast() {
-        return mForecast;
-    }
-
-    public void setmForecast(List<ForecastBean> mForecast) {
-        this.mForecast = mForecast;
-    }
-
-    public WindBean getmWind() {
-        return mWind;
-    }
-
-    public void setmWind(WindBean mWind) {
-        this.mWind = mWind;
-    }
-
-    public void setmCurrentCity(String mCurrentCity) {
-        this.mCurrentCity = mCurrentCity;
-    }
-
-    public String getmCurrentCity() {
-        return mCurrentCity;
     }
 }

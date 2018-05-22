@@ -93,12 +93,12 @@ public class UpdateWeatherInfoService extends Service {
                 .applicationComponent(BaseApplication.getApplicationComponent())
                 .build()
                 .inject(this);
-        if(latestWeatherInfoManager.getmCurrentCity().equals("")) {
+        if(latestWeatherInfoManager.getCurrentCity().equals("")) {
             if(chinaCitiesManager.getCurrentCity().equals(ChinaCitiesManager.LOAD_CURRENT_LOCATION)) {
                 chinaCitiesManager.loadCurrentCity(new ChinaCitiesManager.LoadCurrentCityListener() {
                     @Override
                     public void onSuccess(String s) {
-                        latestWeatherInfoManager.setmCurrentCity(s);
+                        latestWeatherInfoManager.setCurrentCity(s);
                     }
 
                     @Override
@@ -107,7 +107,7 @@ public class UpdateWeatherInfoService extends Service {
                     }
                 });
             } else {
-                latestWeatherInfoManager.setmCurrentCity(chinaCitiesManager.getCurrentCity());
+                latestWeatherInfoManager.setCurrentCity(chinaCitiesManager.getCurrentCity());
             }
         }
         instance = this;
@@ -135,15 +135,15 @@ public class UpdateWeatherInfoService extends Service {
         instance = null;
         unregisterReceiver(mUpdateWeatherReceiver);
         latestWeatherInfoManager.unregisterWeatherUpdateListener(weatherUpdatedListener);
-        settingsManager.unregisterlistener(settingsChangeListener);
+        settingsManager.unregisterListener(settingsChangeListener);
     }
 
     private void showNotification() {
         RemoteViews v = new RemoteViews(this.getPackageName(), R.layout.layout_notification_weather);
         v.setImageViewResource(R.id.iv_weather_ic,
-                ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
-        v.setTextViewText(R.id.tv_temperature,latestWeatherInfoManager.getmCondition().getTemp()+"°");
-        v.setTextViewText(R.id.tv_city,latestWeatherInfoManager.getmCurrentCity());
+                ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getCondition().getCode()));
+        v.setTextViewText(R.id.tv_temperature,latestWeatherInfoManager.getCondition().getTemp()+"°");
+        v.setTextViewText(R.id.tv_city,latestWeatherInfoManager.getCurrentCity());
 
         Intent intent = new Intent(this, WelcomeActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -152,7 +152,7 @@ public class UpdateWeatherInfoService extends Service {
         builder.setContent(v);
         builder.setAutoCancel(false);
         builder.setOngoing(true);
-        builder.setSmallIcon(ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getmCondition().getCode()));
+        builder.setSmallIcon(ResultTransUtils.getWeatherIconId(latestWeatherInfoManager.getCondition().getCode()));
         builder.setContentIntent(pendingIntent);
 
         Notification notification = builder.build();

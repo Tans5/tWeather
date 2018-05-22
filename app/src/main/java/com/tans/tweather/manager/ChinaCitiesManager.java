@@ -67,9 +67,6 @@ public class ChinaCitiesManager {
         return instance;
     }
 
-    private ChinaCitiesManager () {
-    }
-
     public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager) {
         mNetRequestUtils = netRequestUtils;
         mSpManager = spManager;
@@ -81,6 +78,94 @@ public class ChinaCitiesManager {
             e.printStackTrace();
         }
         testCities();
+    }
+
+    public List<LocationBean> queryCitiesByParentCode(String parentCode) {
+        List<LocationBean> resultCities = null;
+        try {
+            resultCities = mDao.queryBuilder().where().eq("parent_code",parentCode).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultCities;
+    }
+
+    /**
+     * 获取当前城市
+     * @param listener
+     */
+    public void loadCurrentCity(final LoadCurrentCityListener listener) {
+
+        if (!mNetRequestUtils.isNetWorkAvailable()) {
+            VolleyError volleyError = new VolleyError("网络不可用");
+            listener.onFail(volleyError);
+            return;
+        }
+
+        mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
+            @Override
+            public void onSuccess(Object result) {
+
+                listener.onSuccess(result.toString());
+//                mCurrentCity = result.toString();
+//                mSpManager.storeCurrentUseCity(result.toString());//写入到sp中
+            }
+
+            @Override
+            public void onFail(VolleyError e) {
+                listener.onFail(e);
+            }
+        },getLocation());
+    }
+
+    public List<String> getCommonCities() {
+        return mSpManager.listCommonUseCities();
+    }
+
+    public void setCommonCities(List<String> citites) {
+        mSpManager.storeCommonUseCities(citites);
+        notifyCommonCitesChange();
+    }
+
+    public String getCurrentCity () {
+
+        return mSpManager.getCurrentUseCity();
+    }
+
+    public void setCurrentCity(String city) {
+        mSpManager.storeCurrentUseCity(city);
+        notifyCurrentCityChange();
+    }
+
+    public void registerCurrentCityChangeListener(CurrentCitesChangeListener listener) {
+        if (currentCitesChangeListeners == null) {
+            currentCitesChangeListeners = new ArrayList<>();
+        }
+        if(!currentCitesChangeListeners.contains(listener)) {
+            currentCitesChangeListeners.add(listener);
+        }
+    }
+
+    public void registerCommonCitesChangeListener(CommonCitesChangeListener listener) {
+        if(commonCitesChangeListeners == null) {
+            commonCitesChangeListeners = new ArrayList<>();
+        }
+        if(! commonCitesChangeListeners.contains(listener)) {
+            commonCitesChangeListeners.add(listener);
+        }
+    }
+
+    public void unregisterCurrentCityChangeListener(CurrentCitesChangeListener listener) {
+        if(listener != null && currentCitesChangeListeners != null)
+            currentCitesChangeListeners.remove(listener);
+    }
+
+    public void unregisterCommCitesChangeListener(CommonCitesChangeListener listener) {
+        if(null != listener && commonCitesChangeListeners != null)
+            commonCitesChangeListeners.remove(listener);
+    }
+
+    private ChinaCitiesManager () {
     }
 
     private void testCities()  {
@@ -128,91 +213,6 @@ public class ChinaCitiesManager {
             mDao.createIfNotExists(locationBean);
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    public List<LocationBean> queryCitiesByParentCode(String parentCode) {
-        List<LocationBean> resultCities = null;
-        try {
-            resultCities = mDao.queryBuilder().where().eq("parent_code",parentCode).query();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return resultCities;
-    }
-
-    /**
-     * 获取当前城市
-     * @param listener
-     */
-    public void loadCurrentCity(final LoadCurrentCityListener listener) {
-
-        if (!mNetRequestUtils.isNetWorkAvailable()) {
-            VolleyError volleyError = new VolleyError("网络不可用");
-            listener.onFail(volleyError);
-            return;
-        }
-
-        mNetRequestUtils.requestLocationInfo(new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-
-                listener.onSuccess(result.toString());
-//                mCurrentCity = result.toString();
-//                mSpManager.storeCurrentUseCity(result.toString());//写入到sp中
-            }
-
-            @Override
-            public void onFail(VolleyError e) {
-                listener.onFail(e);
-            }
-        },getLocation());
-    }
-
-    public List<String> getCommonCities() {
-        return mSpManager.getCommonUseCities();
-    }
-
-    public void setCommonCities(List<String> citites) {
-        mSpManager.storeCommonUseCities(citites);
-        notifyCommonCitesChange();
-    }
-
-    public String getCurrentCity () {
-
-        return mSpManager.getCurrentUseCity();
-    }
-
-    public void setCurrentCity(String city) {
-        mSpManager.storeCurrentUseCity(city);
-        notifyCurrentCityChange();
-    }
-
-    public void registerCurrentCityChangeListener(CurrentCitesChangeListener listener) {
-        if (currentCitesChangeListeners == null) {
-            currentCitesChangeListeners = new ArrayList<>();
-        }
-        if(!currentCitesChangeListeners.contains(listener)) {
-            currentCitesChangeListeners.add(listener);
-        }
-    }
-
-    public void unregisterCurrentCityChangeListener(CurrentCitesChangeListener listener) {
-        if(listener != null && currentCitesChangeListeners != null)
-            currentCitesChangeListeners.remove(listener);
-    }
-
-    public void unregisterCommCitesChangeListener(CommonCitesChangeListener listener) {
-        if(null != listener && commonCitesChangeListeners != null)
-            commonCitesChangeListeners.remove(listener);
-    }
-
-    public void registerCommonCitesChangeListener(CommonCitesChangeListener listener) {
-        if(commonCitesChangeListeners == null) {
-            commonCitesChangeListeners = new ArrayList<>();
-        }
-        if(! commonCitesChangeListeners.contains(listener)) {
-            commonCitesChangeListeners.add(listener);
         }
     }
 

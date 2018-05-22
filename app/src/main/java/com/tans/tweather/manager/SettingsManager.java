@@ -28,26 +28,7 @@ public class SettingsManager {
         void settingsChange();
     }
 
-    private SettingsManager() {
-
-    }
-
-    public void registerListener(SettingsChangeListener listener) {
-        if(listeners == null) {
-            listeners = new ArrayList<>();
-        }
-        if(listener != null && !listeners.contains(listener)) {
-            listeners.add(listener);
-        }
-    }
-
-    public void unregisterlistener(SettingsChangeListener listener) {
-        if(listener != null && listeners.contains(listener)) {
-            listeners.remove(listener);
-        }
-    }
-
-    public void setSpManager(SpManager spManager) {
+    public void initDependencies(SpManager spManager) {
         this.spManager = spManager;
     }
 
@@ -103,6 +84,25 @@ public class SettingsManager {
         spManager.storeOpenService(openService);
         spManager.storeOpenNotification(openNotification);
         notifySettingsChange();
+    }
+
+    public void registerListener(SettingsChangeListener listener) {
+        if(listeners == null) {
+            listeners = new ArrayList<>();
+        }
+        if(listener != null && !listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void unregisterListener(SettingsChangeListener listener) {
+        if(listener != null && listeners.contains(listener)) {
+            listeners.remove(listener);
+        }
+    }
+
+    private SettingsManager() {
+
     }
 
     private void notifySettingsChange() {

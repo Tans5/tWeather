@@ -210,7 +210,6 @@ public class NetRequestUtils implements INetRequestUtils {
             }
         };
         requestNet(ATMOSPHERE_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
-       // requestNet(ATMOSPHERE_URL  + WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override

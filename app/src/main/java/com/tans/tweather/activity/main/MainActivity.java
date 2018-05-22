@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         });
 
         mCurrentUseCity.setVisibility(View.VISIBLE);
-        mCurrentUseCity.setText(latestWeatherInfoManager.getmCurrentCity());
+        mCurrentUseCity.setText(latestWeatherInfoManager.getCurrentCity());
         refreshForecast(forecastBean);
     }
 
