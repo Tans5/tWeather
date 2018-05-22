@@ -1,18 +1,15 @@
 package com.tans.tweather.manager;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.bean.AtmosphereBean;
-import com.tans.tweather.bean.ConditionBean;
+import com.tans.tweather.bean.weather.AtmosphereBean;
+import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.DateBean;
-import com.tans.tweather.bean.ForecastBean;
-import com.tans.tweather.bean.WindBean;
-import com.tans.tweather.interfaces.ILatestWeatherInfoManager;
+import com.tans.tweather.bean.weather.ForecastBean;
+import com.tans.tweather.bean.weather.WindBean;
 import com.tans.tweather.interfaces.INetRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
 import com.tans.tweather.widget.WeatherInfoWidget;
@@ -25,7 +22,7 @@ import java.util.List;
  * Created by mine on 2017/11/23.
  */
 
-public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
+public class LatestWeatherInfoManager {
     private AtmosphereBean mAtmosphere = null;//大气bean
     private ConditionBean mCondition = null;//天气bean
     private List<ForecastBean> mForecast = null;//预报list
@@ -40,8 +37,13 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     private static int WEATHER_ITEM_NUMBER = 4; //天气请求item总共个数
     private List<WeatherUpdatedListener> mWeatherUpdatedListeners = new ArrayList<WeatherUpdatedListener>();//注册的天气信息变化监听
 
-    public DateBean getUpdateDate() {
-        return updateDate;
+
+    /**
+     * 天气更新的监听
+     */
+    public interface WeatherRequestListener {
+        void onSuccess();
+        void onFail(VolleyError e);
     }
 
     /**
@@ -58,25 +60,54 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         return instance;
     }
 
-    private LatestWeatherInfoManager(Context context) {
-        this.mContext = context;
-    }
-
-    public void initDependences(NetRequestUtils netRequestUtils,SpManager spManager) {
+    public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager) {
         mNetRequestUtils = netRequestUtils;
         mSpManager = spManager;
     }
 
-    /**
-     * 发送天气信息变化的广播，小部件接收
-     */
-    private void sendWeatherUpdatedBroadcast() {
-        Intent intent = new Intent();
-        intent.setAction(WeatherInfoWidget.UPDATE_WEATHER);
-        mContext.sendBroadcast(intent);
+    public DateBean getUpdateDate() {
+        return updateDate;
     }
 
+    public AtmosphereBean getAtmosphere() {
+        return mAtmosphere;
+    }
 
+    public void setAtmosphere(AtmosphereBean mAtmosphere) {
+        this.mAtmosphere = mAtmosphere;
+    }
+
+    public ConditionBean getCondition() {
+        return mCondition;
+    }
+
+    public void setCondition(ConditionBean mCondition) {
+        this.mCondition = mCondition;
+    }
+
+    public List<ForecastBean> listForecast() {
+        return mForecast;
+    }
+
+    public void setForecast(List<ForecastBean> mForecast) {
+        this.mForecast = mForecast;
+    }
+
+    public WindBean getWind() {
+        return mWind;
+    }
+
+    public void setWind(WindBean mWind) {
+        this.mWind = mWind;
+    }
+
+    public void setCurrentCity(String mCurrentCity) {
+        this.mCurrentCity = mCurrentCity;
+    }
+
+    public String getCurrentCity() {
+        return mCurrentCity;
+    }
 
     /**
      * 是否位当天的天气信息
@@ -90,8 +121,7 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
      * 请求天气更新 activity
      * @param listener
      */
-    @Override
-    public void updateLatestWeatherInfo(final LatestWeatherUpdateListener listener) {
+    public void updateLatestWeatherInfo(final WeatherRequestListener listener) {
 
         if (!mNetRequestUtils.isNetWorkAvailable()) {
             VolleyError volleyError = new VolleyError("网络不可用");
@@ -183,18 +213,8 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
     }
 
     /**
-     * 获取当前日期
-     * @return
-     */
-    private DateBean getCurrentDate() {
-        Calendar c = Calendar.getInstance();
-        return new DateBean(c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
-    }
-
-    /**
      * 广播调用
      */
-    @Override
     public void updateLatestWeatherInfo() {
         mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
             @Override
@@ -270,7 +290,6 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
         });
     }
 
-
     /**
      * 注册天气监听
      * @param listener
@@ -290,51 +309,34 @@ public class LatestWeatherInfoManager implements ILatestWeatherInfoManager {
             mWeatherUpdatedListeners.remove(listener);
     }
 
+    private LatestWeatherInfoManager(Context context) {
+        this.mContext = context;
+    }
+
+    /**
+     * 发送天气信息变化的广播，小部件接收
+     */
+    private void sendWeatherUpdatedBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction(WeatherInfoWidget.UPDATE_WEATHER);
+        mContext.sendBroadcast(intent);
+    }
+
+
+    /**
+     * 获取当前日期
+     * @return
+     */
+    private DateBean getCurrentDate() {
+        Calendar c = Calendar.getInstance();
+        return new DateBean(c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
+    }
+
     /**
      * 通知监听 天气更新
      */
     private void notifyWeatherInfoUpdated() {
         for (WeatherUpdatedListener listener : mWeatherUpdatedListeners)
             listener.updated();
-    }
-
-    public AtmosphereBean getmAtmosphere() {
-        return mAtmosphere;
-    }
-
-    public void setmAtmosphere(AtmosphereBean mAtmosphere) {
-        this.mAtmosphere = mAtmosphere;
-    }
-
-    public ConditionBean getmCondition() {
-        return mCondition;
-    }
-
-    public void setmCondition(ConditionBean mCondition) {
-        this.mCondition = mCondition;
-    }
-
-    public List<ForecastBean> getmForecast() {
-        return mForecast;
-    }
-
-    public void setmForecast(List<ForecastBean> mForecast) {
-        this.mForecast = mForecast;
-    }
-
-    public WindBean getmWind() {
-        return mWind;
-    }
-
-    public void setmWind(WindBean mWind) {
-        this.mWind = mWind;
-    }
-
-    public void setmCurrentCity(String mCurrentCity) {
-        this.mCurrentCity = mCurrentCity;
-    }
-
-    public String getmCurrentCity() {
-        return mCurrentCity;
     }
 }

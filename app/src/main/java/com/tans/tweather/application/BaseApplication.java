@@ -2,11 +2,11 @@ package com.tans.tweather.application;
 
 import android.app.Application;
 
-import com.tans.tweather.component.ApplicationComponent;
-import com.tans.tweather.component.DaggerApplicationComponent;
-import com.tans.tweather.module.ApplicationModule;
-import com.tans.tweather.module.ManagerModule;
-import com.tans.tweather.module.UtilsModule;
+import com.tans.tweather.dagger2.component.ApplicationComponent;
+import com.tans.tweather.dagger2.component.DaggerApplicationComponent;
+import com.tans.tweather.dagger2.module.ApplicationModule;
+import com.tans.tweather.dagger2.module.ManagerModule;
+import com.tans.tweather.dagger2.module.UtilsModule;
 
 /**
  * Created by mine on 2017/12/28.

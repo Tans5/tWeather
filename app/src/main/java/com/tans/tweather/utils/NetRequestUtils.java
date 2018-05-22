@@ -22,10 +22,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.tans.tweather.bean.AtmosphereBean;
-import com.tans.tweather.bean.ConditionBean;
-import com.tans.tweather.bean.ForecastBean;
-import com.tans.tweather.bean.WindBean;
+import com.tans.tweather.bean.weather.AtmosphereBean;
+import com.tans.tweather.bean.weather.ConditionBean;
+import com.tans.tweather.bean.weather.ForecastBean;
+import com.tans.tweather.bean.weather.WindBean;
 import com.tans.tweather.interfaces.INetRequestUtils;
 
 import org.json.JSONArray;
@@ -210,7 +210,6 @@ public class NetRequestUtils implements INetRequestUtils {
             }
         };
         requestNet(ATMOSPHERE_URL + java.net.URLEncoder.encode(location) + WEATHER_URL_TAIL, responseListener, errorListener);
-       // requestNet(ATMOSPHERE_URL  + WEATHER_URL_TAIL, responseListener, errorListener);
     }
 
     @Override
