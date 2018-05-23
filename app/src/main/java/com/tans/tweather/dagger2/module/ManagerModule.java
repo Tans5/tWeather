@@ -6,7 +6,9 @@ import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.utils.NetRequestUtils;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -21,9 +23,10 @@ public class ManagerModule {
 
     @Provides
     @Singleton
-    public ChinaCitiesManager provideChinaCitiesManager(NetRequestUtils netRequestUtils,SpManager spManager) {
+    public ChinaCitiesManager provideChinaCitiesManager(NetRequestUtils netRequestUtils, SpManager spManager,
+                                                        @Named("volley") BaseHttpRequestUtils httpRequestUtils) {
         ChinaCitiesManager chinaCitiesManager = ChinaCitiesManager.newInstance();
-        chinaCitiesManager.initDependencies(netRequestUtils,spManager);
+        chinaCitiesManager.initDependencies(netRequestUtils,spManager,httpRequestUtils);
         return chinaCitiesManager;
     }
 

@@ -1,4 +1,6 @@
-package com.tans.tweather.utils;
+package com.tans.tweather.utils.httprequest;
+
+import android.content.Context;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -15,10 +17,11 @@ import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.weather.ForecastBean;
 import com.tans.tweather.bean.weather.WindBean;
-import com.tans.tweather.interfaces.HttpRequestUtils;
+import com.tans.tweather.utils.ResponseConvertUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +29,7 @@ import java.util.Map;
  * Created by 鹏程 on 2018/5/22.
  */
 
-public class VolleyHttpRequestUtils implements HttpRequestUtils {
+public class VolleyHttpRequestUtils extends BaseHttpRequestUtils {
     private static VolleyHttpRequestUtils instance;
 
     private RequestQueue mQueue;
@@ -55,12 +58,14 @@ public class VolleyHttpRequestUtils implements HttpRequestUtils {
     public static VolleyHttpRequestUtils newInstance() {
         if(instance == null) {
             instance = new VolleyHttpRequestUtils();
+            instance.init(BaseApplication.getInstance());
         }
         return instance;
     }
 
     @Override
-    public void init() {
+    protected void init(Context context) {
+        super.init(context);
         if(mQueue == null) {
             mQueue = Volley.newRequestQueue(BaseApplication.getInstance().getBaseContext());
         }
@@ -71,9 +76,10 @@ public class VolleyHttpRequestUtils implements HttpRequestUtils {
         Response.Listener<String> vListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Class c = (Class) ((ParameterizedType) listener.getClass()
-                        .getGenericSuperclass()).getActualTypeArguments()[0];
-                listener.onSuccess(convertResponse(response,c));
+                Type type = listener.getClass().getGenericSuperclass();
+                System.out.println(type);
+                //Class c = (Class)(parameterizedType.getActualTypeArguments()[0]);
+                //listener.onSuccess(convertResponse(response,c));
             }
         };
         Response.ErrorListener vErrorListener = new Response.ErrorListener() {

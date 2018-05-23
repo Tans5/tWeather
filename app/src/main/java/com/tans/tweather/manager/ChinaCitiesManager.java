@@ -14,6 +14,9 @@ import com.tans.tweather.database.DatabaseHelper;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.interfaces.HttpRequestUtils;
 import com.tans.tweather.utils.NetRequestUtils;
+import com.tans.tweather.utils.ResponseConvertUtils;
+import com.tans.tweather.utils.UrlUtils;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public class ChinaCitiesManager {
     private DatabaseHelper mDatabaseHelper = null;
     private Dao<LocationBean,String> mDao = null;
     private NetRequestUtils mNetRequestUtils = null;
+    private BaseHttpRequestUtils mHttpRequestUtils = null;
     private Context mContext = null;
 
     private SpManager mSpManager = null;
@@ -67,11 +71,12 @@ public class ChinaCitiesManager {
         return instance;
     }
 
-    public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager) {
+    public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager, BaseHttpRequestUtils httpRequestUtils) {
         mNetRequestUtils = netRequestUtils;
         mSpManager = spManager;
         mDatabaseHelper = DatabaseHelper.getHelper(BaseApplication.getInstance());
         mContext = BaseApplication.getInstance();
+        mHttpRequestUtils = httpRequestUtils;
         try {
             mDao = mDatabaseHelper.getDao(LocationBean.class);
         } catch (SQLException e) {
@@ -96,26 +101,42 @@ public class ChinaCitiesManager {
      */
     public void loadCurrentCity(final LoadCurrentCityListener listener) {
 
-        if (!mNetRequestUtils.isNetWorkAvailable()) {
-            VolleyError volleyError = new VolleyError("网络不可用");
-            listener.onFail(volleyError.toString());
-            return;
+//        if (!mNetRequestUtils.isNetWorkAvailable()) {
+//            VolleyError volleyError = new VolleyError("网络不可用");
+//            listener.onFail(volleyError.toString());
+//            return;
+//        }
+//
+//        mNetRequestUtils.requestLocationInfo(new HttpRequestUtils.NetRequestListener() {
+//            @Override
+//            public void onSuccess(Object result) {
+//
+//                listener.onSuccess(result.toString());
+//            }
+//
+//            @Override
+//            public void onFail(String e) {
+//                listener.onFail(e);
+//            }
+//        },getLocation());
+        if(!mHttpRequestUtils.isNetWorkAvailable()) {
+            listener.onFail("网络不可用");
+        } else {
+            mHttpRequestUtils.request(UrlUtils.getBaiduLocationUrl(getLocation()),
+                    BaseHttpRequestUtils.HttpRequestMethod.GET,
+                    null,
+                    new BaseHttpRequestUtils.HttpRequestListener<String>() {
+                        @Override
+                        public void onSuccess(String result) {
+                            listener.onSuccess(ResponseConvertUtils.getCurrentCityString(result));
+                        }
+
+                        @Override
+                        public void onFail(String e) {
+                            listener.onFail(e);
+                        }
+                    });
         }
-
-        mNetRequestUtils.requestLocationInfo(new HttpRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-
-                listener.onSuccess(result.toString());
-//                mCurrentCity = result.toString();
-//                mSpManager.storeCurrentUseCity(result.toString());//写入到sp中
-            }
-
-            @Override
-            public void onFail(String e) {
-                listener.onFail(e);
-            }
-        },getLocation());
     }
 
     public List<String> getCommonCities() {
