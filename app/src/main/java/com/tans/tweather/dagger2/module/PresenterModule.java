@@ -8,6 +8,9 @@ import com.tans.tweather.activity.addcity.presenter.AddCityActivityPresenter;
 import com.tans.tweather.activity.main.presenter.MainActivityPresenter;
 import com.tans.tweather.activity.settings.presenter.SettingsActivityPresenter;
 import com.tans.tweather.dagger2.scope.ActivityScope;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;

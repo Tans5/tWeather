@@ -15,6 +15,7 @@ public abstract class BaseHttpRequestUtils {
 
     public interface HttpRequestListener<T> {
         void onSuccess(T result);
+        Class<T> getResultType();
         void onFail(String e);
     }
 

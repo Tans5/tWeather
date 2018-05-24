@@ -12,6 +12,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
@@ -20,9 +21,9 @@ import com.tans.tweather.bean.weather.WindBean;
 import com.tans.tweather.utils.ResponseConvertUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,10 +77,8 @@ public class VolleyHttpRequestUtils extends BaseHttpRequestUtils {
         Response.Listener<String> vListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Type type = listener.getClass().getGenericSuperclass();
-                System.out.println(type);
-                //Class c = (Class)(parameterizedType.getActualTypeArguments()[0]);
-                //listener.onSuccess(convertResponse(response,c));
+                Class c = listener.getResultType();
+                listener.onSuccess(convertResponse(response,c));
             }
         };
         Response.ErrorListener vErrorListener = new Response.ErrorListener() {
@@ -126,9 +125,10 @@ public class VolleyHttpRequestUtils extends BaseHttpRequestUtils {
         } else if(c == ConditionBean.class) {
             resultString = ResponseConvertUtils.getCurrentConditionJsonString(response);
             result = gson.fromJson(resultString,c);
-        } else if(c == ForecastBean.class) {
+        } else if(c == List.class) {
             resultString = ResponseConvertUtils.getFutureConditionJsonString(response);
-            result = gson.fromJson(resultString,c);
+            result = gson.fromJson(resultString, new TypeToken<ArrayList<ForecastBean>>() {
+            }.getType());
         } else if(c == WindBean.class) {
             resultString = ResponseConvertUtils.getWindJsonString(response);
             result = gson.fromJson(resultString,c);

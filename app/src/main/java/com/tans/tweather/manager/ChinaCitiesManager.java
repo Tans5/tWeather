@@ -6,14 +6,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
-
-import com.android.volley.VolleyError;
 import com.j256.ormlite.dao.Dao;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.database.DatabaseHelper;
 import com.tans.tweather.database.bean.LocationBean;
-import com.tans.tweather.interfaces.HttpRequestUtils;
-import com.tans.tweather.utils.NetRequestUtils;
 import com.tans.tweather.utils.ResponseConvertUtils;
 import com.tans.tweather.utils.UrlUtils;
 import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
@@ -37,7 +33,6 @@ public class ChinaCitiesManager {
     private static ChinaCitiesManager instance;
     private DatabaseHelper mDatabaseHelper = null;
     private Dao<LocationBean,String> mDao = null;
-    private NetRequestUtils mNetRequestUtils = null;
     private BaseHttpRequestUtils mHttpRequestUtils = null;
     private Context mContext = null;
 
@@ -71,8 +66,7 @@ public class ChinaCitiesManager {
         return instance;
     }
 
-    public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager, BaseHttpRequestUtils httpRequestUtils) {
-        mNetRequestUtils = netRequestUtils;
+    public void initDependencies(SpManager spManager, BaseHttpRequestUtils httpRequestUtils) {
         mSpManager = spManager;
         mDatabaseHelper = DatabaseHelper.getHelper(BaseApplication.getInstance());
         mContext = BaseApplication.getInstance();
@@ -101,24 +95,6 @@ public class ChinaCitiesManager {
      */
     public void loadCurrentCity(final LoadCurrentCityListener listener) {
 
-//        if (!mNetRequestUtils.isNetWorkAvailable()) {
-//            VolleyError volleyError = new VolleyError("网络不可用");
-//            listener.onFail(volleyError.toString());
-//            return;
-//        }
-//
-//        mNetRequestUtils.requestLocationInfo(new HttpRequestUtils.NetRequestListener() {
-//            @Override
-//            public void onSuccess(Object result) {
-//
-//                listener.onSuccess(result.toString());
-//            }
-//
-//            @Override
-//            public void onFail(String e) {
-//                listener.onFail(e);
-//            }
-//        },getLocation());
         if(!mHttpRequestUtils.isNetWorkAvailable()) {
             listener.onFail("网络不可用");
         } else {
@@ -130,10 +106,14 @@ public class ChinaCitiesManager {
                         public void onSuccess(String result) {
                             listener.onSuccess(ResponseConvertUtils.getCurrentCityString(result));
                         }
-
                         @Override
                         public void onFail(String e) {
                             listener.onFail(e);
+                        }
+
+                        @Override
+                        public Class<String> getResultType() {
+                            return String.class;
                         }
                     });
         }
@@ -143,8 +123,8 @@ public class ChinaCitiesManager {
         return mSpManager.listCommonUseCities();
     }
 
-    public void setCommonCities(List<String> citites) {
-        mSpManager.storeCommonUseCities(citites);
+    public void setCommonCities(List<String> cities) {
+        mSpManager.storeCommonUseCities(cities);
         notifyCommonCitesChange();
     }
 
@@ -196,31 +176,38 @@ public class ChinaCitiesManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if(testCity == null)
-            initCitiesInfo(ROOT_CITY_PARENT_CODE,ROOT_CITY_LEVEL);
+        if(testCity == null) {
+            initCitiesInfo(ROOT_CITY_PARENT_CODE, ROOT_CITY_LEVEL);
+        }
     }
 
     private void initCitiesInfo(final String parentCityCode, final int level) {
-
-        mNetRequestUtils.requestCitiesInfo(new HttpRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                String s = result.toString();
-                String[] cities = splitCityString(s);
-                for(int i=0;i< cities.length;i++) {
-                    String[] city = splitCityNameAndCode(cities[i]);
-                    saveCity(city,parentCityCode,level);
-                    if(level < END_LEVEL) {
-                        initCitiesInfo(city[0],level+1);
+        mHttpRequestUtils.request(UrlUtils.getChinaCitiesUrl(parentCityCode),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                null,
+                new BaseHttpRequestUtils.HttpRequestListener<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        String[] cities = splitCityString(result);
+                        for(int i=0;i< cities.length;i++) {
+                            String[] city = splitCityNameAndCode(cities[i]);
+                            saveCity(city,parentCityCode,level);
+                            if(level < END_LEVEL) {
+                                initCitiesInfo(city[0],level+1);
+                            }
+                        }
                     }
-                }
-            }
 
-            @Override
-            public void onFail(String e) {
+                    @Override
+                    public Class<String> getResultType() {
+                        return String.class;
+                    }
 
-            }
-        },parentCityCode);
+                    @Override
+                    public void onFail(String e) {
+
+                    }
+                });
 
     }
 

@@ -1,7 +1,5 @@
 package com.tans.tweather.dagger2.module;
 
-import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.utils.NetRequestUtils;
 import com.tans.tweather.utils.ToastUtils;
 import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 import com.tans.tweather.utils.httprequest.RetrofitHttpRequestUtils;
@@ -22,14 +20,6 @@ public class UtilsModule {
 
     @Provides
     @Singleton
-    public NetRequestUtils provideNetRequestUtils(BaseApplication context) {
-        NetRequestUtils netRequestUtils = NetRequestUtils.newInstance();
-        netRequestUtils.setContext(context);
-        return netRequestUtils;
-    }
-
-    @Provides
-    @Singleton
     @Named("volley")
     public BaseHttpRequestUtils provideVolleyHttpRequestUtils() {
         BaseHttpRequestUtils result = VolleyHttpRequestUtils.newInstance();
@@ -39,7 +29,7 @@ public class UtilsModule {
     @Provides
     @Singleton
     @Named("retrofit")
-    public BaseHttpRequestUtils privodeRetrofitHttpRequestUtils() {
+    public BaseHttpRequestUtils provideRetrofitHttpRequestUtils() {
         BaseHttpRequestUtils result = RetrofitHttpRequestUtils.newInstance();
         return result;
     }
