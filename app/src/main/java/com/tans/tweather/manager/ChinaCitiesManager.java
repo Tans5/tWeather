@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import com.j256.ormlite.dao.Dao;
 import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.bean.request.HttpGetParams;
 import com.tans.tweather.database.DatabaseHelper;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.utils.ResponseConvertUtils;
@@ -98,9 +99,10 @@ public class ChinaCitiesManager {
         if(!mHttpRequestUtils.isNetWorkAvailable()) {
             listener.onFail("网络不可用");
         } else {
-            mHttpRequestUtils.request(UrlUtils.getBaiduLocationUrl(getLocation()),
+            mHttpRequestUtils.request(UrlUtils.getBaiduLocationBaseUrl(),
+                    UrlUtils.getBaiduLocationPath(),
                     BaseHttpRequestUtils.HttpRequestMethod.GET,
-                    null,
+                    UrlUtils.createBaiduLocationParams(getLocation()),
                     new BaseHttpRequestUtils.HttpRequestListener<String>() {
                         @Override
                         public void onSuccess(String result) {
@@ -182,7 +184,8 @@ public class ChinaCitiesManager {
     }
 
     private void initCitiesInfo(final String parentCityCode, final int level) {
-        mHttpRequestUtils.request(UrlUtils.getChinaCitiesUrl(parentCityCode),
+        mHttpRequestUtils.request(UrlUtils.getChinaCitiesBaseUrl(),
+                UrlUtils.getChinaCitiesPath(parentCityCode),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
                 null,
                 new BaseHttpRequestUtils.HttpRequestListener<String>() {

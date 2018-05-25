@@ -23,7 +23,7 @@ public class ManagerModule {
     @Provides
     @Singleton
     public ChinaCitiesManager provideChinaCitiesManager(SpManager spManager,
-                                                        @Named("volley") BaseHttpRequestUtils httpRequestUtils) {
+                                                        @Named("retrofit") BaseHttpRequestUtils httpRequestUtils) {
         ChinaCitiesManager chinaCitiesManager = ChinaCitiesManager.newInstance();
         chinaCitiesManager.initDependencies(spManager,httpRequestUtils);
         return chinaCitiesManager;
@@ -31,7 +31,7 @@ public class ManagerModule {
 
     @Provides
     @Singleton
-    public LatestWeatherInfoManager provideLatestWeatherInfoManager(@Named("volley") BaseHttpRequestUtils httpRequestUtils,
+    public LatestWeatherInfoManager provideLatestWeatherInfoManager(@Named("retrofit") BaseHttpRequestUtils httpRequestUtils,
                                                                     ChinaCitiesManager chinaCitiesManager) {
         LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
         latestWeatherInfoManager.initDependencies(httpRequestUtils);

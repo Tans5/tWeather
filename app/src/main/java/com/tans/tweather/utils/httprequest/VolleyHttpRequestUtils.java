@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.bean.request.HttpGetParams;
 import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.weather.ForecastBean;
@@ -73,7 +74,7 @@ public class VolleyHttpRequestUtils extends BaseHttpRequestUtils {
     }
 
     @Override
-    public void request(String url, HttpRequestMethod method, final Object requestParams, final HttpRequestListener listener) {
+    public void request(String url, String path, HttpRequestMethod method, final Object requestParams, final HttpRequestListener listener) {
         Response.Listener<String> vListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -88,10 +89,14 @@ public class VolleyHttpRequestUtils extends BaseHttpRequestUtils {
             }
         };
         Request request;
-        if(method == HttpRequestMethod.GET || requestParams == null) {
-            request = new U8StringRequest(url,vListener,vErrorListener);
+        if(method == HttpRequestMethod.GET) {
+            if(requestParams != null) {
+                request = new U8StringRequest(url + path + ((HttpGetParams) requestParams).toHttpGetParamsString(), vListener, vErrorListener);
+            } else {
+                request = new U8StringRequest(url + path , vListener, vErrorListener);
+            }
         } else {
-            request = new U8StringRequest(Request.Method.POST,url,vListener,vErrorListener) {
+            request = new U8StringRequest(Request.Method.POST,url + path,vListener,vErrorListener) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap();
@@ -134,6 +139,9 @@ public class VolleyHttpRequestUtils extends BaseHttpRequestUtils {
             result = gson.fromJson(resultString,c);
         } else if(c == String.class) {
             result = response;
+        } else {
+            resultString = response;
+            result = gson.fromJson(resultString,c);
         }
         return result;
     }

@@ -257,20 +257,24 @@ public class MainActivityPresenter implements Presenter {
         latestWeatherInfoManager.updateLatestWeatherInfo(new LatestWeatherInfoManager.WeatherRequestListener() {
             @Override
             public void onSuccess() {
-                mView.setWeatherViewEnable(true);
-                mView.refreshWeatherInfo(createWeatherVo());
-                ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getCurrentCity()+": "+ latestWeatherInfoManager.getCondition().getText()+"  "+latestWeatherInfoManager.getCondition().getTemp());
-                if(mView.isRefreshing()) {
-                    mView.closeRefreshing();
+                if(mView != null) {
+                    mView.setWeatherViewEnable(true);
+                    mView.refreshWeatherInfo(createWeatherVo());
+                    ToastUtils.getInstance().showShortText(latestWeatherInfoManager.getCurrentCity() + ": " + latestWeatherInfoManager.getCondition().getText() + "  " + latestWeatherInfoManager.getCondition().getTemp());
+                    if (mView.isRefreshing()) {
+                        mView.closeRefreshing();
+                    }
                 }
             }
 
             @Override
             public void onFail(String e) {
-                mView.setWeatherViewEnable(false);
-                ToastUtils.getInstance().showShortText(e);
-                if(mView.isRefreshing()) {
-                    mView.closeRefreshing();
+                if(mView != null) {
+                    mView.setWeatherViewEnable(false);
+                    ToastUtils.getInstance().showShortText(e);
+                    if (mView.isRefreshing()) {
+                        mView.closeRefreshing();
+                    }
                 }
             }
         });

@@ -125,9 +125,10 @@ public class LatestWeatherInfoManager {
             return;
         }
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherAtomosphereUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createAtmosphereParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<AtmosphereBean>() {
                     @Override
                     public void onSuccess(AtmosphereBean result) {
@@ -155,9 +156,10 @@ public class LatestWeatherInfoManager {
                     }
                 });
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherConditionUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createConditionParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<ConditionBean>() {
                     @Override
                     public void onSuccess(ConditionBean result) {
@@ -185,9 +187,10 @@ public class LatestWeatherInfoManager {
                     }
                 });
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherWindUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createWindParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<WindBean>() {
                     @Override
                     public void onSuccess(WindBean result) {
@@ -215,9 +218,10 @@ public class LatestWeatherInfoManager {
                     }
                 });
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherForecastUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createForecastParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<List>() {
                     @Override
                     public void onSuccess(List result) {
@@ -255,9 +259,10 @@ public class LatestWeatherInfoManager {
             return;
         }
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherAtomosphereUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createAtmosphereParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<AtmosphereBean>() {
                     @Override
                     public void onSuccess(AtmosphereBean result) {
@@ -283,9 +288,10 @@ public class LatestWeatherInfoManager {
                     }
                 });
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherConditionUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createConditionParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<ConditionBean>() {
                     @Override
                     public void onSuccess(ConditionBean result) {
@@ -311,9 +317,10 @@ public class LatestWeatherInfoManager {
                     }
                 });
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherWindUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createWindParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<WindBean>() {
                     @Override
                     public void onSuccess(WindBean result) {
@@ -339,9 +346,10 @@ public class LatestWeatherInfoManager {
                     }
                 });
 
-        mHttpRequestUtils.request(UrlUtils.getWeatherForecastUrl(mCurrentCity),
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
-                null,
+                UrlUtils.createForecastParams(mCurrentCity),
                 new BaseHttpRequestUtils.HttpRequestListener<List>() {
                     @Override
                     public void onSuccess(List result) {

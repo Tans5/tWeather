@@ -43,6 +43,6 @@ public abstract class BaseHttpRequestUtils {
         return false;
     }
 
-    abstract public void request(String url, HttpRequestMethod method, Object requestParams, HttpRequestListener listener);
+    abstract public void request(String baseUrl, String path, HttpRequestMethod method, Object requestParams, HttpRequestListener listener);
 
 }
