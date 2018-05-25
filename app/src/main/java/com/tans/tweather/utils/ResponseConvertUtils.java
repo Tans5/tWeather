@@ -2,12 +2,116 @@ package com.tans.tweather.utils;
 
 import com.tans.tweather.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * 用于获取到的网络信息到界面展示信息的转换。
  * Created by tans on 2017/12/3.
  */
 
-public class ResultTransUtils {
+public class ResponseConvertUtils {
+
+
+    /**
+     * @param result 网络请求返回的json 字符串
+     * @return 描述大气的json字符串
+     */
+    public static String getAtmosphereJsonString(String result) {
+        String resultString = "";
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(result);
+            jsonObject = (JSONObject) jsonObject.get("query");
+            jsonObject = (JSONObject) jsonObject.get("results");
+            jsonObject = (JSONObject) jsonObject.get("channel");
+            jsonObject = (JSONObject) jsonObject.get("atmosphere");
+            resultString = jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultString;
+    }
+
+    /**
+     * @param result
+     * @return 描述风的json字符串
+     */
+    public static String getWindJsonString(String result) {
+        String resultString = "";
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(result);
+            jsonObject = (JSONObject) jsonObject.get("query");
+            jsonObject = (JSONObject) jsonObject.get("results");
+            jsonObject = (JSONObject) jsonObject.get("channel");
+            jsonObject = (JSONObject) jsonObject.get("wind");
+            resultString = jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultString;
+    }
+
+    /**
+     * @param result
+     * @return 描述当前天气的json字符串
+     */
+    public static String getCurrentConditionJsonString(String result) {
+        String resultString = "";
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(result);
+            jsonObject = (JSONObject) jsonObject.get("query");
+            jsonObject = (JSONObject) jsonObject.get("results");
+            jsonObject = (JSONObject) jsonObject.get("channel");
+            jsonObject = (JSONObject) jsonObject.get("item");
+            jsonObject = (JSONObject) jsonObject.get("condition");
+            resultString = jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultString;
+    }
+
+    /**
+     * @param result
+     * @return 未来10天天气的字符串
+     */
+    public static String getFutureConditionJsonString(String result) {
+        String resultString = "";
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(result);
+            jsonObject = (JSONObject) jsonObject.get("query");
+            jsonObject = (JSONObject) jsonObject.get("results");
+            JSONArray jsonArray = (JSONArray) jsonObject.get("channel");
+            resultString = jsonArray.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultString;
+    }
+
+    /**
+     * @param result
+     * @return 返回当前位置的城市
+     */
+    public static String getCurrentCityString(String result) {
+        String city = "";
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            jsonObject = (JSONObject) jsonObject.get("result");
+            jsonObject = (JSONObject) jsonObject.get("addressComponent");
+            city = jsonObject.get("city").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return city;
+    }
 
     /**
      * @param code 天气的情况编号

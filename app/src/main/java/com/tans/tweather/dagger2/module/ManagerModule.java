@@ -5,8 +5,9 @@ import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.manager.SpManager;
-import com.tans.tweather.utils.NetRequestUtils;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -21,17 +22,20 @@ public class ManagerModule {
 
     @Provides
     @Singleton
-    public ChinaCitiesManager provideChinaCitiesManager(NetRequestUtils netRequestUtils,SpManager spManager) {
+    public ChinaCitiesManager provideChinaCitiesManager(SpManager spManager,
+                                                        @Named("retrofit") BaseHttpRequestUtils httpRequestUtils) {
         ChinaCitiesManager chinaCitiesManager = ChinaCitiesManager.newInstance();
-        chinaCitiesManager.initDependencies(netRequestUtils,spManager);
+        chinaCitiesManager.initDependencies(spManager,httpRequestUtils);
         return chinaCitiesManager;
     }
 
     @Provides
     @Singleton
-    public LatestWeatherInfoManager provideLatestWeatherInfoManager(NetRequestUtils netRequestUtils,SpManager spManager) {
+    public LatestWeatherInfoManager provideLatestWeatherInfoManager(@Named("retrofit") BaseHttpRequestUtils httpRequestUtils,
+                                                                    ChinaCitiesManager chinaCitiesManager) {
         LatestWeatherInfoManager latestWeatherInfoManager = LatestWeatherInfoManager.newInstance();
-        latestWeatherInfoManager.initDependencies(netRequestUtils,spManager);
+        latestWeatherInfoManager.initDependencies(httpRequestUtils);
+        latestWeatherInfoManager.setCurrentCity(chinaCitiesManager.getCurrentCity());
         return latestWeatherInfoManager;
     }
 

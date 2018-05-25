@@ -3,15 +3,14 @@ package com.tans.tweather.manager;
 import android.content.Context;
 import android.content.Intent;
 
-import com.android.volley.VolleyError;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.DateBean;
 import com.tans.tweather.bean.weather.ForecastBean;
 import com.tans.tweather.bean.weather.WindBean;
-import com.tans.tweather.interfaces.INetRequestUtils;
-import com.tans.tweather.utils.NetRequestUtils;
+import com.tans.tweather.utils.UrlUtils;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 import com.tans.tweather.widget.WeatherInfoWidget;
 
 import java.util.ArrayList;
@@ -28,8 +27,7 @@ public class LatestWeatherInfoManager {
     private List<ForecastBean> mForecast = null;//预报list
     private WindBean mWind = null;//风bean
     private Context mContext = null;
-    private NetRequestUtils mNetRequestUtils = null;//网络请求实例
-    private SpManager mSpManager = null;//sp管理实例
+    private BaseHttpRequestUtils mHttpRequestUtils = null;
     private int mGotItem = 0;//一次天气信息请求（大气，天气，预报，风） 收到的个数
     private String mCurrentCity = "";//当前城市
     private DateBean updateDate = null;//更新日期
@@ -43,7 +41,7 @@ public class LatestWeatherInfoManager {
      */
     public interface WeatherRequestListener {
         void onSuccess();
-        void onFail(VolleyError e);
+        void onFail(String e);
     }
 
     /**
@@ -60,9 +58,8 @@ public class LatestWeatherInfoManager {
         return instance;
     }
 
-    public void initDependencies(NetRequestUtils netRequestUtils, SpManager spManager) {
-        mNetRequestUtils = netRequestUtils;
-        mSpManager = spManager;
+    public void initDependencies(BaseHttpRequestUtils httpRequestUtils) {
+        mHttpRequestUtils = httpRequestUtils;
     }
 
     public DateBean getUpdateDate() {
@@ -123,171 +120,261 @@ public class LatestWeatherInfoManager {
      */
     public void updateLatestWeatherInfo(final WeatherRequestListener listener) {
 
-        if (!mNetRequestUtils.isNetWorkAvailable()) {
-            VolleyError volleyError = new VolleyError("网络不可用");
-            listener.onFail(volleyError);
+        if (!mHttpRequestUtils.isNetWorkAvailable()) {
+            listener.onFail("网络不可用");
             return;
         }
 
-        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mAtmosphere = (AtmosphereBean) result;
-                mGotItem++;
-                //判断信息是否接收完毕
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();//更新日期
-                    notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
-                    listener.onSuccess(); //成功回掉
-                    sendWeatherUpdatedBroadcast(); //发送广播
-                }
-            }
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createAtmosphereParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<AtmosphereBean>() {
+                    @Override
+                    public void onSuccess(AtmosphereBean result) {
+                        mAtmosphere = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            listener.onSuccess(); //成功回掉
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-                listener.onFail(e);
-            }
-        });
-        mNetRequestUtils.requestConditionInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mCondition = (ConditionBean) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    listener.onSuccess();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+                    @Override
+                    public Class getResultType() {
+                        return AtmosphereBean.class;
+                    }
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-                listener.onFail(e);
-            }
-        });
-        mNetRequestUtils.requestForecastInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mForecast = (ArrayList<ForecastBean>) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    listener.onSuccess();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                        listener.onFail(e);
+                    }
+                });
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-                listener.onFail(e);
-            }
-        });
-        mNetRequestUtils.requestWindInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mWind = (WindBean) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    listener.onSuccess();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createConditionParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<ConditionBean>() {
+                    @Override
+                    public void onSuccess(ConditionBean result) {
+                        mCondition = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            listener.onSuccess(); //成功回掉
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-                listener.onFail(e);
-            }
-        });
+                    @Override
+                    public Class getResultType() {
+                        return ConditionBean.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                        listener.onFail(e);
+                    }
+                });
+
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createWindParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<WindBean>() {
+                    @Override
+                    public void onSuccess(WindBean result) {
+                        mWind = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            listener.onSuccess(); //成功回掉
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
+
+                    @Override
+                    public Class<WindBean> getResultType() {
+                        return WindBean.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                        listener.onFail(e);
+                    }
+                });
+
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createForecastParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<List>() {
+                    @Override
+                    public void onSuccess(List result) {
+                        mForecast = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            listener.onSuccess(); //成功回掉
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
+
+                    @Override
+                    public Class<List> getResultType() {
+                        return List.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                        listener.onFail(e);
+                    }
+                });
+
     }
 
     /**
      * 广播调用
      */
     public void updateLatestWeatherInfo() {
-        mNetRequestUtils.requestAtmosphereInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mAtmosphere = (AtmosphereBean) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+        if (!mHttpRequestUtils.isNetWorkAvailable()) {
+            return;
+        }
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-            }
-        });
-        mNetRequestUtils.requestConditionInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mCondition = (ConditionBean) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createAtmosphereParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<AtmosphereBean>() {
+                    @Override
+                    public void onSuccess(AtmosphereBean result) {
+                        mAtmosphere = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-            }
-        });
-        mNetRequestUtils.requestForecastInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mForecast = (ArrayList<ForecastBean>) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+                    @Override
+                    public Class getResultType() {
+                        return AtmosphereBean.class;
+                    }
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-            }
-        });
-        mNetRequestUtils.requestWindInfo(mCurrentCity, new INetRequestUtils.NetRequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                mWind = (WindBean) result;
-                mGotItem++;
-                if (mGotItem == WEATHER_ITEM_NUMBER) {
-                    mGotItem = 0;
-                    updateDate = getCurrentDate();
-                    notifyWeatherInfoUpdated();
-                    sendWeatherUpdatedBroadcast();
-                }
-            }
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                    }
+                });
 
-            @Override
-            public void onFail(VolleyError e) {
-                mGotItem = 0;
-            }
-        });
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createConditionParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<ConditionBean>() {
+                    @Override
+                    public void onSuccess(ConditionBean result) {
+                        mCondition = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
+
+                    @Override
+                    public Class getResultType() {
+                        return ConditionBean.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                    }
+                });
+
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createWindParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<WindBean>() {
+                    @Override
+                    public void onSuccess(WindBean result) {
+                        mWind = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
+
+                    @Override
+                    public Class<WindBean> getResultType() {
+                        return WindBean.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                    }
+                });
+
+        mHttpRequestUtils.request(UrlUtils.getWeatherBaseUrl(),
+                UrlUtils.getWeatherPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createForecastParams(mCurrentCity),
+                new BaseHttpRequestUtils.HttpRequestListener<List>() {
+                    @Override
+                    public void onSuccess(List result) {
+                        mForecast = result;
+                        mGotItem++;
+                        //判断信息是否接收完毕
+                        if (mGotItem == WEATHER_ITEM_NUMBER) {
+                            mGotItem = 0;
+                            updateDate = getCurrentDate();//更新日期
+                            notifyWeatherInfoUpdated();//通知给注册的监听 天气更新
+                            sendWeatherUpdatedBroadcast(); //发送广播
+                        }
+                    }
+
+                    @Override
+                    public Class<List> getResultType() {
+                        return List.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mGotItem = 0;
+                    }
+                });
+
     }
 
     /**

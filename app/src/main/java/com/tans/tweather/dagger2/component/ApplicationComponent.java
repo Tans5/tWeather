@@ -9,9 +9,10 @@ import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.dagger2.module.ApplicationModule;
 import com.tans.tweather.dagger2.module.ManagerModule;
 import com.tans.tweather.dagger2.module.UtilsModule;
-import com.tans.tweather.utils.NetRequestUtils;
 import com.tans.tweather.utils.ToastUtils;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -27,7 +28,10 @@ public interface ApplicationComponent {
     ChinaCitiesManager chinaCitiesManager();
     LatestWeatherInfoManager latestWeatherInfoManager();
     SpManager spManager();
-    NetRequestUtils netRequestUtils();
+    @Named("volley")
+    BaseHttpRequestUtils volleyHttpRequestUtils();
+    @Named("retrofit")
+    BaseHttpRequestUtils retrofitHttpRequestUtils();
     ToastUtils toastUtils();
     SettingsManager settingsManager();
 }
