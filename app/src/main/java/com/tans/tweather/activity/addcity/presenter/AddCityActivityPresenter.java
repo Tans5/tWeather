@@ -1,6 +1,5 @@
 package com.tans.tweather.activity.addcity.presenter;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.tans.tweather.activity.addcity.AddCityActivity;
@@ -12,7 +11,6 @@ import com.tans.tweather.mvp.Presenter;
 import com.tans.tweather.mvp.view.AddCityActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.dagger2.module.PresenterModule;
-import com.tans.tweather.utils.ToastUtils;
 
 import java.util.List;
 
@@ -22,7 +20,7 @@ import javax.inject.Inject;
  * Created by mine on 2018/3/20.
  */
 
-public class AddCityActivityPresenter implements Presenter,CitiesRecyclerAdapter.ItemClickListener {
+public class AddCityActivityPresenter implements Presenter, CitiesRecyclerAdapter.ItemClickListener {
     public static String TAG = AddCityActivityPresenter.class.getSimpleName();
 
     private AddCityActivityView mView;
@@ -51,26 +49,43 @@ public class AddCityActivityPresenter implements Presenter,CitiesRecyclerAdapter
                 .presenterModule(new PresenterModule(mView))
                 .build()
                 .inject(this);
-        data0 = mChinaCitiesManager.queryCitiesByParentCode(ChinaCitiesManager.ROOT_CITY_PARENT_CODE);
-        mAdapter = new CitiesRecyclerAdapter((AddCityActivity)mView,this);
-        mAdapter.setData(data0);
+        mAdapter = new CitiesRecyclerAdapter((AddCityActivity) mView, this);
         mView.initRecyclerView(mAdapter);
+    }
+
+    public void initRootCity() {
+        mView.setLoadingViewEnable(true);
+        mChinaCitiesManager.queryChildrenCities(ChinaCitiesManager.ROOT_CITY_PARENT_CODE, ChinaCitiesManager.ROOT_CITY_LEVEL,
+                new ChinaCitiesManager.LoadChildrenCityListener() {
+                    @Override
+                    public void onSuccess(List<LocationBean> childCities) {
+                        data0 = childCities;
+                        mAdapter.setData(data0);
+                        mView.setLoadingViewEnable(false);
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        mView.showToast(e.toString());
+                        mView.setLoadingViewEnable(false);
+                    }
+                });
     }
 
     @Override
     public void onClick(int position, int level) {
-        Log.d(TAG,"level: "+level+" position: "+position);
+        Log.d(TAG, "level: " + level + " position: " + position);
         switch (level) {
             case 1:
                 mView.setLoadingViewEnable(true);
                 mView.refreshParentCity(data0.get(position).getCityName());
                 parent0 = data0.get(position).getCityName();
-                updateData(data0.get(position).getCode());
+                updateData(data0.get(position).getCode(), 2);
                 break;
             case 2:
                 mView.setLoadingViewEnable(true);
                 mView.refreshParentCity(data1.get(position).getCityName());
-                updateData(data1.get(position).getCode());
+                updateData(data1.get(position).getCode(), 3);
                 break;
             case 3:
                 saveCommonUserCity(data2.get(position).getCityName());
@@ -81,10 +96,10 @@ public class AddCityActivityPresenter implements Presenter,CitiesRecyclerAdapter
     public boolean backToParent() {
         boolean b = false;
         switch (currentLevel) {
-            case 1 :
+            case 1:
                 b = false;
                 break;
-            case  2:
+            case 2:
                 mAdapter.setData(data0);
                 mView.hideParentCity();
                 currentLevel--;
@@ -110,45 +125,38 @@ public class AddCityActivityPresenter implements Presenter,CitiesRecyclerAdapter
         mChinaCitiesManager = null;
     }
 
-    private void updateData(final String parentCode) {
-        new AsyncTask<Void,Void,List<LocationBean>>() {
-
+    private void updateData(final String parentCode, final int level) {
+        mChinaCitiesManager.queryChildrenCities(parentCode, level, new ChinaCitiesManager.LoadChildrenCityListener() {
             @Override
-            protected List<LocationBean> doInBackground(Void... params) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return mChinaCitiesManager.queryCitiesByParentCode(parentCode);
-            }
-
-            @Override
-            protected void onPostExecute(List<LocationBean> locationBeen) {
-                super.onPostExecute(locationBeen);
-                int level = locationBeen.get(0).getLevel();
+            public void onSuccess(List<LocationBean> childCities) {
+                int level = childCities.get(0).getLevel();
                 currentLevel = level;
-                if(level == 2) {
-                    data1 = locationBeen;
+                if (level == 2) {
+                    data1 = childCities;
                     mAdapter.setData(data1);
                 } else if (level == 3) {
-                    data2 = locationBeen;
+                    data2 = childCities;
                     mAdapter.setData(data2);
                 }
                 mView.setLoadingViewEnable(false);
             }
-        }.execute();
+
+            @Override
+            public void onFail(String e) {
+                mView.showToast(e);
+            }
+        });
     }
 
     private void saveCommonUserCity(String city) {
         List<String> cities = mChinaCitiesManager.getCommonCities();
-        if(cities.contains(city)) {
-            ToastUtils.getInstance().showShortText("该城市已经添加");
+        if (cities.contains(city)) {
+            mView.showToast("该城市已经添加");
             return;
         } else {
             cities.add(city);
             mChinaCitiesManager.setCommonCities(cities);
-            ToastUtils.getInstance().showShortText("添加成功");
+            mView.showToast("添加成功");
             mView.destroyActivity();
         }
     }

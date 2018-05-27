@@ -25,6 +25,7 @@ import com.tans.tweather.dagger2.component.DaggerAddCityActivityComponent;
 import com.tans.tweather.mvp.view.AddCityActivityView;
 import com.tans.tweather.dagger2.module.PresenterModule;
 import com.tans.tweather.activity.addcity.presenter.AddCityActivityPresenter;
+import com.tans.tweather.utils.ToastUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -55,6 +56,8 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
     @Inject
     AddCityActivityPresenter mPresenter;
 
+    @Inject
+    ToastUtils mToastUtils;
 
     int mAnimaRadius = 25;
 
@@ -113,6 +116,11 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
     }
 
     @Override
+    public void showToast(String msg) {
+        mToastUtils.showShortText(msg);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
@@ -149,16 +157,15 @@ public class AddCityActivity extends AppCompatActivity implements AddCityActivit
 
     @AfterViews
     void init() {
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        //mPresenter = new AddCityActivityPresenter(this);
         DaggerAddCityActivityComponent.builder()
                 .applicationComponent(BaseApplication.getApplicationComponent())
                 .presenterModule(new PresenterModule(this))
                 .build()
                 .inject(this);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mPresenter.initRootCity();
     }
 
 }

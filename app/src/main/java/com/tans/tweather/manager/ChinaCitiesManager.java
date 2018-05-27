@@ -8,7 +8,6 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import com.j256.ormlite.dao.Dao;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.bean.request.HttpGetParams;
 import com.tans.tweather.database.DatabaseHelper;
 import com.tans.tweather.database.bean.LocationBean;
 import com.tans.tweather.utils.ResponseConvertUtils;
@@ -18,6 +17,12 @@ import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by mine on 2017/12/28.
@@ -52,11 +57,16 @@ public class ChinaCitiesManager {
     }
 
     /**
-     * 城市信息更新的监听
+     * 当前城市信息更新的监听
      */
     public interface LoadCurrentCityListener {
         void onSuccess(String s);
 
+        void onFail(String e);
+    }
+
+    public interface LoadChildrenCityListener {
+        void onSuccess(List<LocationBean> childCities);
         void onFail(String e);
     }
 
@@ -77,17 +87,49 @@ public class ChinaCitiesManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        testCities();
     }
 
-    public List<LocationBean> queryCitiesByParentCode(String parentCode) {
-        List<LocationBean> resultCities = null;
-        try {
-            resultCities = mDao.queryBuilder().where().eq("parent_code",parentCode).query();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void queryChildrenCities(final String parentCode,final int level, final LoadChildrenCityListener listener) {
+        if (level > END_LEVEL) {
+            listener.onFail("error level");
+        } else {
+            Observable.create(new Observable.OnSubscribe<List<LocationBean>>() {
+
+                @Override
+                public void call(Subscriber<? super List<LocationBean>> subscriber) {
+                    List<LocationBean> resultCities = null;
+                    try {
+                        resultCities = mDao.queryBuilder().where().eq("parent_code", parentCode).query();
+                        subscriber.onNext(resultCities);
+                    } catch (SQLException e) {
+                        subscriber.onError(e);
+                        e.printStackTrace();
+                    }
+                }
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<List<LocationBean>>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            listener.onFail(e.getMessage());
+                        }
+
+                        @Override
+                        public void onNext(List<LocationBean> locations) {
+                            if (locations.size() == 0) {
+                                requestCitiesInfo(parentCode, level, listener);
+                            } else {
+                                listener.onSuccess(locations);
+                            }
+                        }
+                    });
         }
-        return resultCities;
     }
 
     /**
@@ -171,19 +213,7 @@ public class ChinaCitiesManager {
     private ChinaCitiesManager () {
     }
 
-    private void testCities()  {
-        LocationBean testCity = null;
-        try {
-            testCity = mDao.queryForId("01");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        if(testCity == null) {
-            initCitiesInfo(ROOT_CITY_PARENT_CODE, ROOT_CITY_LEVEL);
-        }
-    }
-
-    private void initCitiesInfo(final String parentCityCode, final int level) {
+    private void requestCitiesInfo(final String parentCityCode, final int level, final LoadChildrenCityListener listener) {
         mHttpRequestUtils.request(UrlUtils.getChinaCitiesBaseUrl(),
                 UrlUtils.getChinaCitiesPath(parentCityCode),
                 BaseHttpRequestUtils.HttpRequestMethod.GET,
@@ -191,14 +221,50 @@ public class ChinaCitiesManager {
                 new BaseHttpRequestUtils.HttpRequestListener<String>() {
                     @Override
                     public void onSuccess(String result) {
+
                         String[] cities = splitCityString(result);
-                        for(int i=0;i< cities.length;i++) {
-                            String[] city = splitCityNameAndCode(cities[i]);
-                            saveCity(city,parentCityCode,level);
-                            if(level < END_LEVEL) {
-                                initCitiesInfo(city[0],level+1);
-                            }
-                        }
+                        final List<LocationBean> locations = new ArrayList();
+                        Observable.from(cities)
+                                .observeOn(Schedulers.io())
+                                .map(new Func1<String, Boolean>() {
+                                    @Override
+                                    public Boolean call(String s) {
+                                        String[] city = splitCityNameAndCode(s);
+                                        LocationBean locationBean = new LocationBean();
+                                        locationBean.setParentCode(parentCityCode);
+                                        locationBean.setLevel(level);
+                                        locationBean.setCode(city[0]);
+                                        locationBean.setCityName(city[1]);
+                                        try {
+                                            locations.add(mDao.createIfNotExists(locationBean));
+                                            return true;
+                                        } catch (SQLException e) {
+                                            e.printStackTrace();
+                                            return false;
+                                        }
+                                    }
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<Boolean>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        if(listener != null) {
+                                            listener.onSuccess(locations);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        if(listener != null) {
+                                            listener.onFail(e.getMessage());
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onNext(Boolean aBoolean) {
+
+                                    }
+                                });
                     }
 
                     @Override
@@ -214,18 +280,6 @@ public class ChinaCitiesManager {
 
     }
 
-    private void saveCity (String[] city,String parentCode,int level) {
-        LocationBean locationBean = new LocationBean();
-        locationBean.setParentCode(parentCode);
-        locationBean.setLevel(level);
-        locationBean.setCode(city[0]);
-        locationBean.setCityName(city[1]);
-        try {
-            mDao.createIfNotExists(locationBean);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void notifyCurrentCityChange() {
         if(currentCitesChangeListeners != null) {
