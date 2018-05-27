@@ -17,4 +17,5 @@ public interface AddCityActivityView extends View {
     void destroyActivity();
     void refreshParentCity(String city);
     void hideParentCity();
+    void showToast(String msg);
 }

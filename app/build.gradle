@@ -3,6 +3,14 @@ apply plugin: 'android-apt'
 def AAVersion='4.4.0'
 
 android {
+    signingConfigs {
+        releaseSign {
+            keyAlias 'tans\'key'
+            keyPassword '123456'
+            storeFile file('D:/tweather.jks')
+            storePassword '123456'
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion '27.0.1'
     defaultConfig {
@@ -17,6 +25,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseSign
         }
     }
 }
@@ -30,7 +39,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:design:26.0.0-beta1'
-    compile group: 'com.android.volley', name: 'volley', version: '1.1.0'
+    compile 'com.android.volley:volley:1.1.0'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.github.bumptech.glide:glide:4.3.1'
     compile 'io.reactivex:rxjava:1.0.14'
@@ -42,7 +51,6 @@ dependencies {
     compile "org.androidannotations:androidannotations-api:$AAVersion"
     compile 'com.android.support:cardview-v7:26.0.0-beta1'
     compile 'com.android.support:palette-v7:26.0.0-alpha1'
-
     apt 'com.google.dagger:dagger-compiler:2.2'
     compile 'com.google.dagger:dagger:2.2'
     provided 'javax.annotation:jsr250-api:1.0'
