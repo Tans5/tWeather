@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.bean.request.HttpGetParams;
+import com.tans.tweather.bean.http.HttpGetParams;
 import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.weather.ForecastBean;

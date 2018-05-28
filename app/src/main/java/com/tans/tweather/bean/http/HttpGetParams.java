@@ -1,4 +1,4 @@
-package com.tans.tweather.bean.request;
+package com.tans.tweather.bean.http;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
