@@ -5,6 +5,7 @@ import com.tans.tweather.manager.ChinaCitiesManager;
 import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.manager.SpManager;
+import com.tans.tweather.manager.UserAccountManager;
 import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
 import javax.inject.Named;
@@ -54,4 +55,15 @@ public class ManagerModule {
         settingsManager.initDependencies(spManager);
         return  settingsManager;
     }
+
+    @Provides
+    @Singleton
+    public UserAccountManager provideUserAccountManager(@Named("volley") BaseHttpRequestUtils httpRequestUtils,
+                                                        ChinaCitiesManager chinaCitiesManager,
+                                                        SettingsManager settingsManager) {
+        UserAccountManager userAccountManager = UserAccountManager.newInstance();
+        userAccountManager.initDependencies(httpRequestUtils,chinaCitiesManager,settingsManager);
+        return userAccountManager;
+    }
+
 }

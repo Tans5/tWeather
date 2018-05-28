@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.tans.tweather.R;
 import com.tans.tweather.utils.DensityUtils;
@@ -47,6 +51,10 @@ public class LogDialogBuilder {
         Button mLogBt;
         Button mCancelBt;
         Button mSignUpBt;
+        EditText mNameEt;
+        EditText mPasswordEt;
+        TextView mWaitingTv;
+        LinearLayout mContentLl;
 
         @Nullable
         @Override
@@ -60,7 +68,10 @@ public class LogDialogBuilder {
             mLogBt = mContentView.findViewById(R.id.log_dialog_bt_log);
             mCancelBt = mContentView.findViewById(R.id.log_dialog_bt_cancel);
             mSignUpBt = mContentView.findViewById(R.id.log_dialog_bt_sign_up);
-
+            mPasswordEt = mContentView.findViewById(R.id.log_dialog_et_password);
+            mNameEt = mContentView.findViewById(R.id.log_dialog_et_name);
+            mWaitingTv = mContentView.findViewById(R.id.log_dialog_tv_waiting);
+            mContentLl = mContentView.findViewById(R.id.log_dialog_ll_content);
             mLogBt.setOnClickListener(this);
             mCancelBt.setOnClickListener(this);
             mSignUpBt.setOnClickListener(this);
@@ -93,7 +104,7 @@ public class LogDialogBuilder {
                         listener.cancel(this);
                         break;
                     case R.id.log_dialog_bt_log:
-                        listener.log("","",this);
+                        listener.log(mNameEt.getText().toString(),mPasswordEt.getText().toString(),this);
                         break;
                     case R.id.log_dialog_bt_sign_up:
                         listener.signUp(this);
@@ -101,6 +112,16 @@ public class LogDialogBuilder {
 
                 }
             }
+        }
+
+        public void showWaiting() {
+            mWaitingTv.setVisibility(View.VISIBLE);
+            mContentLl.setVisibility(View.INVISIBLE);
+        }
+
+        public void showContent() {
+            mWaitingTv.setVisibility(View.GONE);
+            mContentLl.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -10,12 +10,14 @@ import android.util.Log;
 import com.android.volley.VolleyError;
 import com.tans.tweather.activity.main.MainActivity;
 import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.bean.account.UserBean;
 import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.DateBean;
 import com.tans.tweather.bean.weather.ForecastBean;
 import com.tans.tweather.bean.weather.WindBean;
 import com.tans.tweather.dagger2.component.DaggerMainActivityComponent;
+import com.tans.tweather.manager.UserAccountManager;
 import com.tans.tweather.mvp.Presenter;
 import com.tans.tweather.mvp.view.MainActivityView;
 import com.tans.tweather.manager.ChinaCitiesManager;
@@ -61,6 +63,9 @@ public class MainActivityPresenter implements Presenter {
 
     @Inject
     SettingsManager settingsManager;
+
+    @Inject
+    UserAccountManager userAccountManager;
 
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
         @Override
@@ -231,6 +236,46 @@ public class MainActivityPresenter implements Presenter {
                 ToastUtils.getInstance().showShortText("保存成功");
             }
         }.execute();
+    }
+
+    public void signUp(String name, String password) {
+        UserBean user = new UserBean();
+        user.setName(name);
+        user.setPassword(password);
+        userAccountManager.signUp(user, new UserAccountManager.SignUpListener() {
+            @Override
+            public void onSuccess() {
+                mView.signUpSuccess(userAccountManager.getUser());
+            }
+
+            @Override
+            public void onFail(String e) {
+                mView.showToast(e);
+                mView.signUpFail();
+            }
+        });
+    }
+
+    public void logIn(String name, String password) {
+        UserBean user = new UserBean();
+        user.setName(name);
+        user.setPassword(password);
+        userAccountManager.logIn(user, new UserAccountManager.LoginListener() {
+            @Override
+            public void onSuccess() {
+                mView.logInSuccess(userAccountManager.getUser());
+            }
+
+            @Override
+            public void onFail(String e) {
+                mView.showToast(e);
+                mView.logInFail();
+            }
+        });
+    }
+
+    public void logOut() {
+        userAccountManager.logOut();
     }
 
     @Override

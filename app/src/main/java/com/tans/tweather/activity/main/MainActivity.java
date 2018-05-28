@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.util.Log;
@@ -54,6 +55,7 @@ import com.tans.tweather.R;
 import com.tans.tweather.activity.addcity.AddCityActivity_;
 import com.tans.tweather.activity.settings.SettingsActivity_;
 import com.tans.tweather.application.BaseApplication;
+import com.tans.tweather.bean.account.UserBean;
 import com.tans.tweather.dialog.LogDialogBuilder;
 import com.tans.tweather.dialog.SignUpDialogBuilder;
 import com.tans.tweather.bean.weather.AtmosphereBean;
@@ -208,6 +210,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @ViewById(R.id.tv_title)
     TextView mTitle;
 
+    @ViewById(R.id.ll_login)
+    LinearLayout mLoginLl;
+
+    @ViewById(R.id.ll_user)
+    LinearLayout mUserLl;
+
+    @ViewById(R.id.tv_username)
+    TextView mUsernameTv;
+
+    SignUpDialogBuilder.SignUpDialog mSignUpDialog;
+
+    LogDialogBuilder.LogDialog mLogDialog;
+
     Animation rotateAnim;
 
     @Override
@@ -349,6 +364,51 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     @Override
+    public void showToast(String msg) {
+        mToastUtils.showShortText(msg);
+    }
+
+    @Override
+    public void signUpSuccess(UserBean userBean) {
+        if(mSignUpDialog != null) {
+            mSignUpDialog.dismiss();
+        }
+        mLoginLl.setVisibility(View.GONE);
+        mUserLl.setVisibility(View.VISIBLE);
+        mUsernameTv.setText(userBean.getName());
+
+    }
+
+    @Override
+    public void signUpFail() {
+        if(mSignUpDialog != null) {
+            mSignUpDialog.dismiss();
+        }
+        mLoginLl.setVisibility(View.VISIBLE);
+        mUserLl.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void logInSuccess(UserBean userBean) {
+        if(mLogDialog != null) {
+            mLogDialog.dismiss();
+        }
+
+        mLoginLl.setVisibility(View.GONE);
+        mUserLl.setVisibility(View.VISIBLE);
+        mUsernameTv.setText(userBean.getName());
+    }
+
+    @Override
+    public void logInFail() {
+        if(mLogDialog != null) {
+            mLogDialog.dismiss();
+        }
+        mLoginLl.setVisibility(View.VISIBLE);
+        mUserLl.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
@@ -452,12 +512,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     @Click(R.id.ll_login)
-    void login() {
-        new LogDialogBuilder()
+    void logIn() {
+        mLogDialog = new LogDialogBuilder()
                 .setListener(new LogDialogBuilder.LogDialogListener() {
                     @Override
                     public void log(String name, String password, LogDialogBuilder.LogDialog dialog) {
-                        dialog.dismiss();
+                        dialog.showWaiting();
+                        mPresenter.logIn(name,password);
                     }
 
                     @Override
@@ -471,16 +532,26 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                         createSignUpDialog();
                     }
                 })
-                .build()
-                .show(getFragmentManager(),"login");
+                .build();
+        mLogDialog.show(getFragmentManager(),"log_in");
+    }
+
+    @Click(R.id.ll_user)
+    void logOut() {
+        mPresenter.logOut();
     }
 
     private void createSignUpDialog() {
-        new SignUpDialogBuilder()
+        mSignUpDialog = new SignUpDialogBuilder()
                 .setListener(new SignUpDialogBuilder.SignUpListener() {
                     @Override
-                    public void signUp(String name, String password, SignUpDialogBuilder.SignUpDialog dialog) {
-
+                    public void signUp(String name, String password, String passwordRepeat, SignUpDialogBuilder.SignUpDialog dialog) {
+                        if(TextUtils.equals(password,passwordRepeat)) {
+                            dialog.showWaiting();
+                            mPresenter.signUp(name,password);
+                        } else {
+                            showToast("两次密码不一致哦～");
+                        }
                     }
 
                     @Override
@@ -493,8 +564,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                         dialog.dismiss();
                     }
                 })
-                .build()
-                .show(getFragmentManager(),"sign_up");
+                .build();
+        mSignUpDialog.show(getFragmentManager(),"sign_up");
     }
 
     private void startEnterTransition() {

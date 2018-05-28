@@ -1,6 +1,7 @@
 package com.tans.tweather.mvp.view;
 
 import com.tans.tweather.activity.main.presenter.MainActivityPresenter;
+import com.tans.tweather.bean.account.UserBean;
 import com.tans.tweather.mvp.View;
 
 import java.util.List;
@@ -18,4 +19,9 @@ public interface MainActivityView extends View {
     void refreshMenuCites(List<String> cites,String currentCity);
     void refreshScrim(int alpha);
     void requestLocationPermission();
+    void showToast(String msg);
+    void signUpSuccess(UserBean userBean);
+    void signUpFail();
+    void logInSuccess(UserBean userBean);
+    void logInFail();
 }

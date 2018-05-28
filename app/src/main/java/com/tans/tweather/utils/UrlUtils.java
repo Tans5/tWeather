@@ -68,6 +68,21 @@ public class UrlUtils {
         return "data/list3/city" + parentCode + ".xml";
     }
 
+    public static String getLoginBaseUrl() {
+        return "http://10.18.128.118:8080/";
+    }
+
+    public static String getSignUpPath() {
+        return "tweather/sign_up/";
+    }
+
+    public static String getSignInPath() {
+        return "tweather/sign_in/";
+    }
+
+    public static String getStorePath() {
+        return "tweather/store/";
+    }
 
     private static HttpGetParams createWeatherBaseParams() {
         HttpGetParams params = new HttpGetParams();

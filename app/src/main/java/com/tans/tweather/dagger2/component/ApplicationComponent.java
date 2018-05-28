@@ -9,6 +9,7 @@ import com.tans.tweather.manager.SpManager;
 import com.tans.tweather.dagger2.module.ApplicationModule;
 import com.tans.tweather.dagger2.module.ManagerModule;
 import com.tans.tweather.dagger2.module.UtilsModule;
+import com.tans.tweather.manager.UserAccountManager;
 import com.tans.tweather.utils.ToastUtils;
 import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
@@ -34,4 +35,5 @@ public interface ApplicationComponent {
     BaseHttpRequestUtils retrofitHttpRequestUtils();
     ToastUtils toastUtils();
     SettingsManager settingsManager();
+    UserAccountManager userAccountManager();
 }
