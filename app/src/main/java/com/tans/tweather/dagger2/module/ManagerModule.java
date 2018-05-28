@@ -58,7 +58,7 @@ public class ManagerModule {
 
     @Provides
     @Singleton
-    public UserAccountManager provideUserAccountManager(@Named("volley") BaseHttpRequestUtils httpRequestUtils,
+    public UserAccountManager provideUserAccountManager(@Named("retrofit") BaseHttpRequestUtils httpRequestUtils,
                                                         ChinaCitiesManager chinaCitiesManager,
                                                         SettingsManager settingsManager) {
         UserAccountManager userAccountManager = UserAccountManager.newInstance();

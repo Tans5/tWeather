@@ -539,6 +539,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     @Click(R.id.ll_user)
     void logOut() {
         mPresenter.logOut();
+        mLoginLl.setVisibility(View.VISIBLE);
+        mUserLl.setVisibility(View.GONE);
     }
 
     private void createSignUpDialog() {
