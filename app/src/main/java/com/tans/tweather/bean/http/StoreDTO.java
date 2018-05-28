@@ -1,4 +1,4 @@
-package com.tans.tweather.bean.request;
+package com.tans.tweather.bean.http;
 
 import com.tans.tweather.bean.account.CityBean;
 import com.tans.tweather.bean.account.SettingBean;

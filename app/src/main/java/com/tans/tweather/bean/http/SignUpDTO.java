@@ -1,10 +1,8 @@
-package com.tans.tweather.bean.request;
+package com.tans.tweather.bean.http;
 
-import com.tans.tweather.bean.account.CityBean;
-import com.tans.tweather.bean.account.SettingBean;
 import com.tans.tweather.bean.account.UserBean;
 
-public class LogInDTO {
+public class SignUpDTO {
     public static class Request {
         UserBean user;
 
@@ -20,9 +18,6 @@ public class LogInDTO {
     public static class Response {
         boolean result;
         UserBean user;
-        SettingBean setting;
-        CityBean city;
-
         public boolean getResult() {
             return result;
         }
@@ -37,22 +32,6 @@ public class LogInDTO {
 
         public void setUser(UserBean user) {
             this.user = user;
-        }
-
-        public SettingBean getSetting() {
-            return setting;
-        }
-
-        public void setSetting(SettingBean setting) {
-            this.setting = setting;
-        }
-
-        public CityBean getCity() {
-            return city;
-        }
-
-        public void setCity(CityBean city) {
-            this.city = city;
         }
     }
 }

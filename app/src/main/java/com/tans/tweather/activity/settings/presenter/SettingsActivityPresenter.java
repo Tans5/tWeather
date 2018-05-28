@@ -2,6 +2,7 @@ package com.tans.tweather.activity.settings.presenter;
 
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.dagger2.component.DaggerSettingsActivityComponent;
+import com.tans.tweather.manager.UserAccountManager;
 import com.tans.tweather.mvp.Presenter;
 import com.tans.tweather.mvp.view.SettingsActivityView;
 import com.tans.tweather.manager.SettingsManager;
@@ -18,6 +19,9 @@ public class SettingsActivityPresenter implements Presenter {
 
     @Inject
     SettingsManager settingsManager;
+
+    @Inject
+    UserAccountManager userAccountManager;
 
     public SettingsActivityPresenter(SettingsActivityView view) {
         mView = view;
@@ -49,5 +53,6 @@ public class SettingsActivityPresenter implements Presenter {
         settingsManager.setAlpha(alpha);
         settingsManager.setOpenNotification(openNotification);
         settingsManager.save();
+        userAccountManager.settingUpload(null);
     }
 }

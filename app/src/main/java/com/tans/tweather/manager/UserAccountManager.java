@@ -1,10 +1,17 @@
 package com.tans.tweather.manager;
 
+import com.tans.tweather.bean.account.CityBean;
+import com.tans.tweather.bean.account.SettingBean;
 import com.tans.tweather.bean.account.UserBean;
-import com.tans.tweather.bean.request.LogInDTO;
-import com.tans.tweather.bean.request.SignUpDTO;
+import com.tans.tweather.bean.http.LogInDTO;
+import com.tans.tweather.bean.http.SignUpDTO;
+import com.tans.tweather.bean.http.StoreDTO;
+import com.tans.tweather.utils.ToastUtils;
 import com.tans.tweather.utils.UrlUtils;
 import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserAccountManager {
 
@@ -89,6 +96,8 @@ public class UserAccountManager {
                     public void onSuccess(LogInDTO.Response result) {
                         if(result.getResult()) {
                             mUser = result.getUser();
+                            saveSetting(result.getSetting());
+                            saveCites(result.getCity());
                             listener.onSuccess();
                         } else {
                             listener.onFail("输入数据有错哦～");
@@ -107,6 +116,59 @@ public class UserAccountManager {
                 });
     }
 
+    public void settingUpload(final SettingUploadListener listener) {
+        if(mUser != null) {
+            StoreDTO.Request request = new StoreDTO.Request();
+            SettingBean setting = new SettingBean();
+            CityBean city = new CityBean();
+            setting.setImageAlpha(mSettingsManager.getAlpha());
+            setting.setUpdateRate(mSettingsManager.getRate());
+            setting.setLoadImage(mSettingsManager.isLoadImage());
+            setting.setLoadNotification(mSettingsManager.isOpenNotification());
+            setting.setLoadService(mSettingsManager.isOpenService());
+            setting.setUserId(mUser.getId());
+            request.setUserId(mUser.getId());
+            request.setSetting(setting);
+            city.setUserId(mUser.getId());
+            city.setCurrentCity(mChinaCitiesManager.getCurrentCity());
+            city.setCommonCities(commonCities2String(mChinaCitiesManager.getCommonCities()));
+            request.setCity(city);
+
+            mHttpRequestUtils.request(UrlUtils.getLoginBaseUrl(),
+                    UrlUtils.getStorePath(),
+                    BaseHttpRequestUtils.HttpRequestMethod.POST,
+                    request,
+                    new BaseHttpRequestUtils.HttpRequestListener<StoreDTO.Response>() {
+                        @Override
+                        public void onSuccess(StoreDTO.Response result) {
+                            if(result.getResult()) {
+                                if(listener != null) {
+                                    listener.onSuccess();
+                                }
+                                ToastUtils.getInstance().showShortText("同步数据到服务器成功！！");
+                            } else {
+                                if(listener != null) {
+                                    listener.onFail("同步设置到服务器失败");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public Class getResultType() {
+                            return StoreDTO.Response.class;
+                        }
+
+                        @Override
+                        public void onFail(String e) {
+                            if(listener != null) {
+                                listener.onFail(e);
+                            }
+                        }
+                    });
+        } else {
+        }
+    }
+
     public void logOut() {
         mUser = null;
     }
@@ -117,6 +179,47 @@ public class UserAccountManager {
 
     private UserAccountManager() {
 
+    }
+
+    private String commonCities2String(List<String> list) {
+        String result = "";
+        for(int i=0;i < list.size();i++) {
+            if(i != list.size()-1) {
+                result = result + list.get(i) + ",";
+            } else {
+                result = result + list.get(i);
+            }
+        }
+        return  result;
+    }
+
+    private List<String> string2CommonCities (String s) {
+        String [] ss = s.split(",");
+        List<String> result = new ArrayList<>();
+
+        for(int i =0 ; i<ss.length;i++) {
+            if(!ss[i] .equals(""))
+                result.add(ss[i]);
+        }
+        return result;
+    }
+
+    private void saveSetting(SettingBean setting) {
+        if(setting != null) {
+            mSettingsManager.setAlpha(setting.getImageAlpha());
+            mSettingsManager.setLoadImage(setting.isLoadImage());
+            mSettingsManager.setOpenNotification(setting.isLoadNotification());
+            mSettingsManager.setRate(setting.getUpdateRate());
+            mSettingsManager.setOpenService(setting.isLoadService());
+            mSettingsManager.save();
+        }
+    }
+
+    private void saveCites(CityBean city) {
+        if(city != null) {
+            mChinaCitiesManager.setCurrentCity(city.getCurrentCity());
+            mChinaCitiesManager.setCommonCities(string2CommonCities(city.getCommonCities()));
+        }
     }
 
 }
