@@ -35,6 +35,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
@@ -153,11 +154,13 @@ public class RetrofitHttpRequestUtils extends BaseHttpRequestUtils {
         private ConditionConverter conditionConverter = new ConditionConverter();
         private StringConverter stringConverter = new StringConverter();
         private static BeanConverterFactory instance;
+        private Type responseType;
 
-        public static BeanConverterFactory create() {
+        public static BeanConverterFactory create(Type responseType) {
             if(instance == null) {
                 instance = new BeanConverterFactory();
             }
+            instance.responseType = responseType;
             return instance;
         }
 
@@ -177,7 +180,7 @@ public class RetrofitHttpRequestUtils extends BaseHttpRequestUtils {
                 result = stringConverter;
             } else {
                 Gson gson = new Gson();
-                TypeAdapter adapter = gson.getAdapter(TypeToken.get(type));
+                TypeAdapter adapter = gson.getAdapter(TypeToken.get(responseType));
                 result = new ResponseBody2BeanConverter<>(gson,adapter);
             }
             return result;
@@ -222,9 +225,11 @@ public class RetrofitHttpRequestUtils extends BaseHttpRequestUtils {
     }
 
     public interface PostService {
+        @Headers({"Content-type:application/json;charset=UTF-8"})
         @POST
         Observable<Object> getObjectResult(@Url String url,@Body Object body);
 
+        @Headers({"Content-type:application/json;charset=UTF-8"})
         @POST
         Observable<String> getStringResult(@Url String url,@Body Object body);
     }
@@ -241,14 +246,15 @@ public class RetrofitHttpRequestUtils extends BaseHttpRequestUtils {
     protected void init(Context context) {
         super.init(context);
         mBuilder = new Retrofit.Builder()
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(BeanConverterFactory.create());
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
 
     @Override
     public void request(String baseUrl, String path, HttpRequestMethod method, Object requestParams, final HttpRequestListener listener) {
-        Retrofit retrofit = mBuilder.baseUrl(baseUrl).build();
         Class c = listener.getResultType();
+        Retrofit retrofit = mBuilder.baseUrl(baseUrl)
+                .addConverterFactory(BeanConverterFactory.create(c))
+                .build();
         if(c == WindBean.class) {
             retrofit.create(WeatherService.class)
                     .getWind(path, ((HttpGetParams)requestParams).getParams())
@@ -404,7 +410,7 @@ public class RetrofitHttpRequestUtils extends BaseHttpRequestUtils {
                         });
             } else if(method == HttpRequestMethod.POST) {
                 retrofit.create(PostService.class)
-                        .getObjectResult(baseUrl,requestParams)
+                        .getObjectResult(path,requestParams)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<Object>() {
