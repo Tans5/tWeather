@@ -1,6 +1,6 @@
 package com.tans.tweather.utils;
 
-import com.tans.tweather.bean.request.HttpGetParams;
+import com.tans.tweather.bean.http.HttpGetParams;
 
 /**
  * Created by 鹏程 on 2018/5/22.

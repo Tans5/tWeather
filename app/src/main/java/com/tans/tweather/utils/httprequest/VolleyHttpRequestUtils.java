@@ -14,7 +14,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tans.tweather.application.BaseApplication;
-import com.tans.tweather.bean.request.HttpGetParams;
+import com.tans.tweather.bean.http.HttpGetParams;
 import com.tans.tweather.bean.weather.AtmosphereBean;
 import com.tans.tweather.bean.weather.ConditionBean;
 import com.tans.tweather.bean.weather.ForecastBean;
