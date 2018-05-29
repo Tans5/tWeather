@@ -2,12 +2,10 @@ package com.tans.tweather.activity.main.presenter;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
-import com.android.volley.VolleyError;
 import com.tans.tweather.activity.main.MainActivity;
 import com.tans.tweather.application.BaseApplication;
 import com.tans.tweather.bean.weather.AtmosphereBean;
@@ -26,13 +24,17 @@ import com.tans.tweather.service.UpdateWeatherInfoService;
 import com.tans.tweather.utils.ToastUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by mine on 2018/3/1.
@@ -192,45 +194,51 @@ public class MainActivityPresenter implements Presenter {
     }
 
     public void saveImage(final Bitmap bitmap) {
-        DateBean today = latestWeatherInfoManager.getUpdateDate();
-        final String fileName ;
-        if(today != null) {
-            fileName = today.getYear() + "-" + today.getMonth() + "-" + today.getDay() + ".jpg";
-        } else {
-            fileName = System.currentTimeMillis()+".jpg";
-        }
-        new AsyncTask<Void,Void,Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                File fileDir = new File(Environment.getExternalStorageDirectory(), "BingImage");
-                if(!fileDir.exists()) {
-                    fileDir.mkdir();
-                }
-                File file = new File(fileDir,fileName);
-                if(file.exists()) {
-                    return null;
-                } else {
-                    try {
-                        FileOutputStream fos = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                        fos.flush();
-                        fos.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        Observable.just(bitmap)
+                .observeOn(Schedulers.io())
+                .map(new Func1<Bitmap, Boolean>() {
+                    @Override
+                    public Boolean call(Bitmap bitmap) {
+                        Boolean result = true;
+                        DateBean today = latestWeatherInfoManager.getUpdateDate();
+                        final String fileName ;
+                        if(today != null) {
+                            fileName = today.getYear() + "-" + today.getMonth() + "-" + today.getDay() + ".jpg";
+                        } else {
+                            fileName = System.currentTimeMillis()+".jpg";
+                        }
+                        File fileDir = new File(Environment.getExternalStorageDirectory(), "BingImage");
+                        if(!fileDir.exists()) {
+                            fileDir.mkdir();
+                        }
+                        File file = new File(fileDir,fileName);
+                        if(file.exists()) {
+                            result = false;
+                        } else {
+                            try {
+                                FileOutputStream fos = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                                fos.flush();
+                                fos.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                result = false;
+                            }
+                        }
+                        return result;
                     }
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                ToastUtils.getInstance().showShortText("保存成功");
-            }
-        }.execute();
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        if(aBoolean) {
+                            mView.showToast("图片保存成功！！");
+                        } else {
+                            mView.showToast("图片保存失败～");
+                        }
+                    }
+                });
     }
 
     @Override

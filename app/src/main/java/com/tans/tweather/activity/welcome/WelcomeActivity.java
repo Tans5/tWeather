@@ -17,6 +17,13 @@ import android.view.View;
 import com.tans.tweather.R;
 import com.tans.tweather.activity.main.MainActivity_;
 
+import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+
 /**
  * Created by mine on 2018/3/20.
  */
@@ -59,24 +66,27 @@ public class WelcomeActivity extends AppCompatActivity {
             //   getWindow().setReenterTransition(transition);
         }
         transStatusColor();
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    Thread.sleep(260);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                changeActivity();
-            }
-        }.execute();
+        Observable.just(260)
+                .observeOn(Schedulers.io())
+                .map(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer integer) {
+                        try {
+                            Thread.sleep(integer);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        changeActivity();
+                    }
+                });
     }
 
     private void transStatusColor() {
@@ -101,25 +111,28 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onRestart() {
         Log.d(TAG, "onRestart");
         super.onRestart();
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                finish();
-                overridePendingTransition(R.anim.anim_acitivity_enter, R.anim.anim_activity_exit);
-                super.onPostExecute(aVoid);
-            }
-        }.execute();
+        Observable.just(1000)
+                .observeOn(Schedulers.io())
+                .map(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer integer) {
+                        try {
+                            Thread.sleep(integer);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        finish();
+                        overridePendingTransition(R.anim.anim_acitivity_enter,
+                                R.anim.anim_activity_exit);
+                    }
+                });
 
     }
 

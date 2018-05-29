@@ -18,4 +18,5 @@ public interface MainActivityView extends View {
     void refreshMenuCites(List<String> cites,String currentCity);
     void refreshScrim(int alpha);
     void requestLocationPermission();
+    void showToast(String msg);
 }
