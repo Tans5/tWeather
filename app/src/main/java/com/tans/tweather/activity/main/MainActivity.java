@@ -357,15 +357,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mScrim.setBackgroundColor(Color.argb((int) a, 0, 0, 0));
     }
 
+    @Override
+    public void showToast(String msg) {
+        mToastUtils.showShortText(msg);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void requestLocationPermission() {
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-    }
-
-    @Override
-    public void showToast(String msg) {
-        mToastUtils.showShortText(msg);
     }
 
     @Override
