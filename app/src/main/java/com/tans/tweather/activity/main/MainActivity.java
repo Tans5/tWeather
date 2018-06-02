@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mOptions.centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .optionalCenterCrop()
-                .placeholder(R.drawable.default_bing)
+//                .placeholder(R.drawable.default_bing)
         ;
         Glide.with(BaseApplication.getInstance()).load(url + path)
                 .apply(mOptions)
@@ -476,9 +476,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(mPresenter.isLoadBingImage()) {
-            mPresenter.updateBingImage();
-        }
         mPresenter.refreshScrim();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(600);
@@ -610,6 +607,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
                 @Override
                 public void onTransitionEnd(Transition transition) {
                     mPresenter.loadWeatherInfo(false);
+                    if(mPresenter.isLoadBingImage()) {
+                        mPresenter.updateBingImage();
+                    }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         transition.removeListener(this);
                     }
