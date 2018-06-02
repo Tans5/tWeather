@@ -113,6 +113,13 @@ public class ResponseConvertUtils {
         return city;
     }
 
+    public static String getBingImagePath(String imageGetWayResponse) {
+        int start = imageGetWayResponse.indexOf("<url>") + 5;
+        int end = imageGetWayResponse.indexOf("</url>");
+        String result = imageGetWayResponse.substring(start,end);
+        return result;
+    }
+
     /**
      * @param code 天气的情况编号
      * @return 对应天气图标的drawable值

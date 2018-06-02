@@ -75,4 +75,19 @@ public class UrlUtils {
                 .add("env", "store://datatables.org/alltableswithkeys");
         return params;
     }
+
+    public static String getBingBaseUrl() {
+        return "https://cn.bing.com/";
+    }
+
+    public static String getBingImageGetWayPath() {
+        return "HPImageArchive.aspx";
+    }
+
+    public static HttpGetParams createBingImageParams() {
+        HttpGetParams params = new HttpGetParams();
+        params.add("idx", "0")
+                .add("n", "1");
+        return params;
+    }
 }

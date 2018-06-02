@@ -19,4 +19,5 @@ public interface MainActivityView extends View {
     void refreshScrim(int alpha);
     void requestLocationPermission();
     void showToast(String msg);
+    void updateBingBg(String url, String path);
 }

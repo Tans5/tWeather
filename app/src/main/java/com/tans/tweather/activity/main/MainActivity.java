@@ -270,6 +270,32 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     @Override
+    public void updateBingBg(String url, String path) {
+        RequestOptions mOptions = new RequestOptions();
+        mOptions.centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .optionalCenterCrop()
+                .placeholder(R.drawable.default_bing)
+        ;
+        Glide.with(BaseApplication.getInstance()).load(url + path)
+                .apply(mOptions)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        replaceBingImageColor(resource);
+                        return false;
+                    }
+                })
+                .transition(new DrawableTransitionOptions().crossFade(1000))
+                .into(mIvBingBg);
+    }
+
+    @Override
     public void setWeatherViewEnable(boolean b) {
         if (b) {
             mError.setVisibility(View.GONE);
@@ -393,9 +419,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(mPresenter.isLoadBingImage()) {
+            mPresenter.updateBingImage();
+        }
         mPresenter.refreshScrim();
-        if (mPresenter.loadBingImage())
-            updateBingBg();
         resizeView();
         mRefreshWeather.setDistanceToTriggerSync(600);
         mRefreshWeather.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -523,32 +550,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
 
-    private void updateBingBg() {
-        RequestOptions mOptions = new RequestOptions();
-        mOptions.centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .optionalCenterCrop()
-                .placeholder(R.drawable.default_bing)
-        ;
-        Glide.with(BaseApplication.getInstance()).load("http://api.dujin.org/bing/1366.php")
-                .apply(mOptions)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        insertBingBgColor(resource);
-                        return false;
-                    }
-                })
-                .transition(new DrawableTransitionOptions().crossFade(1000))
-                .into(mIvBingBg);
-    }
-
-    private void insertBingBgColor(Drawable resource) {
+    private void replaceBingImageColor(Drawable resource) {
         Bitmap b = ((BitmapDrawable) resource).getBitmap();
         mBingBitmap = b;
         Palette.from(b).generate(new Palette.PaletteAsyncListener() {
