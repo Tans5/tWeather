@@ -23,7 +23,10 @@ import com.tans.tweather.manager.LatestWeatherInfoManager;
 import com.tans.tweather.manager.SettingsManager;
 import com.tans.tweather.dagger2.module.PresenterModule;
 import com.tans.tweather.service.UpdateWeatherInfoService;
+import com.tans.tweather.utils.ResponseConvertUtils;
 import com.tans.tweather.utils.ToastUtils;
+import com.tans.tweather.utils.UrlUtils;
+import com.tans.tweather.utils.httprequest.BaseHttpRequestUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -68,6 +72,10 @@ public class MainActivityPresenter implements Presenter {
 
     @Inject
     UserAccountManager userAccountManager;
+
+    @Named("retrofit")
+    @Inject
+    BaseHttpRequestUtils mHttpRequestUtils;
 
     LatestWeatherInfoManager.WeatherUpdatedListener mWeatherUpdatedListener = new LatestWeatherInfoManager.WeatherUpdatedListener() {
         @Override
@@ -121,10 +129,6 @@ public class MainActivityPresenter implements Presenter {
 
     public void refreshScrim() {
         mView.refreshScrim(settingsManager.getAlpha());
-    }
-
-    public boolean loadBingImage() {
-        return settingsManager.isLoadImage();
     }
 
     public void loadWeatherInfo(boolean isRefresh) {
@@ -293,6 +297,39 @@ public class MainActivityPresenter implements Presenter {
         chinaCitiesManager.unregisterCommCitesChangeListener(commonCitesChangeListener);
         chinaCitiesManager.unregisterCurrentCityChangeListener(currentCitesChangeListener);
         settingsManager.unregisterListener(settingsChangeListener);
+    }
+
+    public void updateBingImage() {
+        //TODO : 直接依赖HTTPUtils不是很友好。。
+        mHttpRequestUtils.request(UrlUtils.getBingBaseUrl(),
+                UrlUtils.getBingImageGetWayPath(),
+                BaseHttpRequestUtils.HttpRequestMethod.GET,
+                UrlUtils.createBingImageParams(),
+                new BaseHttpRequestUtils.HttpRequestListener<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        if(mView != null) {
+                            mView.updateBingBg(UrlUtils.getBingBaseUrl(),
+                                    ResponseConvertUtils.getBingImagePath(result));
+                        }
+                    }
+
+                    @Override
+                    public Class getResultType() {
+                        return String.class;
+                    }
+
+                    @Override
+                    public void onFail(String e) {
+                        if(mView != null) {
+                            mView.showToast(e);
+                        }
+                    }
+                });
+    }
+
+    public boolean isLoadBingImage() {
+        return settingsManager.isLoadImage();
     }
 
     private void startService() {

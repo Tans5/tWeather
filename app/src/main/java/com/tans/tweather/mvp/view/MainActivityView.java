@@ -24,4 +24,5 @@ public interface MainActivityView extends View {
     void signUpFail();
     void logInSuccess(UserBean userBean);
     void logInFail();
+    void updateBingBg(String url, String path);
 }
